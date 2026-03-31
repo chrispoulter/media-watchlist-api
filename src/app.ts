@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { toNodeHandler } from "better-auth/node";
-import rateLimit from "express-rate-limit";
+import { rateLimit } from "express-rate-limit";
 import { apiReference } from "@scalar/express-api-reference";
 import { auth } from "./lib/auth.js";
 import { env } from "./env.js";

@@ -1,0 +1,54 @@
+services:
+  media-watchlist-api:
+    image: media-watchlist-api:latest
+    build:
+      context: .
+    environment:
+      DATABASE_URL: postgresql://postgres:password@host-docker-internal:5432/media-watchlist
+      PORT: 3000
+      BETTER_AUTH_URL: http://localhost:3000
+      BETTER_AUTH_SECRET: change-me-to-a-secret-that-is-at-least-32-chars
+      CLIENT_ORIGIN: http://localhost:5173
+      SMTP_HOST: host.docker.internal
+      SMTP_PORT: 1025
+      SMTP_FROM: noreply@example.com
+    ports:
+      - 3000:3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+
+  postgres:
+    image: postgres:17.6
+    user: postgres
+    environment:
+      POSTGRES_PASSWORD: password
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  mailpit:
+    image: axllent/mailpit:v1.22.3
+    environment:
+      MP_DATABASE: /data/mailpit.db
+    ports:
+      - 1025:1025
+      - 8025:8025
+    volumes:
+      - mailpit:/data
+    restart: always
+
+volumes:
+  postgres:
+    name: media-watchlist-postgres
+  mailpit:
+    name: media-watchlist-mailpit

@@ -43,6 +43,7 @@ export function createApp() {
     "/",
     apiReference({
       url: "/openapi.json",
+      pageTitle: "Media Watchlist API",
     })
   );
 

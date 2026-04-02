@@ -16,6 +16,12 @@ export const auth = betterAuth({
     provider: "pg",
     schema,
   }),
+  user: {
+    changeEmail: {
+      enabled: true,
+      updateEmailWithoutVerification: true,
+    },
+  },
   emailAndPassword: {
     enabled: true,
     sendResetPassword: async ({ user, url }) => {

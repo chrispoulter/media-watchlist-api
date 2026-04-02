@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { twoFactor } from "better-auth/plugins";
+import { twoFactor, openAPI } from "better-auth/plugins";
 import { createElement } from "react";
 import { db } from "../db/index.js";
 import * as schema from "../db/schema.js";
@@ -44,6 +44,9 @@ export const auth = betterAuth({
   plugins: [
     twoFactor({
       issuer: "Media Watchlist",
+    }),
+    openAPI({
+      disableDefaultReference: true,
     }),
   ],
 });

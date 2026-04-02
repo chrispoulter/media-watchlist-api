@@ -35,8 +35,17 @@ export function createApp() {
 
   app.use("/api", apiRouter);
 
-  app.get("/openapi.json", (_req, res) => {
-    res.json(openApiSpec);
+  app.get("/openapi.json", async (_req, res) => {
+    const authSchema = await auth.api.generateOpenAPISchema();
+
+    res.json({
+      ...openApiSpec,
+      paths: { ...authSchema.paths, ...openApiSpec.paths },
+      components: {
+        ...openApiSpec.components,
+        schemas: { ...authSchema.components.schemas, ...openApiSpec.components.schemas },
+      },
+    });
   });
 
   app.use(

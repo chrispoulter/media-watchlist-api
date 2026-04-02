@@ -196,54 +196,6 @@ export const openApiSpec = {
         },
       },
     },
-    "/api/auth/send-verification-email": {
-      post: {
-        tags: ["Auth"],
-        summary: "Send email verification link",
-        requestBody: {
-          required: true,
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  email: { type: "string", format: "email", example: "jane@example.com" },
-                },
-                required: ["email"],
-              },
-            },
-          },
-        },
-        responses: {
-          "200": { description: "Verification email sent." },
-          "404": { description: "Email not found." },
-        },
-      },
-    },
-    "/api/auth/verify-email": {
-      post: {
-        tags: ["Auth"],
-        summary: "Verify email address with token",
-        requestBody: {
-          required: true,
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  token: { type: "string", example: "abc123..." },
-                },
-                required: ["token"],
-              },
-            },
-          },
-        },
-        responses: {
-          "200": { description: "Email verified." },
-          "400": { description: "Invalid or expired token." },
-        },
-      },
-    },
     "/api/auth/forget-password": {
       post: {
         tags: ["Auth"],
@@ -405,6 +357,186 @@ export const openApiSpec = {
         responses: {
           "200": { description: "Code verified. Session fully authenticated." },
           "400": { description: "Invalid TOTP code." },
+          "401": { description: "Unauthorized." },
+        },
+      },
+    },
+    "/api/auth/delete-user": {
+      post: {
+        tags: ["Auth"],
+        summary: "Delete the authenticated user's account",
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: false,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  password: {
+                    type: "string",
+                    example: "currentpassword",
+                    description: "Current password for confirmation.",
+                  },
+                  callbackURL: {
+                    type: "string",
+                    example: "https://myapp.com/goodbye",
+                    description: "URL to redirect to after deletion.",
+                  },
+                  token: {
+                    type: "string",
+                    description: "Deletion token (if using token-based deletion flow).",
+                  },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "Account deleted successfully.",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    success: { type: "boolean" },
+                    message: { type: "string" },
+                  },
+                },
+              },
+            },
+          },
+          "401": { description: "Unauthorized." },
+        },
+      },
+    },
+    "/api/auth/change-password": {
+      post: {
+        tags: ["Auth"],
+        summary: "Change the authenticated user's password",
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  currentPassword: { type: "string", example: "oldpassword" },
+                  newPassword: { type: "string", minLength: 8, example: "newpassword123" },
+                  revokeOtherSessions: {
+                    type: "boolean",
+                    description: "Invalidate all other active sessions.",
+                    example: true,
+                  },
+                },
+                required: ["currentPassword", "newPassword"],
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "Password changed successfully.",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    token: { type: "string", nullable: true },
+                    user: { $ref: "#/components/schemas/User" },
+                  },
+                },
+              },
+            },
+          },
+          "400": { description: "Current password is incorrect." },
+          "401": { description: "Unauthorized." },
+        },
+      },
+    },
+    "/api/auth/change-email": {
+      post: {
+        tags: ["Auth"],
+        summary: "Change the authenticated user's email address",
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  newEmail: { type: "string", format: "email", example: "newemail@example.com" },
+                  callbackURL: {
+                    type: "string",
+                    example: "https://myapp.com/",
+                    description: "URL to redirect to after verification (if required).",
+                  },
+                },
+                required: ["newEmail"],
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "Email updated successfully.",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    user: { $ref: "#/components/schemas/User" },
+                    status: { type: "boolean" },
+                  },
+                },
+              },
+            },
+          },
+          "400": { description: "Invalid email address." },
+          "401": { description: "Unauthorized." },
+        },
+      },
+    },
+    "/api/auth/update-user": {
+      post: {
+        tags: ["Auth"],
+        summary: "Update the authenticated user's profile",
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  name: { type: "string", example: "Jane Smith" },
+                  image: {
+                    type: "string",
+                    nullable: true,
+                    example: "https://example.com/avatar.png",
+                  },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          "200": {
+            description: "User profile updated.",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    status: { type: "boolean" },
+                  },
+                },
+              },
+            },
+          },
           "401": { description: "Unauthorized." },
         },
       },

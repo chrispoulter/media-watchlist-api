@@ -25,6 +25,11 @@ export const auth = betterAuth({
       enabled: true,
     },
   },
+  account: {
+    accountLinking: {
+      allowDifferentEmails: true,
+    },
+  },
   emailAndPassword: {
     enabled: true,
     sendResetPassword: async ({ user, url }) => {

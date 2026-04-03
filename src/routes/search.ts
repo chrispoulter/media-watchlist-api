@@ -25,7 +25,7 @@ router.get("/", async (req, res) => {
     results: data.results.map((item) => ({
       tmdbId: item.id,
       mediaType: item.media_type,
-      title: item.title ?? undefined,
+      title: item.title ?? item.name ?? undefined,
       posterPath: item.poster_path ?? undefined,
       overview: item.overview ?? undefined,
       releaseDate: item.release_date ?? undefined,

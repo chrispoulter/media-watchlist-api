@@ -12,21 +12,21 @@ import {
   Preview,
 } from "@react-email/components";
 
-type ForgotPasswordEmailProps = {
+type VerificationEmailProps = {
   url: string;
   username: string;
 };
 
-ForgotPasswordEmail.PreviewProps = {
-  url: "https://example.com/reset-password?token=abc123xyz",
+VerificationEmail.PreviewProps = {
+  url: "https://example.com/verify-email?token=abc123xyz",
   username: "Jane Smith",
-} satisfies ForgotPasswordEmailProps;
+} satisfies VerificationEmailProps;
 
-export default function ForgotPasswordEmail({ url, username }: ForgotPasswordEmailProps) {
+export default function VerificationEmail({ url, username }: VerificationEmailProps) {
   return (
     <Html lang="en">
       <Head />
-      <Preview>Reset your Media Watchlist password</Preview>
+      <Preview>Verify your Media Watchlist email address</Preview>
       <Body style={body}>
         <Container style={container}>
           <Section style={header}>
@@ -34,22 +34,21 @@ export default function ForgotPasswordEmail({ url, username }: ForgotPasswordEma
           </Section>
 
           <Section style={content}>
-            <Text style={heading}>Reset your password</Text>
+            <Text style={heading}>Verify your email address</Text>
             <Text style={paragraph}>Hi {username},</Text>
             <Text style={paragraph}>
-              We received a request to reset the password for your account. Click the button below
-              to choose a new password. This link expires in 1 hour.
+              Thanks for signing up! Please verify your email address to activate your account.
+              Click the button below to confirm this is you. This link expires in 24 hours.
             </Text>
 
             <Section style={buttonContainer}>
               <Button href={url} style={button}>
-                Reset password
+                Verify email address
               </Button>
             </Section>
 
             <Text style={paragraph}>
-              If you didn&apos;t request a password reset, you can safely ignore this email. Your
-              password will not change.
+              If you didn&apos;t create an account, you can safely ignore this email.
             </Text>
 
             <Hr style={divider} />

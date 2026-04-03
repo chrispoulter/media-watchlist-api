@@ -6,7 +6,8 @@ import { db } from "../db/index.js";
 import * as schema from "../db/schema.js";
 import { env } from "../env.js";
 import { sendMail } from "./mailer.js";
-import ForgotPasswordEmail from "../emails/forgot-password.js";
+import ResetPasswordEmail from "../emails/reset-password-email.js";
+import VerificationEmail from "../emails/verification-email.js";
 
 export const auth = betterAuth({
   baseURL: env.BETTER_AUTH_URL,
@@ -19,7 +20,7 @@ export const auth = betterAuth({
   user: {
     changeEmail: {
       enabled: true,
-      updateEmailWithoutVerification: true,
+      // updateEmailWithoutVerification: true,
     },
     deleteUser: {
       enabled: true,
@@ -36,7 +37,16 @@ export const auth = betterAuth({
       await sendMail({
         to: user.email,
         subject: "Reset your password",
-        template: createElement(ForgotPasswordEmail, { username: user.name, url }),
+        template: createElement(ResetPasswordEmail, { username: user.name, url }),
+      });
+    },
+  },
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url }) => {
+      await sendMail({
+        to: user.email,
+        subject: "Verify your email address",
+        template: createElement(VerificationEmail, { username: user.name, url }),
       });
     },
   },

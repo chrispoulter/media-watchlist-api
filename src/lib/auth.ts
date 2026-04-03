@@ -20,7 +20,7 @@ export const auth = betterAuth({
   user: {
     changeEmail: {
       enabled: true,
-      // updateEmailWithoutVerification: true,
+      updateEmailWithoutVerification: true,
     },
     deleteUser: {
       enabled: true,
@@ -36,7 +36,7 @@ export const auth = betterAuth({
     sendResetPassword: async ({ user, url }) => {
       await sendMail({
         to: user.email,
-        subject: "Reset your password",
+        subject: "Reset your password | Media Watchlist",
         template: createElement(ResetPasswordEmail, { username: user.name, url }),
       });
     },
@@ -45,7 +45,7 @@ export const auth = betterAuth({
     sendVerificationEmail: async ({ user, url }) => {
       await sendMail({
         to: user.email,
-        subject: "Verify your email address",
+        subject: "Verify your email address | Media Watchlist",
         template: createElement(VerificationEmail, { username: user.name, url }),
       });
     },

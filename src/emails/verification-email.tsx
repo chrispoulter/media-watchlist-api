@@ -37,8 +37,8 @@ export default function VerificationEmail({ url, username }: VerificationEmailPr
             <Text style={heading}>Verify your email address</Text>
             <Text style={paragraph}>Hi {username},</Text>
             <Text style={paragraph}>
-              Thanks for signing up! Please verify your email address to activate your account.
-              Click the button below to confirm this is you. This link expires in 24 hours.
+              Please verify your email address by clicking the button below to confirm this is you.
+              This link expires in 24 hours.
             </Text>
 
             <Section style={buttonContainer}>
@@ -48,7 +48,7 @@ export default function VerificationEmail({ url, username }: VerificationEmailPr
             </Section>
 
             <Text style={paragraph}>
-              If you didn&apos;t create an account, you can safely ignore this email.
+              If you didn&apos;t request this, you can safely ignore this email.
             </Text>
 
             <Hr style={divider} />
@@ -62,9 +62,7 @@ export default function VerificationEmail({ url, username }: VerificationEmailPr
           </Section>
 
           <Section style={footerSection}>
-            <Text style={footerText}>
-              &copy; {new Date().getFullYear()} Media Watchlist. All rights reserved.
-            </Text>
+            <Text style={footerText}>&copy; Chris Poulter {new Date().getFullYear()}</Text>
           </Section>
         </Container>
       </Body>

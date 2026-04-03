@@ -63,9 +63,7 @@ export default function ResetPasswordEmail({ url, username }: ResetPasswordEmail
           </Section>
 
           <Section style={footerSection}>
-            <Text style={footerText}>
-              &copy; {new Date().getFullYear()} Media Watchlist. All rights reserved.
-            </Text>
+            <Text style={footerText}>&copy; Chris Poulter {new Date().getFullYear()}</Text>
           </Section>
         </Container>
       </Body>

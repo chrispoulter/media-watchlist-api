@@ -7,8 +7,10 @@ if (!url) {
   process.exit(1);
 }
 
-const { hostname, port, username, password, pathname } = new URL(url);
+const parsedUrl = new URL(url);
+const { hostname, port, username, password, pathname, searchParams } = parsedUrl;
 const dbName = pathname.slice(1);
+const ssl = searchParams.get("sslmode");
 
 const sql = postgres({
   host: hostname,
@@ -17,6 +19,7 @@ const sql = postgres({
   password,
   database: "postgres",
   max: 1,
+  ...(ssl === "require" && { ssl: "require" }),
 });
 
 const rows = await sql`SELECT 1 FROM pg_database WHERE datname = ${dbName}`;

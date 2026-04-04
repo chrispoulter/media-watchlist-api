@@ -28,7 +28,6 @@
     "dotenv": "^17.3.1",
     "drizzle-orm": "^0.45.2",
     "express": "^5.2.1",
-    "express-rate-limit": "^8.3.1",
     "nodemailer": "^8.0.4",
     "postgres": "^3.4.8",
     "react": "^19.2.4",

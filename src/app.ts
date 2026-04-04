@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import { toNodeHandler } from "better-auth/node";
-import { rateLimit } from "express-rate-limit";
 import { apiReference } from "@scalar/express-api-reference";
 import { auth } from "./lib/auth.js";
 import apiRouter from "./routes/index.js";
@@ -19,15 +18,6 @@ export function createApp() {
       origin: env.CLIENT_ORIGIN.split(","),
       methods: ["GET", "POST", "PUT", "DELETE"],
       credentials: true,
-    })
-  );
-
-  app.use(
-    rateLimit({
-      max: 100,
-      windowMs: 60 * 1000,
-      standardHeaders: true,
-      legacyHeaders: false,
     })
   );
 

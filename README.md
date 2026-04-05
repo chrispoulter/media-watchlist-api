@@ -82,7 +82,7 @@ npm run dev
 | `SMTP_USER`            | No       | —                       | SMTP username                           |
 | `SMTP_PASS`            | No       | —                       | SMTP password                           |
 | `SMTP_FROM`            | No       | —                       | From address for outgoing emails        |
-| `SMTP_SECURE`          | No       | `false`                 | Use TLS/SSL for SMTP                    |
+| `SMTP_SECURE`          | No       | —                       | Use TLS/SSL for SMTP                    |
 
 ## API Overview
 

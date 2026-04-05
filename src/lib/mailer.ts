@@ -10,7 +10,7 @@ const mailer = nodemailer.createTransport({
   auth: env.SMTP_USER && env.SMTP_PASS ? { user: env.SMTP_USER, pass: env.SMTP_PASS } : undefined,
 });
 
-type SendMailOptions = {
+interface SendMailOptions {
   to: string;
   subject: string;
   template: ReactElement;

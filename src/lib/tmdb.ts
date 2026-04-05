@@ -4,7 +4,7 @@ const BASE_URL = "https://api.themoviedb.org/3";
 const FETCH_TIMEOUT_MS = 3_000;
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
-type TmdbSearchMultiResponse = {
+interface TmdbSearchMultiResponse {
   results: {
     id: number;
     media_type: "movie" | "tv";

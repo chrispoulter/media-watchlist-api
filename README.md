@@ -9,10 +9,8 @@ A REST API for tracking movies and TV shows you want to watch. Built with Expres
 - Two-factor authentication (TOTP)
 - Search for movies and TV shows via The Movie Database (TMDB)
 - Personal watchlist management — add and remove items
-- Real-time watchlist updates via Server-Sent Events (SSE)
 - Transactional emails with React Email templates
 - Interactive API documentation (Scalar) at the root route
-- Rate limiting (100 requests/min per IP)
 - Docker Compose for local development
 
 ## Tech Stack
@@ -30,7 +28,7 @@ A REST API for tracking movies and TV shows you want to watch. Built with Expres
 
 ## Prerequisites
 
-- [Node.js 22+](https://nodejs.org)
+- [Node.js 24+](https://nodejs.org)
 - [Docker](https://www.docker.com) (for local dev via Docker Compose)
 - [TMDB API read token](https://developer.themoviedb.org/docs/getting-started) (for search)
 - Google OAuth credentials (optional — for social login)
@@ -98,20 +96,18 @@ Interactive documentation with a request explorer is available at `GET /` when t
 
 All auth routes are handled by Better Auth. Requests requiring authentication use a Bearer token in the `Authorization` header.
 
-| Method | Path                                | Description                           |
-| ------ | ----------------------------------- | ------------------------------------- |
-| POST   | `/api/auth/sign-up/email`           | Register with email and password      |
-| POST   | `/api/auth/sign-in/email`           | Sign in with email and password       |
-| POST   | `/api/auth/sign-out`                | Sign out                              |
-| GET    | `/api/auth/get-session`             | Get current session                   |
-| GET    | `/api/auth/sign-in/social`          | Sign in with Google                   |
-| POST   | `/api/auth/send-verification-email` | Request email verification            |
-| POST   | `/api/auth/verify-email`            | Verify email with token               |
-| POST   | `/api/auth/forget-password`         | Request password reset                |
-| POST   | `/api/auth/reset-password`          | Reset password with token             |
-| POST   | `/api/auth/two-factor/enable`       | Enable TOTP two-factor authentication |
-| POST   | `/api/auth/two-factor/disable`      | Disable two-factor authentication     |
-| POST   | `/api/auth/two-factor/verify-totp`  | Verify a TOTP code                    |
+| Method | Path                               | Description                           |
+| ------ | ---------------------------------- | ------------------------------------- |
+| POST   | `/api/auth/sign-up/email`          | Register with email and password      |
+| POST   | `/api/auth/sign-in/email`          | Sign in with email and password       |
+| POST   | `/api/auth/sign-out`               | Sign out                              |
+| GET    | `/api/auth/get-session`            | Get current session                   |
+| GET    | `/api/auth/sign-in/social`         | Sign in with Google                   |
+| POST   | `/api/auth/forget-password`        | Request password reset                |
+| POST   | `/api/auth/reset-password`         | Reset password with token             |
+| POST   | `/api/auth/two-factor/enable`      | Enable TOTP two-factor authentication |
+| POST   | `/api/auth/two-factor/disable`     | Disable two-factor authentication     |
+| POST   | `/api/auth/two-factor/verify-totp` | Verify a TOTP code                    |
 
 ### Search
 
@@ -140,14 +136,6 @@ All auth routes are handled by Better Auth. Requests requiring authentication us
 }
 ```
 
-### Real-Time Events
-
-| Method | Path          | Auth | Description                                   |
-| ------ | ------------- | ---- | --------------------------------------------- |
-| GET    | `/api/events` | Yes  | Subscribe to SSE stream for watchlist updates |
-
-Events emitted: `item-added`, `item-removed`. Note: the SSE implementation uses in-memory pub/sub and is scoped to a single server instance.
-
 ## Scripts
 
 | Script                | Description                              |
@@ -155,6 +143,7 @@ Events emitted: `item-added`, `item-removed`. Note: the SSE implementation uses 
 | `npm run dev`         | Start development server with hot reload |
 | `npm run build`       | Compile TypeScript to `dist/`            |
 | `npm run start`       | Run the compiled server                  |
+| `npm run typecheck`   | Run TypeScript type checking             |
 | `npm run lint`        | Run ESLint                               |
 | `npm run format`      | Format code with Prettier                |
 | `npm run db:create`   | Create the database                      |
@@ -166,9 +155,7 @@ Events emitted: `item-added`, `item-removed`. Note: the SSE implementation uses 
 
 ## CI/CD
 
-**CI** runs on all pushes to non-main branches and pull requests to `main`. It lints, builds, and (on push events) builds a Docker preview image tagged with the branch name and pushes it to GHCR.
-
-**CD** runs on merges to `main`. It auto-increments the version, creates a GitHub release, then builds and pushes a Docker image to GHCR tagged with the version number and `latest`.
+A single CI workflow runs on every push and pull request to any branch. It type checks, lints, and builds the project using Node.js 24.
 
 ## License
 

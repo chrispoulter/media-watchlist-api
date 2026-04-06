@@ -14,7 +14,7 @@ interface TmdbSearchMultiResponse {
     overview: string;
     release_date: string | null;
   }[];
-};
+}
 
 interface CacheEntry {
   data: TmdbSearchMultiResponse;

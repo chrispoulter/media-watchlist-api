@@ -4,7 +4,6 @@ import { z } from "zod";
 import { db } from "../db/index.js";
 import { watchlistItem } from "../db/schema.js";
 import { requireAuth } from "../middleware/require-auth.js";
-import { emit } from "../lib/sse.js";
 
 const router = Router();
 
@@ -57,7 +56,7 @@ router.post("/", async (req, res) => {
       return;
     }
 
-    const newItem = {
+    res.status(201).json({
       id: created.id,
       tmdbId: created.tmdbId,
       mediaType: created.mediaType,
@@ -66,14 +65,7 @@ router.post("/", async (req, res) => {
       overview: created.overview ?? undefined,
       releaseDate: created.releaseDate ?? undefined,
       addedAt: created.addedAt,
-    };
-
-    emit(`user:${userId}`, {
-      event: "item-added",
-      data: newItem,
     });
-
-    res.status(201).json(newItem);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "";
 
@@ -110,11 +102,6 @@ router.delete("/:id", async (req, res) => {
     res.status(404).json({ error: "Item not found in watchlist" });
     return;
   }
-
-  emit(`user:${userId}`, {
-    event: "item-removed",
-    data: { id: deleted.id },
-  });
 
   res.status(204).send();
 });

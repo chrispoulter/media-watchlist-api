@@ -55,7 +55,6 @@ export const openApiSpec = {
     { name: "Health", description: "Service health check" },
     { name: "Search", description: "Search for movies and TV shows via TMDB" },
     { name: "Watchlist", description: "Manage your personal media watchlist" },
-    { name: "Events", description: "Real-time server-sent events" },
   ],
   paths: {
     // ── Health ───────────────────────────────────────────────────────────────
@@ -88,7 +87,7 @@ export const openApiSpec = {
     "/api/search": {
       get: {
         tags: ["Search"],
-        summary: "Search TMDB for movies and TV shows",
+        summary: "Search for movies and TV shows",
         security: [{ bearerAuth: [] }],
         parameters: [
           {
@@ -197,28 +196,6 @@ export const openApiSpec = {
           "400": { description: "Invalid ID." },
           "401": { description: "Unauthorized." },
           "404": { description: "Item not found in watchlist." },
-        },
-      },
-    },
-
-    // ── Events ───────────────────────────────────────────────────────────────
-    "/api/events": {
-      get: {
-        tags: ["Events"],
-        summary: "Subscribe to real-time server-sent events",
-        description:
-          "Opens a persistent SSE connection. Events are scoped to the authenticated user.\n\n**Event types:**\n- `item-added` — a new item was added to the watchlist\n- `item-removed` — an item was removed from the watchlist",
-        security: [{ bearerAuth: [] }],
-        responses: {
-          "200": {
-            description: "SSE stream.",
-            content: {
-              "text/event-stream": {
-                schema: { type: "string" },
-              },
-            },
-          },
-          "401": { description: "Unauthorized." },
         },
       },
     },

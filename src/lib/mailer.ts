@@ -14,7 +14,7 @@ interface SendMailOptions {
   to: string;
   subject: string;
   template: ReactElement;
-};
+}
 
 export const sendMail = async ({ to, subject, template }: SendMailOptions) => {
   const html = await render(template);

@@ -1,7 +1,7 @@
 # TODO
 
 - logging
-- user profile: first name, last name, dob
+- software version
 - vercel deployment config
 
 ## Bugfixes

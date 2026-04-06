@@ -11,9 +11,20 @@ const router = Router();
 router.use(requireAuth);
 
 router.get("/", async (req, res) => {
-  const items = await db.select().from(watchlistItem).where(eq(watchlistItem.userId, req.user!.id));
+  const data = await db.select().from(watchlistItem).where(eq(watchlistItem.userId, req.user!.id));
 
-  res.json(items);
+  res.json(
+    data.map((item) => ({
+      id: item.id,
+      tmdbId: item.tmdbId,
+      mediaType: item.mediaType,
+      title: item.title,
+      posterPath: item.posterPath ?? undefined,
+      overview: item.overview ?? undefined,
+      releaseDate: item.releaseDate ?? undefined,
+      addedAt: item.addedAt,
+    }))
+  );
 });
 
 const addWatchlistItemSchema = z.object({
@@ -51,9 +62,10 @@ router.post("/", async (req, res) => {
       tmdbId: created.tmdbId,
       mediaType: created.mediaType,
       title: created.title,
-      posterPath: created.posterPath,
-      overview: created.overview,
-      releaseDate: created.releaseDate,
+      posterPath: created.posterPath ?? undefined,
+      overview: created.overview ?? undefined,
+      releaseDate: created.releaseDate ?? undefined,
+      addedAt: created.addedAt,
     };
 
     emit(`user:${userId}`, {

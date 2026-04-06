@@ -1,5 +1,8 @@
 import { Router } from "express";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
+import { db } from "../db/index.js";
+import { watchlistItem } from "../db/schema.js";
 import { requireAuth } from "../middleware/require-auth.js";
 import { searchMulti } from "../lib/tmdb.js";
 
@@ -21,16 +24,28 @@ router.get("/", async (req, res) => {
 
   const data = await searchMulti(result.data.q);
 
-  return res.json({
-    results: data.results.map((item) => ({
-      tmdbId: item.id,
-      mediaType: item.media_type,
-      title: item.title ?? item.name ?? undefined,
-      posterPath: item.poster_path ?? undefined,
-      overview: item.overview ?? undefined,
-      releaseDate: item.release_date ?? undefined,
-    })),
-  });
+  const watchlistItems = await db
+    .select()
+    .from(watchlistItem)
+    .where(eq(watchlistItem.userId, req.user!.id));
+
+  res.json(
+    data.results.map((item) => {
+      const watchlistItemId = watchlistItems.find(
+        (w) => w.tmdbId === item.id && w.mediaType === item.media_type
+      )?.id;
+
+      return {
+        tmdbId: item.id,
+        mediaType: item.media_type,
+        title: item.title ?? item.name,
+        posterPath: item.poster_path ?? undefined,
+        overview: item.overview ?? undefined,
+        releaseDate: item.release_date ?? undefined,
+        watchlistItemId: watchlistItemId ?? undefined,
+      };
+    })
+  );
 });
 
 export default router;

@@ -42,9 +42,10 @@ export const openApiSpec = {
           tmdbId: { type: "integer" },
           mediaType: { type: "string", enum: ["movie", "tv"] },
           title: { type: "string" },
-          posterPath: { type: "string" },
-          overview: { type: "string" },
-          releaseDate: { type: "string" },
+          posterPath: { type: "string", nullable: true },
+          overview: { type: "string", nullable: true },
+          releaseDate: { type: "string", nullable: true },
+          watchlistItemId: { type: "integer", nullable: true },
         },
         required: ["tmdbId", "mediaType"],
       },
@@ -105,14 +106,8 @@ export const openApiSpec = {
             content: {
               "application/json": {
                 schema: {
-                  type: "object",
-                  properties: {
-                    results: {
-                      type: "array",
-                      items: { $ref: "#/components/schemas/SearchResult" },
-                    },
-                  },
-                  required: ["results"],
+                  type: "array",
+                  items: { $ref: "#/components/schemas/SearchResult" },
                 },
               },
             },

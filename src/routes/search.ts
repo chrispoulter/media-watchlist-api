@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "../db/index.js";
 import { watchlistItem } from "../db/schema.js";
@@ -24,27 +24,25 @@ router.get("/", async (req, res) => {
 
   const data = await searchMulti(result.data.q);
 
+  const tmdbIds = data.results.map((item) => item.id);
+
   const watchlistItems = await db
     .select()
     .from(watchlistItem)
-    .where(eq(watchlistItem.userId, req.user!.id));
+    .where(and(eq(watchlistItem.userId, req.user!.id), inArray(watchlistItem.tmdbId, tmdbIds)));
+
+  const watchlistMap = new Map(watchlistItems.map((w) => [`${w.tmdbId}-${w.mediaType}`, w.id]));
 
   res.json(
-    data.results.map((item) => {
-      const watchlistItemId = watchlistItems.find(
-        (w) => w.tmdbId === item.id && w.mediaType === item.media_type
-      )?.id;
-
-      return {
-        tmdbId: item.id,
-        mediaType: item.media_type,
-        title: item.title ?? item.name,
-        posterPath: item.poster_path ?? undefined,
-        overview: item.overview ?? undefined,
-        releaseDate: item.release_date ?? undefined,
-        watchlistItemId: watchlistItemId ?? undefined,
-      };
-    })
+    data.results.map((item) => ({
+      tmdbId: item.id,
+      mediaType: item.media_type,
+      title: item.title ?? item.name,
+      posterPath: item.poster_path ?? undefined,
+      overview: item.overview ?? undefined,
+      releaseDate: item.release_date ?? undefined,
+      watchlistItemId: watchlistMap.get(`${item.id}-${item.media_type}`) ?? undefined,
+    }))
   );
 });
 

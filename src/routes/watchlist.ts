@@ -5,6 +5,8 @@ import { db } from "../db/index.js";
 import { watchlistItem } from "../db/schema.js";
 import { requireAuth } from "../middleware/require-auth.js";
 
+const WATCHLIST_ITEM_LIMIT = 100;
+
 const router = Router();
 
 router.use(requireAuth);
@@ -44,6 +46,13 @@ router.post("/", async (req, res) => {
   }
 
   const userId = req.user!.id;
+
+  const count = await db.$count(watchlistItem, eq(watchlistItem.userId, userId));
+
+  if (count >= WATCHLIST_ITEM_LIMIT) {
+    res.status(429).json({ error: `Watchlist limit of ${WATCHLIST_ITEM_LIMIT} items reached` });
+    return;
+  }
 
   try {
     const [created] = await db

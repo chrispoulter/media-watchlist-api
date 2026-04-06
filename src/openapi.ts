@@ -173,6 +173,7 @@ export const openApiSpec = {
           "400": { description: "Invalid request body." },
           "401": { description: "Unauthorized." },
           "409": { description: "Item already exists in watchlist." },
+          "429": { description: "Watchlist limit of items reached." },
         },
       },
     },

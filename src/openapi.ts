@@ -91,7 +91,7 @@ export const openApiSpec = {
         security: [{ bearerAuth: [] }],
         parameters: [
           {
-            name: "q",
+            name: "query",
             in: "query",
             required: true,
             schema: { type: "string", minLength: 1 },

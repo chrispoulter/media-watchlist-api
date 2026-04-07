@@ -11,7 +11,7 @@ const router = Router();
 router.use(requireAuth);
 
 const searchSchema = z.object({
-  q: z.string().min(1),
+  query: z.string().min(1),
 });
 
 router.get("/", async (req, res) => {
@@ -22,7 +22,7 @@ router.get("/", async (req, res) => {
     return;
   }
 
-  const data = await searchMulti(result.data.q);
+  const data = await searchMulti(result.data.query);
 
   const tmdbIds = data.results.map((item) => item.id);
 

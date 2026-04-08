@@ -40,7 +40,7 @@ router.get("/", async (req, res) => {
       title: item.title ?? item.name,
       posterPath: item.poster_path ?? undefined,
       overview: item.overview ?? undefined,
-      releaseDate: item.release_date ?? undefined,
+      releaseDate: item.release_date ?? item.first_air_date ?? undefined,
       watchlistItemId: watchlistMap.get(`${item.id}-${item.media_type}`) ?? undefined,
     }))
   );

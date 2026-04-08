@@ -13,6 +13,7 @@ interface TmdbSearchMultiResponse {
     poster_path: string | null;
     overview: string;
     release_date: string | null;
+    first_air_date: string | null;
   }[];
 }
 

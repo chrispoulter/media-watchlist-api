@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import { toNodeHandler } from "better-auth/node";
 import { apiReference } from "@scalar/express-api-reference";
+import { requestLogger } from "./middleware/request-logger.js";
 import { auth } from "./lib/auth.js";
 import apiRouter from "./routes/index.js";
 import { env } from "./env.js";
@@ -9,6 +10,8 @@ import { openApiSpec } from "./openapi.js";
 
 export function createApp() {
   const app = express();
+
+  app.use(requestLogger);
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
@@ -46,13 +49,14 @@ export function createApp() {
     })
   );
 
-  app.use((_req, res) => {
+  app.use((req, res) => {
+    req.log.warn({ method: req.method, path: req.path }, "Route not found");
     res.status(404).json({ error: "Not Found" });
   });
 
   app.use(
-    (err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-      console.error(err.stack);
+    (err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+      req.log.error({ err, userId: req.user?.id }, "Unhandled error");
       res.status(500).json({ error: "Internal Server Error" });
     }
   );

@@ -73,12 +73,25 @@ router.post("/", async (req, res) => {
       posterPath: created.posterPath ?? undefined,
       overview: created.overview ?? undefined,
       releaseDate: created.releaseDate ?? undefined,
-      addedAt: created.addedAt,
     });
+
+    req.log.info(
+      {
+        itemId: created.id,
+        tmdbId: created.tmdbId,
+        mediaType: created.mediaType,
+        title: created.title,
+      },
+      "Watchlist item added"
+    );
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "";
 
     if (message.includes("watchlist_user_tmdb_idx")) {
+      req.log.warn(
+        { tmdbId: result.data.tmdbId, mediaType: result.data.mediaType },
+        "Duplicate watchlist item"
+      );
       res.status(409).json({ error: "Item already exists in watchlist" });
       return;
     }
@@ -108,9 +121,12 @@ router.delete("/:id", async (req, res) => {
     .returning();
 
   if (!deleted) {
+    req.log.warn({ itemId: id }, "Watchlist item not found");
     res.status(404).json({ error: "Item not found in watchlist" });
     return;
   }
+
+  req.log.info({ itemId: deleted.id }, "Watchlist item removed");
 
   res.status(204).send();
 });

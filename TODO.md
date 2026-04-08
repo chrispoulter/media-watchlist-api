@@ -1,6 +1,5 @@
 # TODO
 
-- logging
 - software version
 - vercel deployment config
 

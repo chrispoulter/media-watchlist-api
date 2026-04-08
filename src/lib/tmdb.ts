@@ -1,4 +1,5 @@
 import { env } from "../env.js";
+import { logger } from "./logger.js";
 
 const BASE_URL = "https://api.themoviedb.org/3";
 const FETCH_TIMEOUT_MS = 3_000;
@@ -29,8 +30,11 @@ export const searchMulti = async (query: string) => {
 
   const cached = cache.get(key);
   if (cached && Date.now() < cached.expiresAt) {
+    logger.debug({ query: key }, "TMDB cache hit");
     return cached.data;
   }
+
+  logger.debug({ query: key }, "TMDB cache miss");
 
   const params = new URLSearchParams({ query });
   const controller = new AbortController();
@@ -43,12 +47,21 @@ export const searchMulti = async (query: string) => {
     });
 
     if (!response.ok) {
+      logger.error(
+        { query: key, status: response.status, statusText: response.statusText },
+        "TMDB API error"
+      );
       throw new Error(`TMDB API error: ${response.status} ${response.statusText}`);
     }
 
     const data = (await response.json()) as TmdbSearchMultiResponse;
     cache.set(key, { data, expiresAt: Date.now() + CACHE_TTL_MS });
     return data;
+  } catch (err) {
+    if (err instanceof Error && err.name === "AbortError") {
+      logger.error({ query: key, timeoutMs: FETCH_TIMEOUT_MS }, "TMDB request timed out");
+    }
+    throw err;
   } finally {
     clearTimeout(id);
   }

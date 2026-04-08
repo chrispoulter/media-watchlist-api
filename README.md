@@ -24,6 +24,7 @@ A REST API for tracking movies and TV shows you want to watch. Built with Expres
 | Media Search     | TMDB API                    |
 | Email            | Nodemailer + React Email    |
 | API Docs         | Scalar (OpenAPI)            |
+| Logging          | Pino                        |
 | Containerisation | Docker, Docker Compose      |
 
 ## Prerequisites
@@ -81,6 +82,7 @@ npm run dev
 | `SMTP_PASS`            | No       | —                       | SMTP password                           |
 | `SMTP_FROM`            | No       | —                       | From address for outgoing emails        |
 | `SMTP_SECURE`          | No       | —                       | Use TLS/SSL for SMTP                    |
+| `LOG_LEVEL`            | No       | `info`                  | Log level: `fatal`, `error`, `warn`, `info`, `debug`, or `trace` |
 
 ## API Overview
 
@@ -113,7 +115,7 @@ All auth routes are handled by Better Auth. Requests requiring authentication us
 
 | Method | Path                    | Auth | Description                         |
 | ------ | ----------------------- | ---- | ----------------------------------- |
-| GET    | `/api/search?q=<query>` | Yes  | Search TMDB for movies and TV shows |
+| GET    | `/api/search?query=<query>` | Yes  | Search TMDB for movies and TV shows |
 
 ### Watchlist
 

@@ -6,7 +6,7 @@ const IMAGE_URL = "https://image.tmdb.org/t/p/w300";
 const FETCH_TIMEOUT_MS = 3_000;
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
-interface TmdbSearchMultiResponse {
+interface TmdbSearchResponse {
   results: {
     id: number;
     media_type: "movie" | "tv" | "person";
@@ -64,7 +64,7 @@ export const search = async (query: string) => {
       throw new Error(`TMDB API error: ${response.status} ${response.statusText}`);
     }
 
-    const data = (await response.json()) as TmdbSearchMultiResponse;
+    const data = (await response.json()) as TmdbSearchResponse;
 
     const results = data.results
       .filter((item) => item.media_type === "movie" || item.media_type === "tv")

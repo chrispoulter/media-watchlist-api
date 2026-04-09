@@ -69,7 +69,7 @@ export const search = async (query: string) => {
     const results = data.results
       .filter((item) => item.media_type === "movie" || item.media_type === "tv")
       .map((item) => ({
-        providerId: `tmdb-${item.id}`,
+        providerId: `tmdb:${item.id}`,
         mediaType: (item.media_type == "movie" ? "movie" : "tv-show") as SearchResult["mediaType"],
         title: item.title || item.name,
         posterUrl: item.poster_path ? `${IMAGE_URL}${item.poster_path}` : null,

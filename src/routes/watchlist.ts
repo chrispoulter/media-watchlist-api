@@ -73,6 +73,7 @@ router.post("/", async (req, res) => {
       posterPath: created.posterPath ?? undefined,
       overview: created.overview ?? undefined,
       releaseDate: created.releaseDate ?? undefined,
+      addedAt: created.addedAt,
     });
 
     req.log.info(

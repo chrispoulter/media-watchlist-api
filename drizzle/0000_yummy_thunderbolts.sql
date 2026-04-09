@@ -57,10 +57,10 @@ CREATE TABLE "verification" (
 CREATE TABLE "watchlist_item" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" text NOT NULL,
-	"tmdb_id" integer NOT NULL,
+	"provider_id" text NOT NULL,
 	"media_type" text NOT NULL,
 	"title" text NOT NULL,
-	"poster_path" text,
+	"poster_url" text,
 	"overview" text,
 	"release_date" text,
 	"added_at" timestamp DEFAULT now() NOT NULL
@@ -75,5 +75,5 @@ CREATE INDEX "session_userId_idx" ON "session" USING btree ("user_id");--> state
 CREATE INDEX "twoFactor_secret_idx" ON "two_factor" USING btree ("secret");--> statement-breakpoint
 CREATE INDEX "twoFactor_userId_idx" ON "two_factor" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "verification_identifier_idx" ON "verification" USING btree ("identifier");--> statement-breakpoint
-CREATE UNIQUE INDEX "watchlist_user_tmdb_idx" ON "watchlist_item" USING btree ("user_id","tmdb_id","media_type");--> statement-breakpoint
+CREATE UNIQUE INDEX "watchlist_user_provider_idx" ON "watchlist_item" USING btree ("user_id","provider_id","media_type");--> statement-breakpoint
 CREATE INDEX "watchlist_user_idx" ON "watchlist_item" USING btree ("user_id");

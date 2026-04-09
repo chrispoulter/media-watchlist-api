@@ -1,55 +1,94 @@
 import { env } from "../env.js";
+import { logger } from "./logger.js";
 
-const BASE_URL = "https://api.themoviedb.org/3";
+const API_URL = "https://api.themoviedb.org/3";
+const IMAGE_URL = "https://image.tmdb.org/t/p/w300";
 const FETCH_TIMEOUT_MS = 3_000;
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
-interface TmdbSearchMultiResponse {
+interface TmdbSearchResponse {
   results: {
     id: number;
-    media_type: "movie" | "tv";
+    media_type: "movie" | "tv" | "person";
     title: string;
     name: string;
     poster_path: string | null;
-    overview: string;
+    overview: string | null;
     release_date: string | null;
     first_air_date: string | null;
   }[];
 }
 
+interface SearchResult {
+  providerId: string;
+  mediaType: "movie" | "tv-show";
+  title: string;
+  posterUrl: string | null;
+  overview: string | null;
+  releaseDate: string | null;
+}
+
 interface CacheEntry {
-  data: TmdbSearchMultiResponse;
+  results: SearchResult[];
   expiresAt: number;
 }
 
 const cache = new Map<string, CacheEntry>();
 
-export const searchMulti = async (query: string) => {
-  const key = query.trim().toLowerCase();
+export const search = async (query: string) => {
+  const normalizedQuery = query.trim().toLowerCase();
 
-  const cached = cache.get(key);
+  const cached = cache.get(normalizedQuery);
   if (cached && Date.now() < cached.expiresAt) {
-    return cached.data;
+    logger.debug({ query: normalizedQuery }, "TMDB cache hit");
+    return cached.results;
   }
 
-  const params = new URLSearchParams({ query });
+  logger.debug({ query: normalizedQuery }, "TMDB cache miss");
+
+  const params = new URLSearchParams({ query: normalizedQuery });
   const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 
   try {
-    const response = await fetch(`${BASE_URL}/search/multi?${params.toString()}`, {
+    const response = await fetch(`${API_URL}/search/multi?${params}`, {
       headers: { Authorization: `Bearer ${env.TMDB_API_READ_TOKEN}` },
       signal: controller.signal,
     });
 
     if (!response.ok) {
+      logger.error(
+        { query: normalizedQuery, status: response.status, statusText: response.statusText },
+        "TMDB API error"
+      );
       throw new Error(`TMDB API error: ${response.status} ${response.statusText}`);
     }
 
-    const data = (await response.json()) as TmdbSearchMultiResponse;
-    cache.set(key, { data, expiresAt: Date.now() + CACHE_TTL_MS });
-    return data;
+    const data = (await response.json()) as TmdbSearchResponse;
+
+    const results = data.results
+      .filter((item) => item.media_type === "movie" || item.media_type === "tv")
+      .map((item) => ({
+        providerId: `${item.media_type}-${item.id}`,
+        mediaType: (item.media_type == "movie" ? "movie" : "tv-show") as SearchResult["mediaType"],
+        title: item.title || item.name,
+        posterUrl: item.poster_path ? `${IMAGE_URL}${item.poster_path}` : null,
+        overview: item.overview,
+        releaseDate: item.release_date || item.first_air_date || null,
+      }));
+
+    cache.set(normalizedQuery, { results, expiresAt: Date.now() + CACHE_TTL_MS });
+
+    return results;
+  } catch (err) {
+    if (err instanceof Error && err.name === "AbortError") {
+      logger.error(
+        { query: normalizedQuery, timeoutMs: FETCH_TIMEOUT_MS },
+        "TMDB request timed out"
+      );
+    }
+    throw err;
   } finally {
-    clearTimeout(id);
+    clearTimeout(timeoutId);
   }
 };

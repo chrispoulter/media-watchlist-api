@@ -17,10 +17,10 @@ router.get("/", async (req, res) => {
   res.json(
     data.map((item) => ({
       id: item.id,
-      tmdbId: item.tmdbId,
+      providerId: item.providerId,
       mediaType: item.mediaType,
       title: item.title,
-      posterPath: item.posterPath ?? undefined,
+      posterUrl: item.posterUrl ?? undefined,
       overview: item.overview ?? undefined,
       releaseDate: item.releaseDate ?? undefined,
       addedAt: item.addedAt,
@@ -29,10 +29,10 @@ router.get("/", async (req, res) => {
 });
 
 const addWatchlistItemSchema = z.object({
-  tmdbId: z.number().int().positive(),
+  providerId: z.string().min(1),
   mediaType: z.enum(["movie", "tv"]),
   title: z.string().min(1),
-  posterPath: z.string().optional(),
+  posterUrl: z.string().optional(),
   overview: z.string().optional(),
   releaseDate: z.string().optional(),
 });
@@ -67,18 +67,32 @@ router.post("/", async (req, res) => {
 
     res.status(201).json({
       id: created.id,
-      tmdbId: created.tmdbId,
+      providerId: created.providerId,
       mediaType: created.mediaType,
       title: created.title,
-      posterPath: created.posterPath ?? undefined,
+      posterUrl: created.posterUrl ?? undefined,
       overview: created.overview ?? undefined,
       releaseDate: created.releaseDate ?? undefined,
       addedAt: created.addedAt,
     });
+
+    req.log.info(
+      {
+        itemId: created.id,
+        providerId: created.providerId,
+        mediaType: created.mediaType,
+        title: created.title,
+      },
+      "Watchlist item added"
+    );
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "";
 
-    if (message.includes("watchlist_user_tmdb_idx")) {
+    if (message.includes("watchlist_user_provider_idx")) {
+      req.log.warn(
+        { providerId: result.data.providerId, mediaType: result.data.mediaType },
+        "Duplicate watchlist item"
+      );
       res.status(409).json({ error: "Item already exists in watchlist" });
       return;
     }
@@ -108,9 +122,12 @@ router.delete("/:id", async (req, res) => {
     .returning();
 
   if (!deleted) {
+    req.log.warn({ itemId: id }, "Watchlist item not found");
     res.status(404).json({ error: "Item not found in watchlist" });
     return;
   }
+
+  req.log.info({ itemId: deleted.id }, "Watchlist item removed");
 
   res.status(204).send();
 });

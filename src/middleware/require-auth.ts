@@ -8,11 +8,13 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
   });
 
   if (!sessionData) {
+    req.log.warn({ path: req.path }, "Unauthenticated request rejected");
     res.status(401).json({ error: "Unauthorized" });
     return;
   }
 
   req.user = sessionData.user;
   req.session = sessionData.session;
+  req.log = req.log.child({ userId: sessionData.user.id });
   next();
 };

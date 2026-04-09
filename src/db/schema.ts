@@ -1,14 +1,5 @@
 import { relations } from "drizzle-orm/relations";
-import {
-  boolean,
-  index,
-  integer,
-  pgTable,
-  serial,
-  text,
-  timestamp,
-  uniqueIndex,
-} from "drizzle-orm/pg-core";
+import { boolean, index, pgTable, serial, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
 
 // ---------------------------------------------------------------------------
 // better-auth core tables
@@ -139,16 +130,16 @@ export const watchlistItem = pgTable(
     userId: text("user_id")
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
-    tmdbId: integer("tmdb_id").notNull(),
+    providerId: text("provider_id").notNull(),
     mediaType: text("media_type", { enum: ["movie", "tv"] }).notNull(),
     title: text("title").notNull(),
-    posterPath: text("poster_path"),
+    posterUrl: text("poster_url"),
     overview: text("overview"),
     releaseDate: text("release_date"),
     addedAt: timestamp("added_at").defaultNow().notNull(),
   },
   (table) => [
-    uniqueIndex("watchlist_user_tmdb_idx").on(table.userId, table.tmdbId, table.mediaType),
+    uniqueIndex("watchlist_user_provider_idx").on(table.userId, table.providerId, table.mediaType),
     index("watchlist_user_idx").on(table.userId),
   ]
 );

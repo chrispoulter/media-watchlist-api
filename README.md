@@ -24,6 +24,7 @@ A REST API for tracking movies and TV shows you want to watch. Built with Expres
 | Media Search     | TMDB API                    |
 | Email            | Nodemailer + React Email    |
 | API Docs         | Scalar (OpenAPI)            |
+| Logging          | Pino                        |
 | Containerisation | Docker, Docker Compose      |
 
 ## Prerequisites
@@ -65,22 +66,23 @@ npm run dev
 
 ## Environment Variables
 
-| Variable               | Required | Default                 | Description                             |
-| ---------------------- | -------- | ----------------------- | --------------------------------------- |
-| `PORT`                 | No       | `3000`                  | Port the server listens on              |
-| `DATABASE_URL`         | Yes      | —                       | PostgreSQL connection string            |
-| `BETTER_AUTH_SECRET`   | Yes      | —                       | Auth signing secret (min 32 chars)      |
-| `BETTER_AUTH_URL`      | No       | `http://localhost:3000` | Public base URL of the API              |
-| `CLIENT_ORIGIN`        | Yes      | —                       | Allowed CORS origin(s), comma-separated |
-| `GOOGLE_CLIENT_ID`     | No       | —                       | Google OAuth client ID                  |
-| `GOOGLE_CLIENT_SECRET` | No       | —                       | Google OAuth client secret              |
-| `TMDB_API_READ_TOKEN`  | No       | —                       | TMDB API read access token              |
-| `SMTP_HOST`            | No       | `localhost`             | SMTP server host                        |
-| `SMTP_PORT`            | No       | `587`                   | SMTP server port                        |
-| `SMTP_USER`            | No       | —                       | SMTP username                           |
-| `SMTP_PASS`            | No       | —                       | SMTP password                           |
-| `SMTP_FROM`            | No       | —                       | From address for outgoing emails        |
-| `SMTP_SECURE`          | No       | —                       | Use TLS/SSL for SMTP                    |
+| Variable               | Required | Default                 | Description                                                      |
+| ---------------------- | -------- | ----------------------- | ---------------------------------------------------------------- |
+| `PORT`                 | No       | `3000`                  | Port the server listens on                                       |
+| `DATABASE_URL`         | Yes      | —                       | PostgreSQL connection string                                     |
+| `BETTER_AUTH_SECRET`   | Yes      | —                       | Auth signing secret (min 32 chars)                               |
+| `BETTER_AUTH_URL`      | No       | `http://localhost:3000` | Public base URL of the API                                       |
+| `CLIENT_ORIGIN`        | Yes      | —                       | Allowed CORS origin(s), comma-separated                          |
+| `GOOGLE_CLIENT_ID`     | No       | —                       | Google OAuth client ID                                           |
+| `GOOGLE_CLIENT_SECRET` | No       | —                       | Google OAuth client secret                                       |
+| `TMDB_API_READ_TOKEN`  | No       | —                       | TMDB API read access token                                       |
+| `SMTP_HOST`            | No       | `localhost`             | SMTP server host                                                 |
+| `SMTP_PORT`            | No       | `587`                   | SMTP server port                                                 |
+| `SMTP_USER`            | No       | —                       | SMTP username                                                    |
+| `SMTP_PASS`            | No       | —                       | SMTP password                                                    |
+| `SMTP_FROM`            | No       | —                       | From address for outgoing emails                                 |
+| `SMTP_SECURE`          | No       | —                       | Use TLS/SSL for SMTP                                             |
+| `LOG_LEVEL`            | No       | `info`                  | Log level: `fatal`, `error`, `warn`, `info`, `debug`, or `trace` |
 
 ## API Overview
 
@@ -111,9 +113,9 @@ All auth routes are handled by Better Auth. Requests requiring authentication us
 
 ### Search
 
-| Method | Path                    | Auth | Description                         |
-| ------ | ----------------------- | ---- | ----------------------------------- |
-| GET    | `/api/search?q=<query>` | Yes  | Search TMDB for movies and TV shows |
+| Method | Path                        | Auth | Description                         |
+| ------ | --------------------------- | ---- | ----------------------------------- |
+| GET    | `/api/search?query=<query>` | Yes  | Search TMDB for movies and TV shows |
 
 ### Watchlist
 
@@ -127,10 +129,10 @@ All auth routes are handled by Better Auth. Requests requiring authentication us
 
 ```json
 {
-  "tmdbId": 550,
+  "providerId": "tmdb:550",
   "mediaType": "movie",
   "title": "Fight Club",
-  "posterPath": "/path.jpg",
+  "posterUrl": "https://image.tmdb.org/t/p/w300/jSziioSwPVrOy9Yow3XhWIBDjq1.jpg",
   "overview": "...",
   "releaseDate": "1999-10-15"
 }

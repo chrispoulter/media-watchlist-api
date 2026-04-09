@@ -4,7 +4,6 @@ import { logger } from "./logger.js";
 const API_URL = "https://api.themoviedb.org/3";
 const IMAGE_URL = "https://image.tmdb.org/t/p/w300";
 const FETCH_TIMEOUT_MS = 3_000;
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
 interface TmdbSearchResponse {
   results: {

@@ -17,10 +17,10 @@ router.get("/", async (req, res) => {
   res.json(
     data.map((item) => ({
       id: item.id,
-      tmdbId: item.tmdbId,
+      providerId: item.providerId,
       mediaType: item.mediaType,
       title: item.title,
-      posterPath: item.posterPath ?? undefined,
+      posterUrl: item.posterUrl ?? undefined,
       overview: item.overview ?? undefined,
       releaseDate: item.releaseDate ?? undefined,
       addedAt: item.addedAt,
@@ -29,10 +29,10 @@ router.get("/", async (req, res) => {
 });
 
 const addWatchlistItemSchema = z.object({
-  tmdbId: z.number().int().positive(),
+  providerId: z.string().min(1),
   mediaType: z.enum(["movie", "tv"]),
   title: z.string().min(1),
-  posterPath: z.string().optional(),
+  posterUrl: z.string().optional(),
   overview: z.string().optional(),
   releaseDate: z.string().optional(),
 });
@@ -67,10 +67,10 @@ router.post("/", async (req, res) => {
 
     res.status(201).json({
       id: created.id,
-      tmdbId: created.tmdbId,
+      providerId: created.providerId,
       mediaType: created.mediaType,
       title: created.title,
-      posterPath: created.posterPath ?? undefined,
+      posterUrl: created.posterUrl ?? undefined,
       overview: created.overview ?? undefined,
       releaseDate: created.releaseDate ?? undefined,
       addedAt: created.addedAt,
@@ -79,7 +79,7 @@ router.post("/", async (req, res) => {
     req.log.info(
       {
         itemId: created.id,
-        tmdbId: created.tmdbId,
+        providerId: created.providerId,
         mediaType: created.mediaType,
         title: created.title,
       },
@@ -88,9 +88,9 @@ router.post("/", async (req, res) => {
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "";
 
-    if (message.includes("watchlist_user_tmdb_idx")) {
+    if (message.includes("watchlist_user_provider_idx")) {
       req.log.warn(
-        { tmdbId: result.data.tmdbId, mediaType: result.data.mediaType },
+        { providerId: result.data.providerId, mediaType: result.data.mediaType },
         "Duplicate watchlist item"
       );
       res.status(409).json({ error: "Item already exists in watchlist" });

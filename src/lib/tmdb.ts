@@ -9,7 +9,7 @@ const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 interface TmdbSearchMultiResponse {
   results: {
     id: number;
-    media_type: "movie" | "tv";
+    media_type: "movie" | "tv" | "person";
     title: string;
     name: string;
     poster_path: string | null;
@@ -19,34 +19,34 @@ interface TmdbSearchMultiResponse {
   }[];
 }
 
-interface SearchResults {
-  tmdbId: number;
+interface SearchResult {
+  providerId: string;
   mediaType: "movie" | "tv";
   title: string;
-  posterPath: string | null;
+  posterUrl: string | null;
   overview: string | null;
   releaseDate: string | null;
 }
 
 interface CacheEntry {
-  results: SearchResults[];
+  results: SearchResult[];
   expiresAt: number;
 }
 
 const cache = new Map<string, CacheEntry>();
 
-export const searchMulti = async (query: string) => {
-  const key = query.trim().toLowerCase();
+export const search = async (query: string) => {
+  const normalizedQuery = query.trim().toLowerCase();
 
-  const cached = cache.get(key);
+  const cached = cache.get(normalizedQuery);
   if (cached && Date.now() < cached.expiresAt) {
-    logger.debug({ query: key }, "TMDB cache hit");
+    logger.debug({ query: normalizedQuery }, "TMDB cache hit");
     return cached.results;
   }
 
-  logger.debug({ query: key }, "TMDB cache miss");
+  logger.debug({ query: normalizedQuery }, "TMDB cache miss");
 
-  const params = new URLSearchParams({ query });
+  const params = new URLSearchParams({ query: normalizedQuery });
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 
@@ -58,7 +58,7 @@ export const searchMulti = async (query: string) => {
 
     if (!response.ok) {
       logger.error(
-        { query: key, status: response.status, statusText: response.statusText },
+        { query: normalizedQuery, status: response.status, statusText: response.statusText },
         "TMDB API error"
       );
       throw new Error(`TMDB API error: ${response.status} ${response.statusText}`);
@@ -66,21 +66,31 @@ export const searchMulti = async (query: string) => {
 
     const data = (await response.json()) as TmdbSearchMultiResponse;
 
-    const results = data.results.map((item) => ({
-      tmdbId: item.id,
-      mediaType: item.media_type,
-      title: item.title || item.name,
-      posterPath: item.poster_path ? `${IMAGE_URL}${item.poster_path}` : null,
-      overview: item.overview,
-      releaseDate: item.release_date || item.first_air_date || null,
-    }));
+    const results = data.results
+      .filter(
+        (
+          item
+        ): item is TmdbSearchMultiResponse["results"][number] & { media_type: "movie" | "tv" } =>
+          item.media_type === "movie" || item.media_type === "tv"
+      )
+      .map((item) => ({
+        providerId: `${item.media_type}-${item.id}`,
+        mediaType: item.media_type,
+        title: item.title || item.name,
+        posterUrl: item.poster_path ? `${IMAGE_URL}${item.poster_path}` : null,
+        overview: item.overview,
+        releaseDate: item.release_date || item.first_air_date || null,
+      }));
 
-    cache.set(key, { results, expiresAt: Date.now() + CACHE_TTL_MS });
+    cache.set(normalizedQuery, { results, expiresAt: Date.now() + CACHE_TTL_MS });
 
     return results;
   } catch (err) {
     if (err instanceof Error && err.name === "AbortError") {
-      logger.error({ query: key, timeoutMs: FETCH_TIMEOUT_MS }, "TMDB request timed out");
+      logger.error(
+        { query: normalizedQuery, timeoutMs: FETCH_TIMEOUT_MS },
+        "TMDB request timed out"
+      );
     }
     throw err;
   } finally {

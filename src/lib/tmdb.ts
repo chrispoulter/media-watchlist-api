@@ -28,24 +28,8 @@ interface SearchResult {
   releaseDate: string | null;
 }
 
-interface CacheEntry {
-  results: SearchResult[];
-  expiresAt: number;
-}
-
-const cache = new Map<string, CacheEntry>();
-
 export const search = async (query: string) => {
   const normalizedQuery = query.trim().toLowerCase();
-
-  const cached = cache.get(normalizedQuery);
-  if (cached && Date.now() < cached.expiresAt) {
-    logger.debug({ query: normalizedQuery }, "TMDB cache hit");
-    return cached.results;
-  }
-
-  logger.debug({ query: normalizedQuery }, "TMDB cache miss");
-
   const params = new URLSearchParams({ query: normalizedQuery });
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
@@ -76,8 +60,6 @@ export const search = async (query: string) => {
         overview: item.overview,
         releaseDate: item.release_date || item.first_air_date || null,
       }));
-
-    cache.set(normalizedQuery, { results, expiresAt: Date.now() + CACHE_TTL_MS });
 
     return results;
   } catch (err) {

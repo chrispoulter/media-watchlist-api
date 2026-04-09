@@ -9,13 +9,13 @@ const envSchema = z.object({
   CLIENT_ORIGIN: z.string().default("http://localhost:5173"),
   GOOGLE_CLIENT_ID: z.string().optional(),
   GOOGLE_CLIENT_SECRET: z.string().optional(),
-  TMDB_API_READ_TOKEN: z.string().optional(),
-  SMTP_HOST: z.string().optional(),
+  TMDB_API_READ_TOKEN: z.string(),
+  SMTP_HOST: z.string().default("localhost"),
   SMTP_PORT: z.coerce.number().default(587),
   SMTP_SECURE: z.coerce.boolean().default(false),
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
-  SMTP_FROM: z.email().optional(),
+  SMTP_FROM: z.email(),
   LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace"]).default("info"),
 });
 

@@ -75,12 +75,12 @@ npm run dev
 | `CLIENT_ORIGIN`        | Yes      | —                       | Allowed CORS origin(s), comma-separated                          |
 | `GOOGLE_CLIENT_ID`     | No       | —                       | Google OAuth client ID                                           |
 | `GOOGLE_CLIENT_SECRET` | No       | —                       | Google OAuth client secret                                       |
-| `TMDB_API_READ_TOKEN`  | No       | —                       | TMDB API read access token                                       |
+| `TMDB_API_READ_TOKEN`  | Yes      | —                       | TMDB API read access token                                       |
 | `SMTP_HOST`            | No       | `localhost`             | SMTP server host                                                 |
 | `SMTP_PORT`            | No       | `587`                   | SMTP server port                                                 |
 | `SMTP_USER`            | No       | —                       | SMTP username                                                    |
 | `SMTP_PASS`            | No       | —                       | SMTP password                                                    |
-| `SMTP_FROM`            | No       | —                       | From address for outgoing emails                                 |
+| `SMTP_FROM`            | Yes      | —                       | From address for outgoing emails                                 |
 | `SMTP_SECURE`          | No       | —                       | Use TLS/SSL for SMTP                                             |
 | `LOG_LEVEL`            | No       | `info`                  | Log level: `fatal`, `error`, `warn`, `info`, `debug`, or `trace` |
 

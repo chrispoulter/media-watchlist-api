@@ -24,7 +24,7 @@ router.get("/", async (req, res) => {
 
   const data = await searchMulti(result.data.query);
 
-  const tmdbIds = data.results.map((item) => item.id);
+  const tmdbIds = data.map((item) => item.tmdbId);
 
   const watchlistItems = await db
     .select()
@@ -34,14 +34,14 @@ router.get("/", async (req, res) => {
   const watchlistMap = new Map(watchlistItems.map((w) => [`${w.tmdbId}-${w.mediaType}`, w.id]));
 
   res.json(
-    data.results.map((item) => ({
-      tmdbId: item.id,
-      mediaType: item.media_type,
-      title: item.title ?? item.name,
-      posterPath: item.poster_path ?? undefined,
+    data.map((item) => ({
+      tmdbId: item.tmdbId,
+      mediaType: item.mediaType,
+      title: item.title,
+      posterPath: item.posterPath ?? undefined,
       overview: item.overview ?? undefined,
-      releaseDate: item.release_date ?? item.first_air_date ?? undefined,
-      watchlistItemId: watchlistMap.get(`${item.id}-${item.media_type}`) ?? undefined,
+      releaseDate: item.releaseDate ?? undefined,
+      watchlistItemId: watchlistMap.get(`${item.tmdbId}-${item.mediaType}`) ?? undefined,
     }))
   );
 });

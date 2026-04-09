@@ -30,7 +30,7 @@ router.get("/", async (req, res) => {
 
 const addWatchlistItemSchema = z.object({
   providerId: z.string().min(1),
-  mediaType: z.enum(["movie", "tv"]),
+  mediaType: z.enum(["movie", "tv-show"]),
   title: z.string().min(1),
   posterUrl: z.string().optional(),
   overview: z.string().optional(),

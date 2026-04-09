@@ -27,7 +27,7 @@ export const openApiSpec = {
         properties: {
           id: { type: "integer" },
           providerId: { type: "string" },
-          mediaType: { type: "string", enum: ["movie", "tv"] },
+          mediaType: { type: "string", enum: ["movie", "tv-show"] },
           title: { type: "string" },
           posterUrl: { type: "string", nullable: true },
           overview: { type: "string", nullable: true },
@@ -40,7 +40,7 @@ export const openApiSpec = {
         type: "object",
         properties: {
           providerId: { type: "string" },
-          mediaType: { type: "string", enum: ["movie", "tv"] },
+          mediaType: { type: "string", enum: ["movie", "tv-show"] },
           title: { type: "string" },
           posterUrl: { type: "string", nullable: true },
           overview: { type: "string", nullable: true },
@@ -150,7 +150,7 @@ export const openApiSpec = {
                 type: "object",
                 properties: {
                   providerId: { type: "string", example: "tmdb:1396" },
-                  mediaType: { type: "string", enum: ["movie", "tv"], example: "tv" },
+                  mediaType: { type: "string", enum: ["movie", "tv-show"], example: "tv-show" },
                   title: { type: "string", example: "Breaking Bad" },
                   posterUrl: {
                     type: "string",

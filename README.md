@@ -17,7 +17,7 @@ A REST API for tracking movies and TV shows you want to watch. Built with Expres
 
 | Layer            | Technology                  |
 | ---------------- | --------------------------- |
-| Runtime          | Node.js 22, TypeScript      |
+| Runtime          | Node.js 24, TypeScript      |
 | Framework        | Express 5                   |
 | Database         | PostgreSQL 17 + Drizzle ORM |
 | Authentication   | Better Auth                 |

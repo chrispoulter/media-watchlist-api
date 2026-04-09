@@ -131,7 +131,7 @@ export const watchlistItem = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
     providerId: text("provider_id").notNull(),
-    mediaType: text("media_type", { enum: ["movie", "tv"] }).notNull(),
+    mediaType: text("media_type", { enum: ["movie", "tv-show"] }).notNull(),
     title: text("title").notNull(),
     posterUrl: text("poster_url"),
     overview: text("overview"),

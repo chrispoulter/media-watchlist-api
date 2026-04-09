@@ -21,7 +21,7 @@ interface TmdbSearchMultiResponse {
 
 interface SearchResult {
   providerId: string;
-  mediaType: "movie" | "tv";
+  mediaType: "movie" | "tv-show";
   title: string;
   posterUrl: string | null;
   overview: string | null;
@@ -48,10 +48,10 @@ export const search = async (query: string) => {
 
   const params = new URLSearchParams({ query: normalizedQuery });
   const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 
   try {
-    const response = await fetch(`${API_URL}/search/multi?${params.toString()}`, {
+    const response = await fetch(`${API_URL}/search/multi?${params}`, {
       headers: { Authorization: `Bearer ${env.TMDB_API_READ_TOKEN}` },
       signal: controller.signal,
     });
@@ -67,15 +67,10 @@ export const search = async (query: string) => {
     const data = (await response.json()) as TmdbSearchMultiResponse;
 
     const results = data.results
-      .filter(
-        (
-          item
-        ): item is TmdbSearchMultiResponse["results"][number] & { media_type: "movie" | "tv" } =>
-          item.media_type === "movie" || item.media_type === "tv"
-      )
+      .filter((item) => item.media_type === "movie" || item.media_type === "tv")
       .map((item) => ({
         providerId: `${item.media_type}-${item.id}`,
-        mediaType: item.media_type,
+        mediaType: (item.media_type == "movie" ? "movie" : "tv-show") as SearchResult["mediaType"],
         title: item.title || item.name,
         posterUrl: item.poster_path ? `${IMAGE_URL}${item.poster_path}` : null,
         overview: item.overview,
@@ -94,6 +89,6 @@ export const search = async (query: string) => {
     }
     throw err;
   } finally {
-    clearTimeout(id);
+    clearTimeout(timeoutId);
   }
 };

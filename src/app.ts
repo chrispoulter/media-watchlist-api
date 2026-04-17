@@ -11,6 +11,11 @@ import { openApiSpec } from "./openapi.js";
 export function createApp() {
   const app = express();
 
+  // app.use(async (_req, _res, next) => {
+  //   await new Promise((resolve) => setTimeout(resolve, 1000 * 3));
+  //   next();
+  // });
+
   app.use(requestLogger);
 
   app.use(express.json());

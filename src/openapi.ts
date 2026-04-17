@@ -1,8 +1,10 @@
+import { version } from "./env.js";
+
 export const openApiSpec = {
   openapi: "3.0.3",
   info: {
     title: "Media Watchlist API",
-    version: "1.0.0",
+    version,
     description: "REST API for managing a personal media watchlist.",
   },
   servers: [{ url: "/" }],
@@ -71,10 +73,15 @@ export const openApiSpec = {
                   type: "object",
                   properties: {
                     status: { type: "string", example: "ok" },
+                    version: {
+                      type: "string",
+                      description: "Application version",
+                      example: "1.0.0",
+                    },
                     timestamp: { type: "string", format: "date-time" },
                     uptime: { type: "number", description: "Process uptime in seconds" },
                   },
-                  required: ["status", "timestamp", "uptime"],
+                  required: ["status", "version", "timestamp", "uptime"],
                 },
               },
             },

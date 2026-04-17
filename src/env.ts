@@ -1,12 +1,9 @@
 import "dotenv/config";
 import { z } from "zod";
+import { createRequire } from "module";
 
-const PACKAGE_VERSION = process.env.npm_package_version;
-const COMMIT_SHA = process.env.GITHUB_SHA ?? process.env.VERCEL_GIT_COMMIT_SHA;
-
-export const version = COMMIT_SHA
-  ? `${PACKAGE_VERSION} (${COMMIT_SHA.slice(0, 7)})`
-  : PACKAGE_VERSION;
+const require = createRequire(import.meta.url);
+export const { version } = require("../package.json");
 
 const envSchema = z.object({
   PORT: z.coerce.number().default(3000),

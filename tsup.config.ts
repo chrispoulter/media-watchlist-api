@@ -1,7 +1,8 @@
 import { defineConfig } from "tsup";
-import { readFileSync } from "fs";
+import { createRequire } from "module";
 
-const { version } = JSON.parse(readFileSync("./package.json", "utf-8"));
+const require = createRequire(import.meta.url);
+const { version } = require("./package.json");
 
 export default defineConfig({
   define: { __APP_VERSION__: JSON.stringify(version) },

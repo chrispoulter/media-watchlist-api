@@ -1,6 +1,39 @@
+# Dependencies
 node_modules
+
+# Build output
 dist
+
+# Environment variables
 .env
 .env.*
 !.env.example
+
+# Logs
 *.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode
+.idea
+.claude
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Version control
+.git
+.github
+.gitignore
+
+# Linting / formatting
+.eslintcache
+eslint.config.mjs
+.prettierrc
+
+# Deployment config
+vercel.json

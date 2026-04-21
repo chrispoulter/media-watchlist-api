@@ -78,10 +78,10 @@ npm run dev
 | `TMDB_API_READ_TOKEN`  | Yes      | —                       | TMDB API read access token                                       |
 | `SMTP_HOST`            | No       | `localhost`             | SMTP server host                                                 |
 | `SMTP_PORT`            | No       | `587`                   | SMTP server port                                                 |
+| `SMTP_SECURE`          | No       | —                       | Use TLS/SSL for SMTP                                             |
+| `SMTP_FROM`            | Yes      | —                       | From address for outgoing emails                                 |
 | `SMTP_USER`            | No       | —                       | SMTP username                                                    |
 | `SMTP_PASS`            | No       | —                       | SMTP password                                                    |
-| `SMTP_FROM`            | Yes      | —                       | From address for outgoing emails                                 |
-| `SMTP_SECURE`          | No       | —                       | Use TLS/SSL for SMTP                                             |
 | `LOG_LEVEL`            | No       | `info`                  | Log level: `fatal`, `error`, `warn`, `info`, `debug`, or `trace` |
 
 ## API Overview

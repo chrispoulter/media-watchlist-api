@@ -4,14 +4,16 @@ services:
     build:
       context: .
     environment:
-      DATABASE_URL: postgresql://postgres:password@host-docker-internal:5432/media-watchlist
       PORT: 3000
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/media-watchlist
       BETTER_AUTH_URL: http://localhost:3000
       BETTER_AUTH_SECRET: change-me-to-a-secret-that-is-at-least-32-chars
-      CLIENT_ORIGIN: http://localhost:5173
-      SMTP_HOST: host.docker.internal
+      CLIENT_ORIGIN: http://localhost:3000,http://localhost:5173
+      SMTP_HOST: mailpit
       SMTP_PORT: 1025
       SMTP_FROM: noreply@example.com
+      TMDB_API_READ_TOKEN: your-tmdb-api-read-token
+      LOG_LEVEL: info
     ports:
       - 3000:3000
     depends_on:
@@ -28,7 +30,7 @@ services:
       context: .
       target: migrator
     environment:
-      DATABASE_URL: postgresql://postgres:password@host-docker-internal:5432/media-watchlist
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/media-watchlist
     depends_on:
       postgres:
         condition: service_healthy

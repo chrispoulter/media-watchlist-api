@@ -19,6 +19,20 @@ services:
         condition: service_healthy
       mailpit:
         condition: service_started
+      media-watchlist-migrate:
+        condition: service_completed_successfully
+
+  media-watchlist-migrate:
+    image: media-watchlist-api:migrator
+    build:
+      context: .
+      target: migrator
+    environment:
+      DATABASE_URL: postgresql://postgres:password@host-docker-internal:5432/media-watchlist
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: no
 
   postgres:
     image: postgres:17.6

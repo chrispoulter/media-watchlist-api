@@ -6,7 +6,7 @@ const { version } = require("./package.json");
 
 export default defineConfig({
   define: { __APP_VERSION__: JSON.stringify(version) },
-  entry: ["src/server.ts"],
+  entry: ["src/server.ts", "src/db/migrate.ts"],
   format: ["esm"],
   target: "node22",
   outDir: "dist",

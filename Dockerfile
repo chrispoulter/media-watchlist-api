@@ -8,11 +8,17 @@ RUN npm run build
 FROM node:24-alpine
 WORKDIR /app
 ENV NODE_ENV=production
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/drizzle ./drizzle
-COPY --from=builder /app/drizzle.config.ts ./drizzle.config.ts
-COPY --from=builder /app/src ./src
+COPY --from=prod-deps /app/node_modules ./node_modules
+COPY --from=build /app/package*.json ./
+COPY --from=build /app/drizzle ./drizzle
+COPY --from=build /app/dist/db/migrate.js ./dist/db/migrate.js
+CMD ["node", "dist/db/migrate.js"]
+
+FROM node:24-alpine AS runtime
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=prod-deps /app/node_modules ./node_modules
+COPY --from=build /app/package*.json ./
+COPY --from=build /app/dist ./dist
 EXPOSE 3000
-CMD ["sh", "-c", "npm run db:migrate && npm start"]
+CMD ["node", "dist/server.js"]

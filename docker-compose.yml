@@ -9,10 +9,12 @@ services:
       BETTER_AUTH_URL: http://localhost:3000
       BETTER_AUTH_SECRET: change-me-to-a-secret-that-is-at-least-32-chars
       CLIENT_ORIGIN: http://localhost:3000,http://localhost:5173
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      TMDB_API_READ_TOKEN: ${TMDB_API_READ_TOKEN:-your-tmdb-api-read-token}
       SMTP_HOST: mailpit
       SMTP_PORT: 1025
       SMTP_FROM: noreply@example.com
-      TMDB_API_READ_TOKEN: your-tmdb-api-read-token
       LOG_LEVEL: info
     ports:
       - 3000:3000

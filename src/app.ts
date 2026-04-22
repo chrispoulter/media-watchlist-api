@@ -36,9 +36,13 @@ export function createApp() {
   app.get("/openapi.json", async (_req, res) => {
     const authSchema = await auth.api.generateOpenAPISchema();
 
+    const authPaths = Object.fromEntries(
+      Object.entries(authSchema.paths).map(([path, pathItem]) => [`/api/auth${path}`, pathItem])
+    );
+
     res.json({
       ...openApiSpec,
-      paths: { ...authSchema.paths, ...openApiSpec.paths },
+      paths: { ...authPaths, ...openApiSpec.paths },
       components: {
         ...openApiSpec.components,
         schemas: { ...authSchema.components.schemas, ...openApiSpec.components.schemas },

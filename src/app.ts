@@ -29,9 +29,9 @@ export function createApp() {
     })
   );
 
-  app.all("/api/auth/*splat", toNodeHandler(auth));
-
   app.use("/api", apiRouter);
+
+  app.all("/api/auth/*splat", toNodeHandler(auth));
 
   app.get("/openapi.json", async (_req, res) => {
     const authSchema = await auth.api.generateOpenAPISchema();

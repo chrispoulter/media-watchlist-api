@@ -22,7 +22,6 @@ export const openApiSpec = {
         properties: {
           service: { type: "string", example: "database" },
           success: { type: "boolean" },
-          error: { type: "string" },
         },
         required: ["service", "success"],
       },

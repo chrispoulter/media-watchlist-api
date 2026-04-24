@@ -45,10 +45,13 @@ export const healthCheck = async (): Promise<HealthcheckResult> => {
 
     return { service: "tmdb", success: true };
   } catch (err) {
+    logger.error("TMDB health check failed", {
+      error: err instanceof Error ? err.message : err,
+    });
+
     return {
       service: "tmdb",
       success: false,
-      error: err instanceof Error ? err.message : "Unknown error",
     };
   }
 };

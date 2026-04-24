@@ -2,6 +2,7 @@ import type { ReactElement } from "react";
 import nodemailer from "nodemailer";
 import { render } from "@react-email/render";
 import { type HealthcheckResult } from "./health.js";
+import { logger } from "./logger.js";
 import { env } from "../env.js";
 
 export const mailer = nodemailer.createTransport({
@@ -18,10 +19,13 @@ export const healthCheck = async (): Promise<HealthcheckResult> => {
     await mailer.verify();
     return { service: "mailer", success: true };
   } catch (err) {
+    logger.error("Mailer health check failed", {
+      error: err instanceof Error ? err.message : err,
+    });
+
     return {
       service: "mailer",
       success: false,
-      error: err instanceof Error ? err.message : "Unknown error",
     };
   }
 };

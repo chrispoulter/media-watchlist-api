@@ -36,18 +36,12 @@ export const healthCheck = async (): Promise<HealthcheckResult> => {
     });
 
     if (!response.ok) {
-      return {
-        service: "tmdb",
-        success: false,
-        error: `HTTP ${response.status} ${response.statusText}`,
-      };
+      throw new Error(`TMDB API error: ${response.status} ${response.statusText}`);
     }
 
     return { service: "tmdb", success: true };
   } catch (err) {
-    logger.error("TMDB health check failed", {
-      error: err instanceof Error ? err.message : err,
-    });
+    logger.error({ error: err instanceof Error ? err.message : err }, "TMDB health check failed");
 
     return {
       service: "tmdb",

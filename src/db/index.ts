@@ -14,10 +14,11 @@ export const healthCheck = async (): Promise<HealthcheckResult> => {
     await db.execute(sql`SELECT 1`);
     return { service: "database", success: true };
   } catch (err) {
-    logger.error("Database health check failed", {
-      error: err instanceof Error ? err.message : err,
-    });
-    
+    logger.error(
+      { error: err instanceof Error ? err.message : err },
+      "Database health check failed"
+    );
+
     return {
       service: "database",
       success: false,

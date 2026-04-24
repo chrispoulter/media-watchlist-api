@@ -19,9 +19,7 @@ export const healthCheck = async (): Promise<HealthcheckResult> => {
     await mailer.verify();
     return { service: "mailer", success: true };
   } catch (err) {
-    logger.error("Mailer health check failed", {
-      error: err instanceof Error ? err.message : err,
-    });
+    logger.error({ error: err instanceof Error ? err.message : err }, "Mailer health check failed");
 
     return {
       service: "mailer",

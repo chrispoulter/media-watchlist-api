@@ -1,5 +1,6 @@
 import { env } from "../env.js";
 import { logger } from "./logger.js";
+import { type HealthcheckResult } from "./health.js";
 
 const API_URL = "https://api.themoviedb.org/3";
 const IMAGE_URL = "https://image.tmdb.org/t/p/w300";
@@ -27,16 +28,36 @@ interface SearchResult {
   releaseDate: string | null;
 }
 
+export const healthCheck = async (): Promise<HealthcheckResult> => {
+  try {
+    const response = await fetch(`${API_URL}/configuration`, {
+      headers: { Authorization: `Bearer ${env.TMDB_API_READ_TOKEN}` },
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+    });
+
+    if (!response.ok) {
+      throw new Error(`TMDB API error: ${response.status} ${response.statusText}`);
+    }
+
+    return { service: "tmdb", success: true };
+  } catch (err) {
+    logger.error({ error: err instanceof Error ? err.message : err }, "TMDB health check failed");
+
+    return {
+      service: "tmdb",
+      success: false,
+    };
+  }
+};
+
 export const search = async (query: string) => {
   const normalizedQuery = query.trim().toLowerCase();
   const params = new URLSearchParams({ query: normalizedQuery });
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 
   try {
     const response = await fetch(`${API_URL}/search/multi?${params}`, {
       headers: { Authorization: `Bearer ${env.TMDB_API_READ_TOKEN}` },
-      signal: controller.signal,
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     });
 
     if (!response.ok) {
@@ -62,14 +83,12 @@ export const search = async (query: string) => {
 
     return results;
   } catch (err) {
-    if (err instanceof Error && err.name === "AbortError") {
+    if (err instanceof Error && err.name === "TimeoutError") {
       logger.error(
         { query: normalizedQuery, timeoutMs: FETCH_TIMEOUT_MS },
         "TMDB request timed out"
       );
     }
     throw err;
-  } finally {
-    clearTimeout(timeoutId);
   }
 };

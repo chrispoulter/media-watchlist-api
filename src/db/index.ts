@@ -2,10 +2,9 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import { sql } from "drizzle-orm";
 import postgres from "postgres";
 import { type HealthcheckResult } from "../lib/health.js";
-import { withTimeout } from "../lib/with-timeout.js";
 import { env } from "../env.js";
 
-const client = postgres(env.DATABASE_URL);
+const client = postgres(env.DATABASE_URL, { connect_timeout: 3 });
 
 export const db = drizzle(client);
 
@@ -13,7 +12,7 @@ export const healthCheck = async (): Promise<HealthcheckResult> => {
   const start = Date.now();
 
   try {
-    await withTimeout(() => db.execute(sql`SELECT 1`));
+    await db.execute(sql`SELECT 1`);
     return { status: "ok", latencyMs: Date.now() - start };
   } catch (err) {
     return {

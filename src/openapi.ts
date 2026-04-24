@@ -17,6 +17,15 @@ export const openApiSpec = {
       },
     },
     schemas: {
+      HealthcheckResult: {
+        type: "object",
+        properties: {
+          service: { type: "string", example: "database" },
+          success: { type: "boolean" },
+          error: { type: "string" },
+        },
+        required: ["service", "success"],
+      },
       Error: {
         type: "object",
         properties: {
@@ -66,22 +75,49 @@ export const openApiSpec = {
         summary: "Health check",
         responses: {
           "200": {
-            description: "Service is healthy.",
+            description: "All services are healthy.",
             content: {
               "application/json": {
                 schema: {
                   type: "object",
                   properties: {
-                    status: { type: "string", example: "ok" },
+                    status: { type: "string", enum: ["ok"] },
                     version: {
                       type: "string",
                       description: "Application version",
                       example: "1.0.0",
                     },
-                    timestamp: { type: "string", format: "date-time" },
                     uptime: { type: "number", description: "Process uptime in seconds" },
+                    services: {
+                      type: "array",
+                      items: { $ref: "#/components/schemas/HealthcheckResult" },
+                    },
                   },
-                  required: ["status", "version", "timestamp", "uptime"],
+                  required: ["status", "version", "uptime", "services"],
+                },
+              },
+            },
+          },
+          "503": {
+            description: "One or more services are unhealthy.",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    status: { type: "string", enum: ["unhealthy"] },
+                    version: {
+                      type: "string",
+                      description: "Application version",
+                      example: "1.0.0",
+                    },
+                    uptime: { type: "number", description: "Process uptime in seconds" },
+                    services: {
+                      type: "array",
+                      items: { $ref: "#/components/schemas/HealthcheckResult" },
+                    },
+                  },
+                  required: ["status", "version", "uptime", "services"],
                 },
               },
             },

@@ -9,15 +9,13 @@ const client = postgres(env.DATABASE_URL, { connect_timeout: 3 });
 export const db = drizzle(client);
 
 export const healthCheck = async (): Promise<HealthcheckResult> => {
-  const start = Date.now();
-
   try {
     await db.execute(sql`SELECT 1`);
-    return { status: "ok", latencyMs: Date.now() - start };
+    return { service: "database", success: true };
   } catch (err) {
     return {
-      status: "error",
-      latencyMs: Date.now() - start,
+      service: "database",
+      success: false,
       error: err instanceof Error ? err.message : "Unknown error",
     };
   }

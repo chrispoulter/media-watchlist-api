@@ -29,8 +29,6 @@ interface SearchResult {
 }
 
 export const healthCheck = async (): Promise<HealthcheckResult> => {
-  const start = Date.now();
-
   try {
     const response = await fetch(`${API_URL}/configuration`, {
       headers: { Authorization: `Bearer ${env.TMDB_API_READ_TOKEN}` },
@@ -39,17 +37,17 @@ export const healthCheck = async (): Promise<HealthcheckResult> => {
 
     if (!response.ok) {
       return {
-        status: "error",
-        latencyMs: Date.now() - start,
+        service: "tmdb",
+        success: false,
         error: `HTTP ${response.status} ${response.statusText}`,
       };
     }
 
-    return { status: "ok", latencyMs: Date.now() - start };
+    return { service: "tmdb", success: true };
   } catch (err) {
     return {
-      status: "error",
-      latencyMs: Date.now() - start,
+      service: "tmdb",
+      success: false,
       error: err instanceof Error ? err.message : "Unknown error",
     };
   }

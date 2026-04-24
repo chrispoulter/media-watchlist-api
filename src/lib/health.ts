@@ -1,5 +1,5 @@
 export interface HealthcheckResult {
-  status: "ok" | "error";
-  latencyMs: number;
+  service: string;
+  success: boolean;
   error?: string;
 }

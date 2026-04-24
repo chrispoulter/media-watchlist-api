@@ -7,24 +7,12 @@ import { healthCheck as checkSmtp } from "../lib/mailer.js";
 const router = Router();
 
 router.get("/", async (_req, res) => {
-  const [dbResult, tmdbResult, smtpResult] = await Promise.all([
-    checkDatabase(),
-    checkTmdb(),
-    checkSmtp(),
-  ]);
-
-  const services = {
-    db: dbResult,
-    tmdb: tmdbResult,
-    smtp: smtpResult,
-  };
-
-  const failing = Object.values(services).some((s) => s?.status !== "ok");
+  const services = await Promise.all([checkDatabase(), checkTmdb(), checkSmtp()]);
+  const failing = services.some((s) => s?.success !== true);
 
   res.status(failing ? 503 : 200).json({
     status: failing ? "unhealthy" : "ok",
     version,
-    timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     services,
   });

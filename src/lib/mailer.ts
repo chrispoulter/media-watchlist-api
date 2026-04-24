@@ -14,14 +14,13 @@ export const mailer = nodemailer.createTransport({
 });
 
 export const healthCheck = async (): Promise<HealthcheckResult> => {
-  const start = Date.now();
   try {
     await mailer.verify();
-    return { status: "ok", latencyMs: Date.now() - start };
+    return { service: "mailer", success: true };
   } catch (err) {
     return {
-      status: "error",
-      latencyMs: Date.now() - start,
+      service: "mailer",
+      success: false,
       error: err instanceof Error ? err.message : "Unknown error",
     };
   }

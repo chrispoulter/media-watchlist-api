@@ -3,9 +3,9 @@ import { sql } from "drizzle-orm";
 import postgres from "postgres";
 import { type HealthcheckResult } from "../lib/health.js";
 import { logger } from "../lib/logger.js";
-import { env } from "../env.js";
+import { config } from "../lib/config.js";
 
-const client = postgres(env.DATABASE_URL, { connect_timeout: 3 });
+const client = postgres(config.DATABASE_URL, { connect_timeout: 3 });
 
 export const db = drizzle(client);
 

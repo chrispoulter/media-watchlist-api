@@ -5,7 +5,7 @@ import { apiReference } from "@scalar/express-api-reference";
 import { requestLogger } from "./middleware/request-logger.js";
 import { auth } from "./lib/auth.js";
 import apiRouter from "./routes/index.js";
-import { env } from "./env.js";
+import { config } from "./lib/config.js";
 import { openApiSpec } from "./openapi.js";
 
 export function createApp() {
@@ -23,7 +23,7 @@ export function createApp() {
 
   app.use(
     cors({
-      origin: env.CLIENT_ORIGIN.split(","),
+      origin: config.CLIENT_ORIGIN.split(","),
       methods: ["GET", "POST", "PUT", "DELETE"],
       credentials: true,
     })

@@ -3,13 +3,16 @@ import nodemailer from "nodemailer";
 import { render } from "@react-email/render";
 import { type HealthcheckResult } from "./health.js";
 import { logger } from "./logger.js";
-import { env } from "../env.js";
+import { config } from "./config.js";
 
 export const mailer = nodemailer.createTransport({
-  host: env.SMTP_HOST,
-  port: env.SMTP_PORT,
-  secure: env.SMTP_SECURE,
-  auth: env.SMTP_USER && env.SMTP_PASS ? { user: env.SMTP_USER, pass: env.SMTP_PASS } : undefined,
+  host: config.SMTP_HOST,
+  port: config.SMTP_PORT,
+  secure: config.SMTP_SECURE,
+  auth:
+    config.SMTP_USER && config.SMTP_PASS
+      ? { user: config.SMTP_USER, pass: config.SMTP_PASS }
+      : undefined,
   connectionTimeout: 3_000,
   greetingTimeout: 3_000,
 });
@@ -36,5 +39,5 @@ interface SendMailOptions {
 
 export const sendMail = async ({ to, subject, template }: SendMailOptions) => {
   const html = await render(template);
-  return mailer.sendMail({ from: env.SMTP_FROM, to, subject, html });
+  return mailer.sendMail({ from: config.SMTP_FROM, to, subject, html });
 };

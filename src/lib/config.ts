@@ -9,7 +9,7 @@ const require = createRequire(import.meta.url);
 export const version =
   typeof __APP_VERSION__ !== "undefined" ? __APP_VERSION__ : require("../package.json").version;
 
-const envSchema = z.object({
+const configSchema = z.object({
   PORT: z.coerce.number().default(3000),
   DATABASE_URL: z.url(),
   BETTER_AUTH_SECRET: z.string().min(32),
@@ -27,4 +27,4 @@ const envSchema = z.object({
   LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace"]).default("info"),
 });
 
-export const env = envSchema.parse(process.env);
+export const config = configSchema.parse(process.env);

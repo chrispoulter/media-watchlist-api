@@ -1,4 +1,4 @@
-import { env } from "../env.js";
+import { config } from "./config.js";
 import { logger } from "./logger.js";
 import { type HealthcheckResult } from "./health.js";
 
@@ -31,7 +31,7 @@ interface SearchResult {
 export const healthCheck = async (): Promise<HealthcheckResult> => {
   try {
     const response = await fetch(`${API_URL}/configuration`, {
-      headers: { Authorization: `Bearer ${env.TMDB_API_READ_TOKEN}` },
+      headers: { Authorization: `Bearer ${config.TMDB_API_READ_TOKEN}` },
       signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     });
 
@@ -56,7 +56,7 @@ export const search = async (query: string) => {
 
   try {
     const response = await fetch(`${API_URL}/search/multi?${params}`, {
-      headers: { Authorization: `Bearer ${env.TMDB_API_READ_TOKEN}` },
+      headers: { Authorization: `Bearer ${config.TMDB_API_READ_TOKEN}` },
       signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     });
 

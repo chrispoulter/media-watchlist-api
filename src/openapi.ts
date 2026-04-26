@@ -1,4 +1,4 @@
-import { version } from "./env.js";
+import { version } from "./lib/config.js";
 
 export const openApiSpec = {
   openapi: "3.0.3",

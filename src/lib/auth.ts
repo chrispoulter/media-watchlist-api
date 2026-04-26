@@ -4,15 +4,15 @@ import { twoFactor, openAPI } from "better-auth/plugins";
 import { createElement } from "react";
 import { db } from "../db/index.js";
 import * as schema from "../db/schema.js";
-import { env } from "../env.js";
+import { config } from "./config.js";
 import { sendMail } from "./mailer.js";
 import ResetPasswordEmail from "../emails/reset-password-email.js";
 import VerificationEmail from "../emails/verification-email.js";
 
 export const auth = betterAuth({
-  baseURL: env.BETTER_AUTH_URL,
-  secret: env.BETTER_AUTH_SECRET,
-  trustedOrigins: env.CLIENT_ORIGIN.split(","),
+  baseURL: config.BETTER_AUTH_URL,
+  secret: config.BETTER_AUTH_SECRET,
+  trustedOrigins: config.CLIENT_ORIGIN.split(","),
   database: drizzleAdapter(db, {
     provider: "pg",
     schema,
@@ -51,9 +51,9 @@ export const auth = betterAuth({
   },
   socialProviders: {
     google: {
-      enabled: !!env.GOOGLE_CLIENT_ID && !!env.GOOGLE_CLIENT_SECRET,
-      clientId: env.GOOGLE_CLIENT_ID ?? "",
-      clientSecret: env.GOOGLE_CLIENT_SECRET ?? "",
+      enabled: !!config.GOOGLE_CLIENT_ID && !!config.GOOGLE_CLIENT_SECRET,
+      clientId: config.GOOGLE_CLIENT_ID ?? "",
+      clientSecret: config.GOOGLE_CLIENT_SECRET ?? "",
     },
   },
   plugins: [

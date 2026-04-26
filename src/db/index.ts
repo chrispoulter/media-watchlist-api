@@ -5,7 +5,7 @@ import { type HealthcheckResult } from "../lib/health.js";
 import { logger } from "../lib/logger.js";
 import { config } from "../lib/config.js";
 
-const client = postgres(config.DATABASE_URL, { connect_timeout: 3 });
+const client = postgres(config.DATABASE_URL);
 
 export const db = drizzle(client);
 

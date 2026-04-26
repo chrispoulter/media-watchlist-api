@@ -13,8 +13,6 @@ export const mailer = nodemailer.createTransport({
     config.SMTP_USER && config.SMTP_PASS
       ? { user: config.SMTP_USER, pass: config.SMTP_PASS }
       : undefined,
-  connectionTimeout: 3_000,
-  greetingTimeout: 3_000,
 });
 
 export const healthCheck = async (): Promise<HealthcheckResult> => {

@@ -14,7 +14,7 @@ router.get("/", async (_req, res) => {
     status: failing ? "unhealthy" : "ok",
     version,
     uptime: process.uptime(),
-    services
+    services,
   });
 });
 

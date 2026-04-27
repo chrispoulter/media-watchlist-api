@@ -7,7 +7,6 @@
     "rootDir": ".",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "rewriteRelativeImportExtensions": true,
     "jsx": "react-jsx"
   }
 }

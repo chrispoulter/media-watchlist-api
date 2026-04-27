@@ -6,6 +6,7 @@ import { db } from "../db/index.js";
 import * as schema from "../db/schema.js";
 import { config } from "./config.js";
 import { sendMail } from "./mailer.js";
+
 import ResetPasswordEmail from "../emails/reset-password-email.js";
 import VerificationEmail from "../emails/verification-email.js";
 

@@ -17,70 +17,59 @@ type ResetPasswordEmailProps = {
   username: string;
 };
 
-export default function ResetPasswordEmail({ url, username }: ResetPasswordEmailProps) {
-  return React.createElement(
-    Html,
-    { lang: "en" },
-    React.createElement(Head),
-    React.createElement(Preview, null, "Reset your Media Watchlist password"),
-    React.createElement(
-      Body,
-      { style: body },
-      React.createElement(
-        Container,
-        { style: container },
-        React.createElement(
-          Section,
-          { style: header },
-          React.createElement(Text, { style: headerText }, "Media Watchlist")
-        ),
-        React.createElement(
-          Section,
-          { style: content },
-          React.createElement(Text, { style: heading }, "Reset your password"),
-          React.createElement(Text, { style: paragraph }, "Hi ", username, ","),
-          React.createElement(
-            Text,
-            { style: paragraph },
-            "We received a request to reset the password for your account. Click the button below to choose a new password. This link expires in 1 hour."
-          ),
-          React.createElement(
-            Section,
-            { style: buttonContainer },
-            React.createElement(Button, { href: url, style: button }, "Reset password")
-          ),
-          React.createElement(
-            Text,
-            { style: paragraph },
-            "If you didn't request a password reset, you can safely ignore this email. Your password will not change."
-          ),
-          React.createElement(Hr, { style: divider }),
-          React.createElement(
-            Text,
-            { style: footer },
-            "If the button above doesn't work, copy and paste this link into your browser:"
-          ),
-          React.createElement(Link, { href: url, style: link }, url)
-        ),
-        React.createElement(
-          Section,
-          { style: footerSection },
-          React.createElement(
-            Text,
-            { style: footerText },
-            "\u00a9 Chris Poulter ",
-            new Date().getFullYear()
-          )
-        )
-      )
-    )
-  );
-}
-
 ResetPasswordEmail.PreviewProps = {
   url: "https://example.com/reset-password?token=abc123xyz",
   username: "Jane Smith",
 } satisfies ResetPasswordEmailProps;
+
+export default function ResetPasswordEmail({ url, username }: ResetPasswordEmailProps) {
+  return (
+    <Html lang="en">
+      <Head />
+      <Preview>Reset your Media Watchlist password</Preview>
+      <Body style={body}>
+        <Container style={container}>
+          <Section style={header}>
+            <Text style={headerText}>Media Watchlist</Text>
+          </Section>
+
+          <Section style={content}>
+            <Text style={heading}>Reset your password</Text>
+            <Text style={paragraph}>Hi {username},</Text>
+            <Text style={paragraph}>
+              We received a request to reset the password for your account. Click the button below
+              to choose a new password. This link expires in 1 hour.
+            </Text>
+
+            <Section style={buttonContainer}>
+              <Button href={url} style={button}>
+                Reset password
+              </Button>
+            </Section>
+
+            <Text style={paragraph}>
+              If you didn&apos;t request a password reset, you can safely ignore this email. Your
+              password will not change.
+            </Text>
+
+            <Hr style={divider} />
+
+            <Text style={footer}>
+              If the button above doesn&apos;t work, copy and paste this link into your browser:
+            </Text>
+            <Link href={url} style={link}>
+              {url}
+            </Link>
+          </Section>
+
+          <Section style={footerSection}>
+            <Text style={footerText}>&copy; Chris Poulter {new Date().getFullYear()}</Text>
+          </Section>
+        </Container>
+      </Body>
+    </Html>
+  );
+}
 
 const body: React.CSSProperties = {
   backgroundColor: "#f6f9fc",

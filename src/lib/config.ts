@@ -7,7 +7,7 @@ declare const __APP_VERSION__: string | undefined;
 const require = createRequire(import.meta.url);
 
 export const version =
-  typeof __APP_VERSION__ !== "undefined" ? __APP_VERSION__ : require("../../../package.json").version;
+  typeof __APP_VERSION__ !== "undefined" ? __APP_VERSION__ : require("../../package.json").version;
 
 const configSchema = z.object({
   PORT: z.coerce.number().default(3000),

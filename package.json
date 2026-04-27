@@ -1,10 +1,7 @@
 {
   "name": "media-watchlist-api",
   "version": "1.0.0",
-  "description": "REST API for managing a personal media watchlist",
   "type": "module",
-  "main": "dist/server.js",
-  "author": "Chris Poulter",
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsup",

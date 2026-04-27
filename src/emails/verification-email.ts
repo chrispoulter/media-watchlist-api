@@ -1,3 +1,5 @@
+//HACK: non jsx version of email template to allow for vercel deployment
+
 import * as React from "react";
 import {
   Html,
@@ -17,58 +19,70 @@ type VerificationEmailProps = {
   username: string;
 };
 
+export default function VerificationEmail({ url, username }: VerificationEmailProps) {
+  return React.createElement(
+    Html,
+    { lang: "en" },
+    React.createElement(Head),
+    React.createElement(Preview, null, "Verify your Media Watchlist email address"),
+    React.createElement(
+      Body,
+      { style: body },
+      React.createElement(
+        Container,
+        { style: container },
+        React.createElement(
+          Section,
+          { style: header },
+          React.createElement(Text, { style: headerText }, "Media Watchlist")
+        ),
+        React.createElement(
+          Section,
+          { style: content },
+          React.createElement(Text, { style: heading }, "Verify your email address"),
+          React.createElement(Text, { style: paragraph }, "Hi ", username, ","),
+          React.createElement(
+            Text,
+            { style: paragraph },
+            "Please verify your email address by clicking the button below to confirm this is you. This link expires in 24 hours."
+          ),
+          React.createElement(
+            Section,
+            { style: buttonContainer },
+            React.createElement(Button, { href: url, style: button }, "Verify email address")
+          ),
+          React.createElement(
+            Text,
+            { style: paragraph },
+            "If you didn't request this, you can safely ignore this email."
+          ),
+          React.createElement(Hr, { style: divider }),
+          React.createElement(
+            Text,
+            { style: footer },
+            "If the button above doesn't work, copy and paste this link into your browser:"
+          ),
+          React.createElement(Link, { href: url, style: link }, url)
+        ),
+        React.createElement(
+          Section,
+          { style: footerSection },
+          React.createElement(
+            Text,
+            { style: footerText },
+            "\u00a9 Chris Poulter ",
+            new Date().getFullYear()
+          )
+        )
+      )
+    )
+  );
+}
+
 VerificationEmail.PreviewProps = {
   url: "https://example.com/verify-email?token=abc123xyz",
   username: "John Smith",
 } satisfies VerificationEmailProps;
-
-export default function VerificationEmail({ url, username }: VerificationEmailProps) {
-  return (
-    <Html lang="en">
-      <Head />
-      <Preview>Verify your Media Watchlist email address</Preview>
-      <Body style={body}>
-        <Container style={container}>
-          <Section style={header}>
-            <Text style={headerText}>Media Watchlist</Text>
-          </Section>
-
-          <Section style={content}>
-            <Text style={heading}>Verify your email address</Text>
-            <Text style={paragraph}>Hi {username},</Text>
-            <Text style={paragraph}>
-              Please verify your email address by clicking the button below to confirm this is you.
-              This link expires in 24 hours.
-            </Text>
-
-            <Section style={buttonContainer}>
-              <Button href={url} style={button}>
-                Verify email address
-              </Button>
-            </Section>
-
-            <Text style={paragraph}>
-              If you didn&apos;t request this, you can safely ignore this email.
-            </Text>
-
-            <Hr style={divider} />
-
-            <Text style={footer}>
-              If the button above doesn&apos;t work, copy and paste this link into your browser:
-            </Text>
-            <Link href={url} style={link}>
-              {url}
-            </Link>
-          </Section>
-
-          <Section style={footerSection}>
-            <Text style={footerText}>&copy; Chris Poulter {new Date().getFullYear()}</Text>
-          </Section>
-        </Container>
-      </Body>
-    </Html>
-  );
-}
 
 const body: React.CSSProperties = {
   backgroundColor: "#f6f9fc",

@@ -6,8 +6,9 @@ import { db } from "../db/index.js";
 import * as schema from "../db/schema.js";
 import { config } from "./config.js";
 import { sendMail } from "./mailer.js";
-import ResetPasswordEmail from "../emails/reset-password-email-component.js";
-import VerificationEmail from "../emails/verification-email-component.js";
+
+import ResetPasswordEmail from "../emails/reset-password-email.tsx";
+import VerificationEmail from "../emails/verification-email.tsx";
 
 export const auth = betterAuth({
   baseURL: config.BETTER_AUTH_URL,

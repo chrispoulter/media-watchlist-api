@@ -1,10 +1,11 @@
 import "dotenv/config";
 import { z } from "zod";
-import { createRequire } from "module";
+import { createRequire } from "node:module";
+import { join } from "node:path";
 
-const require = createRequire(import.meta.url);
+const require = createRequire(join(process.cwd(), "package.json"));
 
-export const version = require("../../package.json").version;
+export const version = require("./package.json").version;
 
 const configSchema = z.object({
   PORT: z.coerce.number().default(3000),

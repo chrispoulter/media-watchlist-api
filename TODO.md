@@ -1,6 +1,6 @@
 # TODO
 
-- vercel deployment config
+-
 
 ## Bugfixes
 

@@ -1,73 +1,73 @@
 services:
-  media-watchlist-api:
-    image: media-watchlist-api:latest
-    build:
-      context: .
-    environment:
-      PORT: 3000
-      DATABASE_URL: postgresql://postgres:password@postgres:5432/media-watchlist
-      BETTER_AUTH_URL: http://localhost:3000
-      BETTER_AUTH_SECRET: change-me-to-a-secret-that-is-at-least-32-chars
-      CLIENT_ORIGIN: http://localhost:3000,http://localhost:5173
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
-      TMDB_API_READ_TOKEN: ${TMDB_API_READ_TOKEN:-your-tmdb-api-read-token}
-      SMTP_HOST: mailpit
-      SMTP_PORT: 1025
-      SMTP_FROM: noreply@example.com
-      LOG_LEVEL: info
-    ports:
-      - 3000:3000
-    depends_on:
-      postgres:
-        condition: service_healthy
-      mailpit:
-        condition: service_started
-      media-watchlist-migrate:
-        condition: service_completed_successfully
+    media-watchlist-api:
+        image: media-watchlist-api:latest
+        build:
+            context: .
+        environment:
+            PORT: 3000
+            DATABASE_URL: postgresql://postgres:password@postgres:5432/media-watchlist
+            BETTER_AUTH_URL: http://localhost:3000
+            BETTER_AUTH_SECRET: change-me-to-a-secret-that-is-at-least-32-chars
+            CLIENT_ORIGIN: http://localhost:3000,http://localhost:5173
+            GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+            GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+            TMDB_API_READ_TOKEN: ${TMDB_API_READ_TOKEN:-your-tmdb-api-read-token}
+            SMTP_HOST: mailpit
+            SMTP_PORT: 1025
+            SMTP_FROM: noreply@example.com
+            LOG_LEVEL: info
+        ports:
+            - 3000:3000
+        depends_on:
+            postgres:
+                condition: service_healthy
+            mailpit:
+                condition: service_started
+            media-watchlist-migrate:
+                condition: service_completed_successfully
 
-  media-watchlist-migrate:
-    image: media-watchlist-api:migrator
-    build:
-      context: .
-      target: migrator
-    environment:
-      DATABASE_URL: postgresql://postgres:password@postgres:5432/media-watchlist
-    depends_on:
-      postgres:
-        condition: service_healthy
-    restart: no
+    media-watchlist-migrate:
+        image: media-watchlist-api:migrator
+        build:
+            context: .
+            target: migrator
+        environment:
+            DATABASE_URL: postgresql://postgres:password@postgres:5432/media-watchlist
+        depends_on:
+            postgres:
+                condition: service_healthy
+        restart: no
 
-  postgres:
-    image: postgres:17.6
-    user: postgres
-    environment:
-      POSTGRES_DB: media-watchlist
-      POSTGRES_PASSWORD: password
-    ports:
-      - 5432:5432
-    volumes:
-      - postgres:/var/lib/postgresql/data
-    restart: always
-    healthcheck:
-      test: ["CMD", "pg_isready"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
+    postgres:
+        image: postgres:17.6
+        user: postgres
+        environment:
+            POSTGRES_DB: media-watchlist
+            POSTGRES_PASSWORD: password
+        ports:
+            - 5432:5432
+        volumes:
+            - postgres:/var/lib/postgresql/data
+        restart: always
+        healthcheck:
+            test: ['CMD', 'pg_isready']
+            interval: 10s
+            timeout: 5s
+            retries: 3
 
-  mailpit:
-    image: axllent/mailpit:v1.22.3
-    environment:
-      MP_DATABASE: /data/mailpit.db
-    ports:
-      - 1025:1025
-      - 8025:8025
-    volumes:
-      - mailpit:/data
-    restart: always
+    mailpit:
+        image: axllent/mailpit:v1.22.3
+        environment:
+            MP_DATABASE: /data/mailpit.db
+        ports:
+            - 1025:1025
+            - 8025:8025
+        volumes:
+            - mailpit:/data
+        restart: always
 
 volumes:
-  postgres:
-    name: media-watchlist-postgres
-  mailpit:
-    name: media-watchlist-mailpit
+    postgres:
+        name: media-watchlist-postgres
+    mailpit:
+        name: media-watchlist-mailpit

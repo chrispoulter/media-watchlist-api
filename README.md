@@ -129,12 +129,12 @@ All auth routes are handled by Better Auth. Requests requiring authentication us
 
 ```json
 {
-  "providerId": "tmdb:550",
-  "mediaType": "movie",
-  "title": "Fight Club",
-  "posterUrl": "https://image.tmdb.org/t/p/w300/jSziioSwPVrOy9Yow3XhWIBDjq1.jpg",
-  "overview": "...",
-  "releaseDate": "1999-10-15"
+    "providerId": "tmdb:550",
+    "mediaType": "movie",
+    "title": "Fight Club",
+    "posterUrl": "https://image.tmdb.org/t/p/w300/jSziioSwPVrOy9Yow3XhWIBDjq1.jpg",
+    "overview": "...",
+    "releaseDate": "1999-10-15"
 }
 ```
 

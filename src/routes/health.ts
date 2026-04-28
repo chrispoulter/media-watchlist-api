@@ -1,21 +1,25 @@
-import { Router } from "express";
-import { version } from "../lib/config.js";
-import { healthCheck as checkDatabase } from "../db/index.js";
-import { healthCheck as checkTmdb } from "../lib/tmdb.js";
-import { healthCheck as checkMailer } from "../lib/mailer.js";
+import { Router } from 'express'
+import { version } from '../lib/config.js'
+import { healthCheck as checkDatabase } from '../db/index.js'
+import { healthCheck as checkTmdb } from '../lib/tmdb.js'
+import { healthCheck as checkMailer } from '../lib/mailer.js'
 
-const router = Router();
+const router = Router()
 
-router.get("/", async (_req, res) => {
-  const services = await Promise.all([checkDatabase(), checkTmdb(), checkMailer()]);
-  const failing = services.some((s) => s?.success !== true);
+router.get('/', async (_req, res) => {
+    const services = await Promise.all([
+        checkDatabase(),
+        checkTmdb(),
+        checkMailer(),
+    ])
+    const failing = services.some((s) => s?.success !== true)
 
-  res.status(failing ? 503 : 200).json({
-    status: failing ? "unhealthy" : "ok",
-    version,
-    uptime: process.uptime(),
-    services,
-  });
-});
+    res.status(failing ? 503 : 200).json({
+        status: failing ? 'unhealthy' : 'ok',
+        version,
+        uptime: process.uptime(),
+        services,
+    })
+})
 
-export default router;
+export default router

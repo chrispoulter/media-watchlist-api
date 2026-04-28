@@ -1,4 +1,4 @@
-//HACK: non jsx version of email template to allow for vercel deployment
+// HACK: non jsx version of email template to allow for vercel deployment
 
 import * as React from "react";
 import {

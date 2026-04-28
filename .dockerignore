@@ -36,7 +36,7 @@ Thumbs.db
 
 # Linting / formatting
 .eslintcache
-eslint.config.mjs
+eslint.config.ts
 .prettierrc
 
 # Deployment config

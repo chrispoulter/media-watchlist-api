@@ -1,4 +1,4 @@
 export interface HealthcheckResult {
-    service: string
-    success: boolean
+    service: string;
+    success: boolean;
 }

@@ -1,6 +1,6 @@
 // HACK: non jsx version of email template to allow for vercel deployment
 
-import * as React from 'react'
+import * as React from 'react';
 import {
     Html,
     Head,
@@ -12,12 +12,12 @@ import {
     Hr,
     Link,
     Preview,
-} from '@react-email/components'
+} from '@react-email/components';
 
 type VerificationEmailProps = {
-    url: string
-    username: string
-}
+    url: string;
+    username: string;
+};
 
 export default function VerificationEmail({
     url,
@@ -101,19 +101,19 @@ export default function VerificationEmail({
                 )
             )
         )
-    )
+    );
 }
 
 VerificationEmail.PreviewProps = {
     url: 'https://example.com/verify-email?token=abc123xyz',
     username: 'John Smith',
-} satisfies VerificationEmailProps
+} satisfies VerificationEmailProps;
 
 const body: React.CSSProperties = {
     backgroundColor: '#f6f9fc',
     fontFamily:
         '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-}
+};
 
 const container: React.CSSProperties = {
     maxWidth: '560px',
@@ -122,42 +122,42 @@ const container: React.CSSProperties = {
     borderRadius: '8px',
     border: '1px solid #e8eaed',
     overflow: 'hidden',
-}
+};
 
 const header: React.CSSProperties = {
     backgroundColor: '#0f172a',
     padding: '24px 40px',
-}
+};
 
 const headerText: React.CSSProperties = {
     color: '#ffffff',
     fontSize: '18px',
     fontWeight: '600',
     margin: '0',
-}
+};
 
 const content: React.CSSProperties = {
     padding: '40px 40px 24px',
-}
+};
 
 const heading: React.CSSProperties = {
     fontSize: '22px',
     fontWeight: '700',
     color: '#0f172a',
     marginBottom: '16px',
-}
+};
 
 const paragraph: React.CSSProperties = {
     fontSize: '15px',
     lineHeight: '1.6',
     color: '#374151',
     margin: '0 0 16px',
-}
+};
 
 const buttonContainer: React.CSSProperties = {
     textAlign: 'center',
     margin: '32px 0',
-}
+};
 
 const button: React.CSSProperties = {
     display: 'inline-block',
@@ -168,34 +168,34 @@ const button: React.CSSProperties = {
     padding: '14px 32px',
     borderRadius: '6px',
     textDecoration: 'none',
-}
+};
 
 const divider: React.CSSProperties = {
     borderColor: '#e8eaed',
     margin: '24px 0',
-}
+};
 
 const footer: React.CSSProperties = {
     fontSize: '13px',
     color: '#6b7280',
     margin: '0 0 8px',
-}
+};
 
 const link: React.CSSProperties = {
     fontSize: '13px',
     color: '#2563eb',
     wordBreak: 'break-all',
-}
+};
 
 const footerSection: React.CSSProperties = {
     backgroundColor: '#f6f9fc',
     padding: '16px 40px',
     borderTop: '1px solid #e8eaed',
-}
+};
 
 const footerText: React.CSSProperties = {
     fontSize: '12px',
     color: '#9ca3af',
     textAlign: 'center',
     margin: '0',
-}
+};

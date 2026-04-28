@@ -1,10 +1,10 @@
-import pino from 'pino'
+import pino from 'pino';
 
-const isDev = process.env['NODE_ENV'] !== 'production'
+const isDev = process.env['NODE_ENV'] !== 'production';
 
 const destination = isDev
     ? undefined
-    : pino.destination({ dest: 1, sync: true })
+    : pino.destination({ dest: 1, sync: true });
 
 export const logger = pino(
     {
@@ -34,4 +34,4 @@ export const logger = pino(
         }),
     },
     destination
-)
+);

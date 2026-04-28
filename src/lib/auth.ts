@@ -1,14 +1,14 @@
-import { betterAuth } from 'better-auth'
-import { drizzleAdapter } from 'better-auth/adapters/drizzle'
-import { twoFactor, openAPI } from 'better-auth/plugins'
-import { createElement } from 'react'
-import { db } from '../db/index.js'
-import * as schema from '../db/schema.js'
-import { config } from './config.js'
-import { sendMail } from './mailer.js'
+import { betterAuth } from 'better-auth';
+import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { twoFactor, openAPI } from 'better-auth/plugins';
+import { createElement } from 'react';
+import { db } from '../db/index.js';
+import * as schema from '../db/schema.js';
+import { config } from './config.js';
+import { sendMail } from './mailer.js';
 
-import ResetPasswordEmail from '../emails/reset-password-email.js'
-import VerificationEmail from '../emails/verification-email.js'
+import ResetPasswordEmail from '../emails/reset-password-email.js';
+import VerificationEmail from '../emails/verification-email.js';
 
 export const auth = betterAuth({
     baseURL: config.BETTER_AUTH_URL,
@@ -41,7 +41,7 @@ export const auth = betterAuth({
                     username: user.name,
                     url,
                 }),
-            })
+            });
         },
     },
     emailVerification: {
@@ -53,7 +53,7 @@ export const auth = betterAuth({
                     username: user.name,
                     url,
                 }),
-            })
+            });
         },
     },
     socialProviders: {
@@ -77,7 +77,7 @@ export const auth = betterAuth({
             secure: true,
         },
     },
-})
+});
 
-export type Session = typeof auth.$Infer.Session.session
-export type User = typeof auth.$Infer.Session.user
+export type Session = typeof auth.$Infer.Session.session;
+export type User = typeof auth.$Infer.Session.user;

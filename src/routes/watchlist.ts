@@ -1,21 +1,21 @@
-import { Router } from 'express'
-import { and, eq } from 'drizzle-orm'
-import { z } from 'zod'
-import { db } from '../db/index.js'
-import { watchlistItem } from '../db/schema.js'
-import { requireAuth } from '../middleware/require-auth.js'
+import { Router } from 'express';
+import { and, eq } from 'drizzle-orm';
+import { z } from 'zod';
+import { db } from '../db/index.js';
+import { watchlistItem } from '../db/schema.js';
+import { requireAuth } from '../middleware/require-auth.js';
 
-const WATCHLIST_ITEM_LIMIT = 100
+const WATCHLIST_ITEM_LIMIT = 100;
 
-const router = Router()
+const router = Router();
 
-router.use(requireAuth)
+router.use(requireAuth);
 
 router.get('/', async (req, res) => {
     const data = await db
         .select()
         .from(watchlistItem)
-        .where(eq(watchlistItem.userId, req.user!.id))
+        .where(eq(watchlistItem.userId, req.user!.id));
 
     res.json(
         data.map((item) => ({
@@ -28,8 +28,8 @@ router.get('/', async (req, res) => {
             releaseDate: item.releaseDate ?? undefined,
             addedAt: item.addedAt,
         }))
-    )
-})
+    );
+});
 
 const addWatchlistItemSchema = z.object({
     providerId: z.string().min(1),
@@ -38,42 +38,42 @@ const addWatchlistItemSchema = z.object({
     posterUrl: z.string().optional(),
     overview: z.string().optional(),
     releaseDate: z.string().optional(),
-})
+});
 
 router.post('/', async (req, res) => {
-    const result = addWatchlistItemSchema.safeParse(req.body)
+    const result = addWatchlistItemSchema.safeParse(req.body);
 
     if (!result.success) {
         res.status(400).json({
             error: 'Invalid request body',
             details: result.error.issues,
-        })
-        return
+        });
+        return;
     }
 
-    const userId = req.user!.id
+    const userId = req.user!.id;
 
     const count = await db.$count(
         watchlistItem,
         eq(watchlistItem.userId, userId)
-    )
+    );
 
     if (count >= WATCHLIST_ITEM_LIMIT) {
         res.status(429).json({
             error: `Watchlist limit of ${WATCHLIST_ITEM_LIMIT} items reached`,
-        })
-        return
+        });
+        return;
     }
 
     try {
         const [created] = await db
             .insert(watchlistItem)
             .values({ ...result.data, userId })
-            .returning()
+            .returning();
 
         if (!created) {
-            res.status(500).json({ error: 'Failed to add item to watchlist' })
-            return
+            res.status(500).json({ error: 'Failed to add item to watchlist' });
+            return;
         }
 
         res.status(201).json({
@@ -85,7 +85,7 @@ router.post('/', async (req, res) => {
             overview: created.overview ?? undefined,
             releaseDate: created.releaseDate ?? undefined,
             addedAt: created.addedAt,
-        })
+        });
 
         req.log.info(
             {
@@ -95,9 +95,9 @@ router.post('/', async (req, res) => {
                 title: created.title,
             },
             'Watchlist item added'
-        )
+        );
     } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : ''
+        const message = err instanceof Error ? err.message : '';
 
         if (message.includes('watchlist_user_provider_idx')) {
             req.log.warn(
@@ -106,47 +106,47 @@ router.post('/', async (req, res) => {
                     mediaType: result.data.mediaType,
                 },
                 'Duplicate watchlist item'
-            )
-            res.status(409).json({ error: 'Item already exists in watchlist' })
-            return
+            );
+            res.status(409).json({ error: 'Item already exists in watchlist' });
+            return;
         }
 
-        throw err
+        throw err;
     }
-})
+});
 
 const deleteWatchlistItemSchema = z.object({
     id: z.coerce.number().int().positive(),
-})
+});
 
 router.delete('/:id', async (req, res) => {
-    const result = deleteWatchlistItemSchema.safeParse(req.params)
+    const result = deleteWatchlistItemSchema.safeParse(req.params);
 
     if (!result.success) {
         res.status(400).json({
             error: 'Invalid request parameters',
             details: result.error.issues,
-        })
-        return
+        });
+        return;
     }
 
-    const { id } = result.data
-    const userId = req.user!.id
+    const { id } = result.data;
+    const userId = req.user!.id;
 
     const [deleted] = await db
         .delete(watchlistItem)
         .where(and(eq(watchlistItem.id, id), eq(watchlistItem.userId, userId)))
-        .returning()
+        .returning();
 
     if (!deleted) {
-        req.log.warn({ itemId: id }, 'Watchlist item not found')
-        res.status(404).json({ error: 'Item not found in watchlist' })
-        return
+        req.log.warn({ itemId: id }, 'Watchlist item not found');
+        res.status(404).json({ error: 'Item not found in watchlist' });
+        return;
     }
 
-    req.log.info({ itemId: deleted.id }, 'Watchlist item removed')
+    req.log.info({ itemId: deleted.id }, 'Watchlist item removed');
 
-    res.status(204).send()
-})
+    res.status(204).send();
+});
 
-export default router
+export default router;

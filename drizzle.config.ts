@@ -1,5 +1,5 @@
-import { defineConfig } from 'drizzle-kit'
-import { config } from './src/lib/config.js'
+import { defineConfig } from 'drizzle-kit';
+import { config } from './src/lib/config.js';
 
 export default defineConfig({
     out: './drizzle',
@@ -8,4 +8,4 @@ export default defineConfig({
     dbCredentials: {
         url: config.DATABASE_URL,
     },
-})
+});

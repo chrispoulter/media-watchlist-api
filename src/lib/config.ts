@@ -1,11 +1,11 @@
-import 'dotenv/config'
-import { z } from 'zod'
-import { createRequire } from 'node:module'
-import { join } from 'node:path'
+import 'dotenv/config';
+import { z } from 'zod';
+import { createRequire } from 'node:module';
+import { join } from 'node:path';
 
-const require = createRequire(join(process.cwd(), 'package.json'))
+const require = createRequire(join(process.cwd(), 'package.json'));
 
-export const version = require('./package.json').version
+export const version = require('./package.json').version;
 
 const configSchema = z.object({
     PORT: z.coerce.number().default(3000),
@@ -25,6 +25,6 @@ const configSchema = z.object({
     LOG_LEVEL: z
         .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace'])
         .default('info'),
-})
+});
 
-export const config = configSchema.parse(process.env)
+export const config = configSchema.parse(process.env);

@@ -1,33 +1,33 @@
-import { Router } from 'express'
-import { and, eq, inArray } from 'drizzle-orm'
-import { z } from 'zod'
-import { db } from '../db/index.js'
-import { watchlistItem } from '../db/schema.js'
-import { requireAuth } from '../middleware/require-auth.js'
-import { search } from '../lib/tmdb.js'
+import { Router } from 'express';
+import { and, eq, inArray } from 'drizzle-orm';
+import { z } from 'zod';
+import { db } from '../db/index.js';
+import { watchlistItem } from '../db/schema.js';
+import { requireAuth } from '../middleware/require-auth.js';
+import { search } from '../lib/tmdb.js';
 
-const router = Router()
+const router = Router();
 
-router.use(requireAuth)
+router.use(requireAuth);
 
 const searchSchema = z.object({
     query: z.string().min(1),
-})
+});
 
 router.get('/', async (req, res) => {
-    const result = searchSchema.safeParse(req.query)
+    const result = searchSchema.safeParse(req.query);
 
     if (!result.success) {
         res.status(400).json({
             error: 'Invalid request body',
             details: result.error.issues,
-        })
-        return
+        });
+        return;
     }
 
-    const data = await search(result.data.query)
+    const data = await search(result.data.query);
 
-    const providerIds = data.map((item) => item.providerId)
+    const providerIds = data.map((item) => item.providerId);
 
     const watchlistItems = await db
         .select()
@@ -37,11 +37,11 @@ router.get('/', async (req, res) => {
                 eq(watchlistItem.userId, req.user!.id),
                 inArray(watchlistItem.providerId, providerIds)
             )
-        )
+        );
 
     const watchlistMap = new Map(
         watchlistItems.map((w) => [`${w.providerId}-${w.mediaType}`, w.id])
-    )
+    );
 
     res.json(
         data.map((item) => ({
@@ -55,7 +55,7 @@ router.get('/', async (req, res) => {
                 watchlistMap.get(`${item.providerId}-${item.mediaType}`) ??
                 undefined,
         }))
-    )
-})
+    );
+});
 
-export default router
+export default router;

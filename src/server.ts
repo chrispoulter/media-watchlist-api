@@ -1,7 +1,7 @@
-import app from './index.js'
-import { config } from './lib/config.js'
-import { logger } from './lib/logger.js'
+import app from './index.js';
+import { config } from './lib/config.js';
+import { logger } from './lib/logger.js';
 
 app.listen(config.PORT, () => {
-    logger.info({ port: config.PORT }, 'Server started')
-})
+    logger.info({ port: config.PORT }, 'Server started');
+});

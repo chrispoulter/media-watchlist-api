@@ -1,4 +1,4 @@
-import { version } from './lib/config.js'
+import { version } from './lib/config.js';
 
 export const openApiSpec = {
     openapi: '3.0.3',
@@ -303,4 +303,4 @@ export const openApiSpec = {
             },
         },
     },
-}
+};

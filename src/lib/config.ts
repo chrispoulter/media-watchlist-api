@@ -25,6 +25,7 @@ const configSchema = z.object({
     LOG_LEVEL: z
         .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace'])
         .default('info'),
+    SENTRY_DSN: z.url().optional(),
 });
 
 export const config = configSchema.parse(process.env);

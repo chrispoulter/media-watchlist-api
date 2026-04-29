@@ -1,4 +1,4 @@
-import './lib/instrument.js';
+import './lib/sentry.js';
 import app from './index.js';
 import { config } from './lib/config.js';
 import { logger } from './lib/logger.js';

@@ -1,4 +1,4 @@
-import './lib/instrument.js';
+import './lib/sentry.js';
 import express from 'express';
 import cors from 'cors';
 import { toNodeHandler } from 'better-auth/node';

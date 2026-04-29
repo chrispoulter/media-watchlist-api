@@ -1,4 +1,4 @@
-import './instrument.js';
+import './lib/instrument.js';
 import app from './index.js';
 import { config } from './lib/config.js';
 import { logger } from './lib/logger.js';

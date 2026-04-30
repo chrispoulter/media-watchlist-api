@@ -152,7 +152,8 @@ export const openApiSpec = {
                                     },
                                     required: [
                                         'status',
-                                        'version',
+                                        'release',
+                                        'environment',
                                         'uptime',
                                         'services',
                                     ],

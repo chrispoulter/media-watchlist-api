@@ -20,8 +20,8 @@ export const requireAuth = async (
 
     req.user = sessionData.user;
     req.session = sessionData.session;
-    req.log = req.log.child({ userId: sessionData.user.id });
 
+    req.log = req.log.child({ userId: sessionData.user.id });
     Sentry.setUser({ id: sessionData.user.id, email: sessionData.user.email });
 
     next();

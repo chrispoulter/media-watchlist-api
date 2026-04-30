@@ -1,10 +1,13 @@
 import pino from 'pino';
+import pretty from 'pino-pretty';
 
 const isDev = process.env['NODE_ENV'] !== 'production';
 
-const destination = isDev
-    ? undefined
-    : pino.destination({ dest: 1, sync: true });
+const stream = pretty({
+    colorize: isDev,
+    translateTime: 'SYS:standard',
+    sync: true,
+});
 
 export const logger = pino(
     {
@@ -26,12 +29,6 @@ export const logger = pino(
             ],
             censor: '[REDACTED]',
         },
-        ...(isDev && {
-            transport: {
-                target: 'pino-pretty',
-                options: { colorize: true, translateTime: 'SYS:standard' },
-            },
-        }),
     },
-    destination
+    stream
 );

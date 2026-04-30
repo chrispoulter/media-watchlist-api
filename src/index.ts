@@ -45,6 +45,11 @@ app.get('/api/debug-sentry', function () {
     throw new Error('My first Sentry error!');
 });
 
+app.use('/api', (req, res) => {
+    req.log.warn({ method: req.method, path: req.path }, 'Route not found');
+    res.status(404).json({ error: 'Not Found' });
+});
+
 app.get('/openapi.json', async (_req, res) => {
     const authSchema = await auth.api.generateOpenAPISchema();
 
@@ -75,11 +80,6 @@ app.use(
         pageTitle: 'Media Watchlist API',
     })
 );
-
-app.use((req, res) => {
-    req.log.warn({ method: req.method, path: req.path }, 'Route not found');
-    res.status(404).json({ error: 'Not Found' });
-});
 
 Sentry.setupExpressErrorHandler(app);
 

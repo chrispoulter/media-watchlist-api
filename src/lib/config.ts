@@ -5,10 +5,11 @@ import { join } from 'node:path';
 
 const require = createRequire(join(process.cwd(), 'package.json'));
 
+const gitCommitSha =
+    process.env.VERCEL_GIT_COMMIT_SHA ?? process.env.GIT_COMMIT_SHA;
+
 export const release =
-    process.env.VERCEL_GIT_COMMIT_SHA ??
-    process.env.GIT_COMMIT_SHA ??
-    require('./package.json').version;
+    gitCommitSha?.slice(0, 7) ?? require('./package.json').version;
 
 export const environment =
     process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? 'development';

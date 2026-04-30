@@ -41,10 +41,6 @@ app.use('/api', apiRouter);
 
 app.all('/api/auth/*splat', toNodeHandler(auth));
 
-app.get('/api/debug-sentry', function () {
-    throw new Error('My first Sentry error!');
-});
-
 app.use('/api', (req, res) => {
     req.log.warn({ method: req.method, path: req.path }, 'Route not found');
     res.status(404).json({ error: 'Not Found' });

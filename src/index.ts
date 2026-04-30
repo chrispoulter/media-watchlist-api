@@ -19,6 +19,13 @@ const app = express();
 
 app.use(requestLogger);
 
+app.use((_req, res, next) => {
+    res.on('finish', () => {
+        Sentry.flush(2000);
+    });
+    next();
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

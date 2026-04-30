@@ -4,9 +4,7 @@ import { logger } from '../lib/logger.js';
 
 export const requestLogger = pinoHttp({
     logger,
-    genReqId: (req) =>
-        (req.headers['x-vercel-id'] as string | undefined) ??
-        crypto.randomUUID(),
+    genReqId: (req) => req.headers['x-vercel-id'] ?? crypto.randomUUID(),
     customProps: (req: Request) => ({
         userId: req.user?.id,
     }),

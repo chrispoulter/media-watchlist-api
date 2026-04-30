@@ -20,9 +20,12 @@ const app = express();
 app.use(requestLogger);
 
 app.use((_req, res, next) => {
-    res.on('finish', () => {
-        Sentry.flush(2000);
-    });
+    if (config.SENTRY_DSN) {
+        res.on('finish', () => {
+            Sentry.flush(2000);
+        });
+    }
+
     next();
 });
 

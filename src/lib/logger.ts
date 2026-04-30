@@ -1,7 +1,7 @@
 import pino from 'pino';
 import { config, environment, release } from './config.js';
 
-const isDev = process.env['NODE_ENV'] !== 'production';
+const isDev = environment !== 'production';
 
 const destination = isDev
     ? undefined

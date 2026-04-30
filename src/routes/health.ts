@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { version } from '../lib/config.js';
+import { release, environment } from '../lib/config.js';
 import { healthCheck as checkDatabase } from '../db/index.js';
 import { healthCheck as checkTmdb } from '../lib/tmdb.js';
 import { healthCheck as checkMailer } from '../lib/mailer.js';
@@ -16,7 +16,8 @@ router.get('/', async (_req, res) => {
 
     res.status(failing ? 503 : 200).json({
         status: failing ? 'unhealthy' : 'ok',
-        version,
+        release,
+        environment,
         uptime: process.uptime(),
         services,
     });

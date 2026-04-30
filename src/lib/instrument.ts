@@ -16,6 +16,7 @@ if (config.SENTRY_DSN) {
         dsn: config.SENTRY_DSN,
         release,
         environment,
+        sendDefaultPii: true,
         integrations: [Sentry.expressIntegration()],
         tracesSampleRate: 1.0,
     });

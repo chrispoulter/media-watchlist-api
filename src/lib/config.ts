@@ -8,7 +8,7 @@ const require = createRequire(join(process.cwd(), 'package.json'));
 const gitCommitSha =
     process.env.VERCEL_GIT_COMMIT_SHA ?? process.env.GIT_COMMIT_SHA;
 
-export const release =
+export const version =
     gitCommitSha?.slice(0, 7) ?? require('./package.json').version;
 
 export const environment =

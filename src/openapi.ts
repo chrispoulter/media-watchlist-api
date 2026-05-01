@@ -1,10 +1,10 @@
-import { release } from './lib/config.js';
+import { version } from './lib/config.js';
 
 export const openApiSpec = {
     openapi: '3.0.3',
     info: {
         title: 'Media Watchlist API',
-        version: release,
+        version,
         description: 'REST API for managing a personal media watchlist.',
     },
     servers: [{ url: '/' }],
@@ -87,10 +87,10 @@ export const openApiSpec = {
                                             type: 'string',
                                             enum: ['ok'],
                                         },
-                                        release: {
+                                        version: {
                                             type: 'string',
                                             description:
-                                                'Application release version',
+                                                'Application version',
                                             example: '1.0.0',
                                         },
                                         environment: {
@@ -113,7 +113,7 @@ export const openApiSpec = {
                                     },
                                     required: [
                                         'status',
-                                        'release',
+                                        'version',
                                         'environment',
                                         'uptime',
                                         'services',
@@ -133,10 +133,10 @@ export const openApiSpec = {
                                             type: 'string',
                                             enum: ['unhealthy'],
                                         },
-                                        release: {
+                                        version: {
                                             type: 'string',
                                             description:
-                                                'Application release version',
+                                                'Application version',
                                             example: '1.0.0',
                                         },
                                         environment: {
@@ -159,7 +159,7 @@ export const openApiSpec = {
                                     },
                                     required: [
                                         'status',
-                                        'release',
+                                        'version',
                                         'environment',
                                         'uptime',
                                         'services',

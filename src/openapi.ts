@@ -133,10 +133,17 @@ export const openApiSpec = {
                                             type: 'string',
                                             enum: ['unhealthy'],
                                         },
-                                        version: {
+                                        release: {
                                             type: 'string',
-                                            description: 'Application version',
+                                            description:
+                                                'Application release version',
                                             example: '1.0.0',
+                                        },
+                                        environment: {
+                                            type: 'string',
+                                            description:
+                                                'Application environment',
+                                            example: 'production',
                                         },
                                         uptime: {
                                             type: 'number',

@@ -5,9 +5,6 @@ import { logger } from '../lib/logger.js';
 export const requestLogger = pinoHttp({
     logger,
     genReqId: (req) => req.headers['x-vercel-id'] ?? crypto.randomUUID(),
-    customProps: (req: Request) => ({
-        userId: req.user?.id,
-    }),
     customLogLevel: (_req, res, err) => {
         if (err || res.statusCode >= 500) {
             return 'error';
@@ -19,6 +16,9 @@ export const requestLogger = pinoHttp({
 
         return 'info';
     },
+    customProps: (req: Request) => ({
+        userId: req.user?.id,
+    }),
     autoLogging: {
         ignore: (req) => req.url === '/api/health',
     },

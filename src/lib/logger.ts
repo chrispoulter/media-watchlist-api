@@ -11,7 +11,7 @@ export const logger = pino(
     {
         level: config.LOG_LEVEL,
         timestamp: pino.stdTimeFunctions.isoTime,
-        base: { service: 'media-watchlist-api', environment, release },
+        base: { environment, release },
         redact: {
             paths: [
                 'req.headers.authorization',

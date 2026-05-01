@@ -5,7 +5,7 @@ import { logger } from './lib/logger.js';
 
 app.listen(config.PORT, () => {
     logger.info(
-        { port: config.PORT, url: `http://localhost:${config.PORT}` },
+        { port: config.PORT, local: `http://localhost:${config.PORT}` },
         'Server started'
     );
 });

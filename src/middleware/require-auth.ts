@@ -19,6 +19,8 @@ export const requireAuth = async (
 
     req.user = sessionData.user;
     req.session = sessionData.session;
+
     req.log = req.log.child({ userId: sessionData.user.id });
+
     next();
 };

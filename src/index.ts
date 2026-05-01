@@ -32,6 +32,11 @@ app.use('/api', apiRouter);
 
 app.all('/api/auth/*splat', toNodeHandler(auth));
 
+app.use('/api', (req, res) => {
+    req.log.warn({ method: req.method, path: req.path }, 'Route not found');
+    res.status(404).json({ error: 'Not Found' });
+});
+
 app.get('/openapi.json', async (_req, res) => {
     const authSchema = await auth.api.generateOpenAPISchema();
 
@@ -62,11 +67,6 @@ app.use(
         pageTitle: 'Media Watchlist API',
     })
 );
-
-app.use((req, res) => {
-    req.log.warn({ method: req.method, path: req.path }, 'Route not found');
-    res.status(404).json({ error: 'Not Found' });
-});
 
 app.use(
     (

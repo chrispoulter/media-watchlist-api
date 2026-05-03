@@ -4,7 +4,7 @@ import { type HealthcheckResult } from '../lib/health.js';
 import { logger } from '../lib/logger.js';
 import { config } from '../lib/config.js';
 
-export const db = drizzle(config.DATABASE_URL);
+export const db = drizzle(config.DATABASE_URL, { logger: true });
 
 export const healthCheck = async (): Promise<HealthcheckResult> => {
     try {

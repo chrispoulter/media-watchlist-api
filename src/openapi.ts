@@ -89,8 +89,7 @@ export const openApiSpec = {
                                         },
                                         version: {
                                             type: 'string',
-                                            description:
-                                                'Application version',
+                                            description: 'Application version',
                                             example: '1.0.0',
                                         },
                                         environment: {
@@ -135,8 +134,7 @@ export const openApiSpec = {
                                         },
                                         version: {
                                             type: 'string',
-                                            description:
-                                                'Application version',
+                                            description: 'Application version',
                                             example: '1.0.0',
                                         },
                                         environment: {

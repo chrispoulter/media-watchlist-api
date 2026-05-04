@@ -1,13 +1,10 @@
-import { drizzle } from 'drizzle-orm/postgres-js';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import { DefaultLogger, sql } from 'drizzle-orm';
-import postgres from 'postgres';
 import { type HealthcheckResult } from '../lib/health.js';
 import { logger } from '../lib/logger.js';
 import { config } from '../lib/config.js';
 
-const client = postgres(config.DATABASE_URL);
-
-export const db = drizzle(client, {
+export const db = drizzle(config.DATABASE_URL, {
     logger: new DefaultLogger({
         writer: {
             write: (message) => logger.debug({ sql: message }, 'query'),

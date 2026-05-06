@@ -35,7 +35,7 @@ app.all('/api/auth/*splat', toNodeHandler(auth));
 app.use('/api/search', searchRouter);
 app.use('/api/watchlist', watchlistRouter);
 app.use('/health', healthRouter);
-app.use('/docs', docsRouter);
+app.use(docsRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

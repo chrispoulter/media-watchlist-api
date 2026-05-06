@@ -1,14 +1,15 @@
 import express from 'express';
 import cors from 'cors';
 import { toNodeHandler } from 'better-auth/node';
-import { apiReference } from '@scalar/express-api-reference';
 import { requestLogger } from './middleware/request-logger.js';
 import { notFoundHandler } from './middleware/not-found-handler.js';
 import { errorHandler } from './middleware/error-handler.js';
+import searchRouter from './routes/search-router.js';
+import watchlistRouter from './routes/watchlist-router.js';
+import healthRouter from './routes/health-router.js';
+import docsRouter from './routes/docs-router.js';
 import { auth } from './lib/auth.js';
-import apiRouter from './routes/index.js';
 import { config } from './lib/config.js';
-import { openApiSpec } from './openapi.js';
 
 const app = express();
 
@@ -16,11 +17,6 @@ const app = express();
 //   await new Promise((resolve) => setTimeout(resolve, 1000 * 3));
 //   next();
 // });
-
-app.use(requestLogger);
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 app.use(
     cors({
@@ -30,43 +26,18 @@ app.use(
     })
 );
 
-app.use('/api', apiRouter);
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
+
+app.use(requestLogger);
 
 app.all('/api/auth/*splat', toNodeHandler(auth));
+app.use('/api/search', searchRouter);
+app.use('/api/watchlist', watchlistRouter);
+app.use('/health', healthRouter);
+app.use('/docs', docsRouter);
 
-app.use('/api', notFoundHandler);
-
-app.get('/openapi.json', async (_req, res) => {
-    const authSchema = await auth.api.generateOpenAPISchema();
-
-    const authPaths = Object.fromEntries(
-        Object.entries(authSchema.paths).map(([path, pathItem]) => [
-            `/api/auth${path}`,
-            pathItem,
-        ])
-    );
-
-    res.json({
-        ...openApiSpec,
-        paths: { ...authPaths, ...openApiSpec.paths },
-        components: {
-            ...openApiSpec.components,
-            schemas: {
-                ...authSchema.components.schemas,
-                ...openApiSpec.components.schemas,
-            },
-        },
-    });
-});
-
-app.use(
-    '/',
-    apiReference({
-        url: '/openapi.json',
-        pageTitle: 'Media Watchlist API',
-    })
-);
-
+app.use(notFoundHandler);
 app.use(errorHandler);
 
 export default app;

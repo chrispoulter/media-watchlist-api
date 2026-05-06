@@ -1,8 +1,11 @@
 import app from './index.js';
 import { config } from './lib/config.js';
 import { logger } from './lib/logger.js';
+
 import { shutdown as shutdownDb } from './db/index.js';
 import { shutdown as shutdownMailer } from './lib/mailer.js';
+
+const SHUTDOWN_TIMEOUT_MS = 10_000;
 
 const server = app.listen(config.PORT, () => {
     logger.info(
@@ -28,7 +31,7 @@ const shutdown = async (signal: string) => {
     setTimeout(() => {
         logger.error('Shutdown timeout exceeded, forcing exit');
         process.exit(1);
-    }, 10_000).unref();
+    }, SHUTDOWN_TIMEOUT_MS).unref();
 };
 
 process.on('SIGTERM', () => shutdown('SIGTERM'));

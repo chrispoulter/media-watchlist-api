@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { version, environment } from '../lib/config.js';
+
 import { healthCheck as checkDatabase } from '../db/index.js';
 import { healthCheck as checkTmdb } from '../lib/tmdb.js';
 import { healthCheck as checkMailer } from '../lib/mailer.js';

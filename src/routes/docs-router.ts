@@ -21,15 +21,15 @@ router.get('/openapi.json', async (_req, res) => {
         components: {
             ...openApiSpec.components,
             schemas: {
-                ...authSchema.components.schemas,
-                ...openApiSpec.components.schemas,
+                ...authSchema.components?.schemas,
+                ...openApiSpec.components?.schemas,
             },
         },
     });
 });
 
 router.use(
-    '/',
+    '/reference',
     apiReference({
         url: '/openapi.json',
         pageTitle: 'Media Watchlist API',

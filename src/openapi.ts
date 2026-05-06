@@ -1,6 +1,7 @@
+import type { OpenAPIV3 } from 'openapi-types';
 import { version } from './lib/config.js';
 
-export const openApiSpec = {
+export const openApiSpec: OpenAPIV3.Document = {
     openapi: '3.0.3',
     info: {
         title: 'Media Watchlist API',

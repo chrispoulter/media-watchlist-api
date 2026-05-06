@@ -15,6 +15,8 @@ export const mailer = nodemailer.createTransport({
             : undefined,
 });
 
+export const shutdown = () => mailer.close();
+
 export const healthCheck = async (): Promise<HealthcheckResult> => {
     try {
         await mailer.verify();

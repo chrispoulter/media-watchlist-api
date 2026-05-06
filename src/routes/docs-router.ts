@@ -36,4 +36,6 @@ router.use(
     })
 );
 
+router.get('/', (_req, res) => res.redirect('/reference'));
+
 export default router;

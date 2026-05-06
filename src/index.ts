@@ -3,6 +3,7 @@ import cors from 'cors';
 import { toNodeHandler } from 'better-auth/node';
 import { apiReference } from '@scalar/express-api-reference';
 import { requestLogger } from './middleware/request-logger.js';
+import { errorHandler } from './middleware/error-handler.js';
 import { auth } from './lib/auth.js';
 import apiRouter from './routes/index.js';
 import { config } from './lib/config.js';
@@ -69,15 +70,7 @@ app.use(
 );
 
 app.use(
-    (
-        err: Error,
-        req: express.Request,
-        res: express.Response,
-        _next: express.NextFunction
-    ) => {
-        req.log.error({ err, userId: req.user?.id }, 'Unhandled error');
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
+   errorHandler
 );
 
 export default app;

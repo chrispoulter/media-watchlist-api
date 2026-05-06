@@ -12,6 +12,7 @@ router.get('/', async (_req, res) => {
         checkTmdb(),
         checkMailer(),
     ]);
+
     const failing = services.some((s) => s?.success !== true);
 
     res.status(failing ? 503 : 200).json({

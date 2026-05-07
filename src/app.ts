@@ -16,13 +16,8 @@ export default async function serviceApp(
     fastify.setSerializerCompiler(serializerCompiler);
 
     fastify.register(fastifyAutoload, {
-        dir: path.join(import.meta.dirname, 'plugins/external'),
+        dir: path.join(import.meta.dirname, 'plugins'),
         options: {},
-    });
-
-    fastify.register(fastifyAutoload, {
-        dir: path.join(import.meta.dirname, 'plugins/app'),
-        options: { ...opts },
     });
 
     fastify.register(fastifyAutoload, {

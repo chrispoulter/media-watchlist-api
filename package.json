@@ -5,8 +5,7 @@
     "scripts": {
         "start": "npm run build && node dist/server.js",
         "build": "tsc",
-        "watch": "tsc -w",
-        "dev": "tsx --env-file=.env ./src/server.ts",
+        "dev": "tsx watch --env-file=.env ./src/server.ts",
         "typecheck": "tsc --noEmit",
         "lint": "eslint --cache .",
         "format": "prettier --write .",

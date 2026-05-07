@@ -1,6 +1,9 @@
-import type { Request, Response } from 'express';
+import type { FastifyRequest, FastifyReply } from 'fastify';
 
-export const notFoundHandler = (req: Request, res: Response) => {
-    req.log.warn({ path: req.path }, 'Request to unknown endpoint');
-    res.status(404).json({ error: 'Not Found' });
+export const notFoundHandler = (
+    request: FastifyRequest,
+    reply: FastifyReply
+) => {
+    request.log.warn({ path: request.url }, 'Request to unknown endpoint');
+    reply.code(404).send({ error: 'Not Found' });
 };

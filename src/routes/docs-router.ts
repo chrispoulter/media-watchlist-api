@@ -1,41 +1,44 @@
-import { Router } from 'express';
-import { apiReference } from '@scalar/express-api-reference';
+import type { FastifyPluginAsync } from 'fastify';
+import type { OpenAPIV3 } from 'openapi-types';
+import apiReference from '@scalar/fastify-api-reference';
 import { auth } from '../lib/auth.js';
-import { openApiSpec } from '../openapi.js';
 
-const router = Router();
+const docsPlugin: FastifyPluginAsync = async (fastify) => {
+    fastify.get('/openapi.json', async (_request, reply) => {
+        const spec = fastify.swagger() as unknown as OpenAPIV3.Document;
+        const authSchema = await auth.api.generateOpenAPISchema();
 
-router.get('/openapi.json', async (_req, res) => {
-    const authSchema = await auth.api.generateOpenAPISchema();
+        const authPaths = Object.fromEntries(
+            Object.entries(authSchema.paths ?? {}).map(([path, pathItem]) => [
+                `/api/auth${path}`,
+                pathItem,
+            ])
+        );
 
-    const authPaths = Object.fromEntries(
-        Object.entries(authSchema.paths).map(([path, pathItem]) => [
-            `/api/auth${path}`,
-            pathItem,
-        ])
-    );
-
-    res.json({
-        ...openApiSpec,
-        paths: { ...authPaths, ...openApiSpec.paths },
-        components: {
-            ...openApiSpec.components,
-            schemas: {
-                ...authSchema.components?.schemas,
-                ...openApiSpec.components?.schemas,
+        return reply.send({
+            ...spec,
+            paths: { ...authPaths, ...(spec.paths ?? {}) },
+            components: {
+                ...(spec.components ?? {}),
+                schemas: {
+                    ...(authSchema.components?.schemas ?? {}),
+                    ...(spec.components?.schemas ?? {}),
+                },
             },
+        });
+    });
+
+    await fastify.register(apiReference, {
+        routePrefix: '/reference',
+        configuration: {
+            url: '/openapi.json',
+            pageTitle: 'Media Watchlist API',
         },
     });
-});
 
-router.use(
-    '/reference',
-    apiReference({
-        url: '/openapi.json',
-        pageTitle: 'Media Watchlist API',
-    })
-);
+    fastify.get('/', async (_request, reply) => {
+        return reply.redirect('/reference');
+    });
+};
 
-router.get('/', (_req, res) => res.redirect('/reference'));
-
-export default router;
+export default docsPlugin;

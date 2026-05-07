@@ -1,61 +1,78 @@
-import { Router } from 'express';
 import { and, eq, inArray } from 'drizzle-orm';
 import { z } from 'zod';
+import type { FastifyPluginAsyncZod } from '@fastify/type-provider-zod';
 import { db } from '../db/index.js';
 import { watchlistItem } from '../db/schema.js';
 import { requireAuth } from '../middleware/require-auth.js';
 import { search } from '../lib/tmdb.js';
 
-const router = Router();
-
-router.use(requireAuth);
-
-const searchSchema = z.object({
-    query: z.string().min(1),
+const searchResultSchema = z.object({
+    providerId: z.string(),
+    mediaType: z.enum(['movie', 'tv-show']),
+    title: z.string(),
+    posterUrl: z.string().optional(),
+    overview: z.string().optional(),
+    releaseDate: z.string().optional(),
+    watchlistItemId: z.number().int().optional(),
 });
 
-router.get('/', async (req, res) => {
-    const result = searchSchema.safeParse(req.query);
+const errorSchema = z.object({ error: z.string() });
 
-    if (!result.success) {
-        res.status(400).json({
-            error: 'Invalid request query',
-            details: result.error.issues,
-        });
-        return;
-    }
+const searchPlugin: FastifyPluginAsyncZod = async (fastify) => {
+    fastify.addHook('preHandler', requireAuth);
 
-    const data = await search(result.data.query);
+    fastify.get(
+        '/',
+        {
+            schema: {
+                tags: ['Search'],
+                summary: 'Search for movies and TV shows',
+                security: [{ bearerAuth: [] }],
+                querystring: z.object({
+                    query: z.string().min(1),
+                }),
+                response: {
+                    200: z.array(searchResultSchema),
+                    400: errorSchema,
+                    401: errorSchema,
+                },
+            },
+        },
+        async (request) => {
+            const data = await search(request.query.query);
 
-    const providerIds = data.map((item) => item.providerId);
+            const providerIds = data.map((item) => item.providerId);
 
-    const watchlistItems = await db
-        .select()
-        .from(watchlistItem)
-        .where(
-            and(
-                eq(watchlistItem.userId, req.user!.id),
-                inArray(watchlistItem.providerId, providerIds)
-            )
-        );
+            const watchlistItems = await db
+                .select()
+                .from(watchlistItem)
+                .where(
+                    and(
+                        eq(watchlistItem.userId, request.user!.id),
+                        inArray(watchlistItem.providerId, providerIds)
+                    )
+                );
 
-    const watchlistMap = new Map(
-        watchlistItems.map((w) => [`${w.providerId}-${w.mediaType}`, w.id])
+            const watchlistMap = new Map(
+                watchlistItems.map((w) => [
+                    `${w.providerId}-${w.mediaType}`,
+                    w.id,
+                ])
+            );
+
+            return data.map((item) => ({
+                providerId: item.providerId,
+                mediaType: item.mediaType,
+                title: item.title,
+                posterUrl: item.posterUrl ?? undefined,
+                overview: item.overview ?? undefined,
+                releaseDate: item.releaseDate ?? undefined,
+                watchlistItemId:
+                    watchlistMap.get(`${item.providerId}-${item.mediaType}`) ??
+                    undefined,
+            }));
+        }
     );
+};
 
-    res.json(
-        data.map((item) => ({
-            providerId: item.providerId,
-            mediaType: item.mediaType,
-            title: item.title,
-            posterUrl: item.posterUrl ?? undefined,
-            overview: item.overview ?? undefined,
-            releaseDate: item.releaseDate ?? undefined,
-            watchlistItemId:
-                watchlistMap.get(`${item.providerId}-${item.mediaType}`) ??
-                undefined,
-        }))
-    );
-});
-
-export default router;
+export default searchPlugin;

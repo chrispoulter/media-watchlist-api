@@ -32,13 +32,10 @@ export default fp(async function (fastify) {
                 hide: true,
             },
         },
-        async () => {
-            return fastify.swagger();
-        }
+        () => fastify.swagger()
     );
 
     await fastify.register(fastifyApiReference, {
         routePrefix: '/reference',
-        logLevel: 'silent',
     });
 });

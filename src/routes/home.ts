@@ -14,7 +14,7 @@ const plugin: FastifyPluginAsyncZod = async (fastify) => {
             },
         },
         async function () {
-            return { message: 'Welcome to the official fastify demo!' };
+            return { message: 'Welcome to the Media Watchlist API!' };
         }
     );
 };

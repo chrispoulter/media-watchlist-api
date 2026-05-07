@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "type": "module",
     "scripts": {
-        "start": "npm run build && node dist/src/server.js",
+        "start": "npm run build && node dist/server.js",
         "build": "tsc",
         "watch": "tsc -w",
         "dev": "tsx --env-file=.env ./src/server.ts",

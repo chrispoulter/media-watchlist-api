@@ -1,8 +1,9 @@
 {
     "extends": "fastify-tsconfig",
     "compilerOptions": {
-        "outDir": "./dist",
-        "rootDir": ".",
+        "outDir": "dist",
+        "rootDir": "src",
         "jsx": "react-jsx"
-    }
+    },
+    "include": ["@types", "src/**/*.ts"]
 }

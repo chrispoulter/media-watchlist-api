@@ -53,6 +53,7 @@ const plugin: FastifyPluginAsyncZod = async (fastify) => {
                 response: {
                     200: z.array(watchlistItemSchema),
                     401: errorSchema,
+                    500: errorSchema,
                 },
             },
         },
@@ -175,6 +176,7 @@ const plugin: FastifyPluginAsyncZod = async (fastify) => {
                     400: errorSchema,
                     401: errorSchema,
                     404: errorSchema,
+                    500: errorSchema,
                 },
             },
         },

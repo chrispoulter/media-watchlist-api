@@ -46,6 +46,7 @@ const plugin: FastifyPluginAsyncZod = async (fastify) => {
                     200: z.array(searchResultSchema),
                     400: errorSchema,
                     401: errorSchema,
+                    500: errorSchema,
                 },
             },
         },

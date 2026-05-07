@@ -5,6 +5,7 @@ import { logger } from './lib/logger.js';
 import serviceApp from './app.js';
 
 const app = Fastify({
+    requestIdHeader: 'x-vercel-id',
     loggerInstance: logger,
     connectionTimeout: 120_000,
     requestTimeout: 60_000,

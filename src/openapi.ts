@@ -46,12 +46,13 @@ export const openApiSpec: OpenAPIV3.Document = {
                             type: 'object',
                             properties: {
                                 name: { type: 'string' },
-                                status: {
-                                    type: 'string',
-                                    enum: ['ok', 'unhealthy'],
+                                success: {
+                                    type: 'boolean',
+                                    description:
+                                        'True if the service is healthy, false otherwise',
                                 },
                             },
-                            required: ['name', 'status'],
+                            required: ['name', 'success'],
                         },
                     },
                 },

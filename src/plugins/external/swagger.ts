@@ -39,5 +39,8 @@ export default fp(async function (fastify) {
 
     await fastify.register(fastifyApiReference, {
         routePrefix: '/reference',
+        configuration: {
+            pageTitle: 'Media Watchlist API',
+        },
     });
 });

@@ -11,12 +11,12 @@ export default async function serviceApp(
         options: {},
     });
 
-    fastify.register(fastifyAutoload, {
+    await fastify.register(fastifyAutoload, {
         dir: path.join(import.meta.dirname, 'plugins/app'),
         options: { ...opts },
     });
 
-    fastify.register(fastifyAutoload, {
+    await fastify.register(fastifyAutoload, {
         dir: path.join(import.meta.dirname, 'routes'),
         autoHooks: true,
         cascadeHooks: true,

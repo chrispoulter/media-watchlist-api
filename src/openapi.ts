@@ -21,15 +21,45 @@ export const openApiSpec: OpenAPIV3.Document = {
             HealthcheckResult: {
                 type: 'object',
                 properties: {
-                    service: { type: 'string', example: 'database' },
-                    success: { type: 'boolean' },
+                    status: { type: 'string', enum: ['ok', 'unhealthy'] },
+                    version: { type: 'string', example: '1.0.0' },
+                    environment: { type: 'string', example: 'production' },
+                    uptime: {
+                        type: 'number',
+                        description: 'Process uptime in seconds',
+                    },
+                    services: {
+                        type: 'array',
+                        items: {
+                            type: 'object',
+                            properties: {
+                                name: { type: 'string' },
+                                status: {
+                                    type: 'string',
+                                    enum: ['ok', 'unhealthy'],
+                                },
+                            },
+                            required: ['name', 'status'],
+                        },
+                    },
                 },
-                required: ['service', 'success'],
+                required: [
+                    'status',
+                    'version',
+                    'environment',
+                    'uptime',
+                    'services',
+                ],
             },
             Error: {
                 type: 'object',
                 properties: {
                     error: { type: 'string' },
+                    details: {
+                        type: 'array',
+                        items: { type: 'object' },
+                        nullable: true,
+                    },
                 },
                 required: ['error'],
             },
@@ -82,42 +112,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    type: 'object',
-                                    properties: {
-                                        status: {
-                                            type: 'string',
-                                            enum: ['ok'],
-                                        },
-                                        version: {
-                                            type: 'string',
-                                            description: 'Application version',
-                                            example: '1.0.0',
-                                        },
-                                        environment: {
-                                            type: 'string',
-                                            description:
-                                                'Application environment',
-                                            example: 'production',
-                                        },
-                                        uptime: {
-                                            type: 'number',
-                                            description:
-                                                'Process uptime in seconds',
-                                        },
-                                        services: {
-                                            type: 'array',
-                                            items: {
-                                                $ref: '#/components/schemas/HealthcheckResult',
-                                            },
-                                        },
-                                    },
-                                    required: [
-                                        'status',
-                                        'version',
-                                        'environment',
-                                        'uptime',
-                                        'services',
-                                    ],
+                                    $ref: '#/components/schemas/HealthcheckResult',
                                 },
                             },
                         },
@@ -127,42 +122,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    type: 'object',
-                                    properties: {
-                                        status: {
-                                            type: 'string',
-                                            enum: ['unhealthy'],
-                                        },
-                                        version: {
-                                            type: 'string',
-                                            description: 'Application version',
-                                            example: '1.0.0',
-                                        },
-                                        environment: {
-                                            type: 'string',
-                                            description:
-                                                'Application environment',
-                                            example: 'production',
-                                        },
-                                        uptime: {
-                                            type: 'number',
-                                            description:
-                                                'Process uptime in seconds',
-                                        },
-                                        services: {
-                                            type: 'array',
-                                            items: {
-                                                $ref: '#/components/schemas/HealthcheckResult',
-                                            },
-                                        },
-                                    },
-                                    required: [
-                                        'status',
-                                        'version',
-                                        'environment',
-                                        'uptime',
-                                        'services',
-                                    ],
+                                    $ref: '#/components/schemas/HealthcheckResult',
                                 },
                             },
                         },

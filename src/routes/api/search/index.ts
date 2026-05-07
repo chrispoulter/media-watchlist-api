@@ -1,10 +1,9 @@
 import { and, eq, inArray } from 'drizzle-orm';
 import { z } from 'zod';
 import type { FastifyPluginAsyncZod } from '@fastify/type-provider-zod';
-import { db } from '../db/index.js';
-import { watchlistItem } from '../db/schema.js';
-import { requireAuth } from '../middleware/require-auth.js';
-import { search } from '../lib/tmdb.js';
+import { db } from '../../../db/index.js';
+import { watchlistItem } from '../../../db/schema.js';
+import { search } from '../../../lib/tmdb.js';
 
 const searchResultSchema = z.object({
     providerId: z.string(),
@@ -18,8 +17,8 @@ const searchResultSchema = z.object({
 
 const errorSchema = z.object({ error: z.string() });
 
-const searchPlugin: FastifyPluginAsyncZod = async (fastify) => {
-    fastify.addHook('preHandler', requireAuth);
+const plugin: FastifyPluginAsyncZod = async (fastify) => {
+    // fastify.addHook('preHandler', requireAuth);
 
     fastify.get(
         '/',
@@ -75,4 +74,4 @@ const searchPlugin: FastifyPluginAsyncZod = async (fastify) => {
     );
 };
 
-export default searchPlugin;
+export default plugin;

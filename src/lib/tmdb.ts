@@ -1,5 +1,3 @@
-import { config } from './config.js';
-import { logger } from './logger.js';
 import { type HealthcheckResult } from './health.js';
 
 const API_URL = 'https://api.themoviedb.org/3';
@@ -31,7 +29,9 @@ interface SearchResult {
 export const healthCheck = async (): Promise<HealthcheckResult> => {
     try {
         const response = await fetch(`${API_URL}/configuration`, {
-            headers: { Authorization: `Bearer ${config.TMDB_API_READ_TOKEN}` },
+            headers: {
+                Authorization: `Bearer ${process.env.TMDB_API_READ_TOKEN}`,
+            },
             signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
         });
 
@@ -61,12 +61,14 @@ export const search = async (query: string) => {
 
     try {
         const response = await fetch(`${API_URL}/search/multi?${params}`, {
-            headers: { Authorization: `Bearer ${config.TMDB_API_READ_TOKEN}` },
+            headers: {
+                Authorization: `Bearer ${process.env.TMDB_API_READ_TOKEN}`,
+            },
             signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
         });
 
         if (!response.ok) {
-            logger.error(
+            console.error(
                 {
                     query: normalizedQuery,
                     status: response.status,
@@ -102,7 +104,7 @@ export const search = async (query: string) => {
         return results;
     } catch (err) {
         if (err instanceof Error && err.name === 'TimeoutError') {
-            logger.error(
+            console.error(
                 { query: normalizedQuery, timeoutMs: FETCH_TIMEOUT_MS },
                 'TMDB request timed out'
             );

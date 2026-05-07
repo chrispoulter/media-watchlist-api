@@ -1,32 +1,63 @@
-import { buildApp } from './index.js';
-import { config } from './lib/config.js';
-import { shutdown as shutdownDb } from './db/index.js';
-import { shutdown as shutdownMailer } from './lib/mailer.js';
+import Fastify from 'fastify';
+import fp from 'fastify-plugin';
+import closeWithGrace from 'close-with-grace';
+import serviceApp from './app.js';
 
-const SHUTDOWN_TIMEOUT_MS = 10_000;
+function getLoggerOptions() {
+    if (process.stdout.isTTY) {
+        return {
+            level: 'info',
+            transport: {
+                target: 'pino-pretty',
+                options: {
+                    translateTime: 'HH:MM:ss Z',
+                    ignore: 'pid,hostname',
+                },
+            },
+        };
+    }
 
-const fastify = await buildApp();
+    return { level: process.env.LOG_LEVEL ?? 'silent' };
+}
 
-await fastify.listen({ port: config.PORT, host: '0.0.0.0' });
+const app = Fastify({
+    logger: getLoggerOptions(),
+    connectionTimeout: 120_000,
+    requestTimeout: 60_000,
+    keepAliveTimeout: 10_000,
+    http: {
+        headersTimeout: 15_000,
+    },
+    ajv: {
+        customOptions: {
+            coerceTypes: 'array',
+            removeAdditional: 'all',
+        },
+    },
+});
 
-const shutdown = async (signal: string) => {
-    fastify.log.info({ signal }, 'Shutdown signal received');
+async function init() {
+    app.register(fp(serviceApp));
 
-    const timeout = setTimeout(() => {
-        fastify.log.error('Shutdown timeout exceeded, forcing exit');
-        process.exit(1);
-    }, SHUTDOWN_TIMEOUT_MS).unref();
+    closeWithGrace(
+        { delay: process.env.FASTIFY_CLOSE_GRACE_DELAY ?? 500 },
+        async ({ err }) => {
+            if (err != null) {
+                app.log.error(err);
+            }
+
+            await app.close();
+        }
+    );
+
+    await app.ready();
 
     try {
-        await Promise.all([fastify.close(), shutdownDb(), shutdownMailer()]);
-        clearTimeout(timeout);
-        fastify.log.info('Shutdown complete');
-        process.exit(0);
+        await app.listen({ port: process.env.PORT ?? 3000 });
     } catch (err) {
-        fastify.log.error({ err }, 'Error during shutdown');
+        app.log.error(err);
         process.exit(1);
     }
-};
+}
 
-process.on('SIGTERM', () => shutdown('SIGTERM'));
-process.on('SIGINT', () => shutdown('SIGINT'));
+init();

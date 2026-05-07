@@ -1,9 +1,8 @@
 import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import type { FastifyPluginAsyncZod } from '@fastify/type-provider-zod';
-import { db } from '../db/index.js';
-import { watchlistItem } from '../db/schema.js';
-import { requireAuth } from '../middleware/require-auth.js';
+import { db } from '../../../db/index.js';
+import { watchlistItem } from '../../../db/schema.js';
 
 const WATCHLIST_ITEM_LIMIT = 100;
 
@@ -29,8 +28,8 @@ const addWatchlistItemSchema = z.object({
 
 const errorSchema = z.object({ error: z.string() });
 
-const watchlistPlugin: FastifyPluginAsyncZod = async (fastify) => {
-    fastify.addHook('preHandler', requireAuth);
+const plugin: FastifyPluginAsyncZod = async (fastify) => {
+    // fastify.addHook('preHandler', requireAuth);
 
     fastify.get(
         '/',
@@ -194,4 +193,4 @@ const watchlistPlugin: FastifyPluginAsyncZod = async (fastify) => {
     );
 };
 
-export default watchlistPlugin;
+export default plugin;

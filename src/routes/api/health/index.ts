@@ -1,11 +1,11 @@
 import { z } from 'zod';
 import type { FastifyPluginAsyncZod } from '@fastify/type-provider-zod';
-import { version, environment } from '../lib/config.js';
-import { healthCheck as checkDatabase } from '../db/index.js';
-import { healthCheck as checkTmdb } from '../lib/tmdb.js';
-import { healthCheck as checkMailer } from '../lib/mailer.js';
+import { healthCheck as checkDatabase } from '../../../db/index.js';
+import { healthCheck as checkTmdb } from '../../../lib/tmdb.js';
+import { healthCheck as checkMailer } from '../../../lib/mailer.js';
+import { environment, version } from '../../../lib/config.js';
 
-const healthPlugin: FastifyPluginAsyncZod = async (fastify) => {
+const plugin: FastifyPluginAsyncZod = async (fastify) => {
     fastify.get(
         '/',
         {
@@ -61,4 +61,4 @@ const healthPlugin: FastifyPluginAsyncZod = async (fastify) => {
     );
 };
 
-export default healthPlugin;
+export default plugin;

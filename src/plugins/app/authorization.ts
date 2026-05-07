@@ -4,7 +4,7 @@ import { auth, User } from '../../lib/auth.js';
 
 declare module 'fastify' {
     export interface FastifyRequest {
-        user: User | null;
+        user?: User;
     }
 }
 
@@ -21,6 +21,7 @@ export default fp(
     async function (fastify) {
         fastify.addHook('onRequest', async (request) => {
             const headers = new Headers();
+
             for (const [key, value] of Object.entries(request.headers)) {
                 if (typeof value === 'string') {
                     headers.set(key, value);
@@ -28,8 +29,9 @@ export default fp(
                     headers.set(key, value.join(', '));
                 }
             }
+
             const session = await auth.api.getSession({ headers });
-            request.user = session?.user ?? null;
+            request.user = session?.user;
         });
     },
     { name: 'authorization' }

@@ -202,9 +202,35 @@ export const openApiSpec: OpenAPIV3.Document = {
                         },
                     },
                     '400': {
-                        description: 'Missing or invalid query parameter.',
+                        description: 'Invalid request query.',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    $ref: '#/components/schemas/Error',
+                                },
+                            },
+                        },
                     },
-                    '401': { description: 'Unauthorized.' },
+                    '401': {
+                        description: 'Unauthorized.',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    $ref: '#/components/schemas/Error',
+                                },
+                            },
+                        },
+                    },
+                    '500': {
+                        description: 'Internal Server Error.',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    $ref: '#/components/schemas/Error',
+                                },
+                            },
+                        },
+                    },
                 },
             },
         },
@@ -229,7 +255,26 @@ export const openApiSpec: OpenAPIV3.Document = {
                             },
                         },
                     },
-                    '401': { description: 'Unauthorized.' },
+                    '401': {
+                        description: 'Unauthorized.',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    $ref: '#/components/schemas/Error',
+                                },
+                            },
+                        },
+                    },
+                    '500': {
+                        description: 'Internal Server Error.',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    $ref: '#/components/schemas/Error',
+                                },
+                            },
+                        },
+                    },
                 },
             },
             post: {
@@ -287,10 +332,56 @@ export const openApiSpec: OpenAPIV3.Document = {
                             },
                         },
                     },
-                    '400': { description: 'Invalid request body.' },
-                    '401': { description: 'Unauthorized.' },
-                    '409': { description: 'Item already exists in watchlist.' },
-                    '429': { description: 'Watchlist limit of items reached.' },
+                    '400': {
+                        description: 'Invalid request body.',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    $ref: '#/components/schemas/Error',
+                                },
+                            },
+                        },
+                    },
+                    '401': {
+                        description: 'Unauthorized.',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    $ref: '#/components/schemas/Error',
+                                },
+                            },
+                        },
+                    },
+                    '409': {
+                        description: 'Item already exists in watchlist.',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    $ref: '#/components/schemas/Error',
+                                },
+                            },
+                        },
+                    },
+                    '429': {
+                        description: 'Watchlist limit of items reached.',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    $ref: '#/components/schemas/Error',
+                                },
+                            },
+                        },
+                    },
+                    '500': {
+                        description: 'Internal Server Error.',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    $ref: '#/components/schemas/Error',
+                                },
+                            },
+                        },
+                    },
                 },
             },
         },
@@ -311,9 +402,46 @@ export const openApiSpec: OpenAPIV3.Document = {
                 ],
                 responses: {
                     '204': { description: 'Item removed.' },
-                    '400': { description: 'Invalid ID.' },
-                    '401': { description: 'Unauthorized.' },
-                    '404': { description: 'Item not found in watchlist.' },
+                    '400': {
+                        description: 'Invalid request parameters.',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    $ref: '#/components/schemas/Error',
+                                },
+                            },
+                        },
+                    },
+                    '401': {
+                        description: 'Unauthorized.',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    $ref: '#/components/schemas/Error',
+                                },
+                            },
+                        },
+                    },
+                    '404': {
+                        description: 'Item not found in watchlist.',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    $ref: '#/components/schemas/Error',
+                                },
+                            },
+                        },
+                    },
+                    '500': {
+                        description: 'Internal Server Error.',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    $ref: '#/components/schemas/Error',
+                                },
+                            },
+                        },
+                    },
                 },
             },
         },

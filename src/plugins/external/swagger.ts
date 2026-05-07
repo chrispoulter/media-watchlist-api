@@ -9,6 +9,8 @@ export default fp(async function (fastify) {
         openapi: {
             info: {
                 title: 'Media Watchlist API',
+                description:
+                    'REST API for managing a personal media watchlist.',
                 version,
             },
             components: {

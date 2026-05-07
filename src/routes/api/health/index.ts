@@ -5,6 +5,19 @@ import { healthCheck as checkTmdb } from '../../../lib/tmdb.js';
 import { healthCheck as checkMailer } from '../../../lib/mailer.js';
 import { environment, version } from '../../../lib/config.js';
 
+const healthCheckSchema = z.object({
+    status: z.enum(['unhealthy', 'ok']),
+    version: z.string(),
+    environment: z.string(),
+    uptime: z.number(),
+    services: z.array(
+        z.object({
+            service: z.string(),
+            success: z.boolean(),
+        })
+    ),
+});
+
 const plugin: FastifyPluginAsyncZod = async (fastify) => {
     fastify.get(
         '/',
@@ -14,30 +27,8 @@ const plugin: FastifyPluginAsyncZod = async (fastify) => {
                 tags: ['Health'],
                 summary: 'Health check',
                 response: {
-                    200: z.object({
-                        status: z.literal('ok'),
-                        version: z.string(),
-                        environment: z.string(),
-                        uptime: z.number(),
-                        services: z.array(
-                            z.object({
-                                service: z.string(),
-                                success: z.boolean(),
-                            })
-                        ),
-                    }),
-                    503: z.object({
-                        status: z.literal('unhealthy'),
-                        version: z.string(),
-                        environment: z.string(),
-                        uptime: z.number(),
-                        services: z.array(
-                            z.object({
-                                service: z.string(),
-                                success: z.boolean(),
-                            })
-                        ),
-                    }),
+                    200: healthCheckSchema,
+                    503: healthCheckSchema,
                 },
             },
         },

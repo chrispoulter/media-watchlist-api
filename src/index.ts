@@ -27,10 +27,12 @@ app.use(
 );
 
 app.use(requestLogger);
+
+app.all('/api/auth/*splat', toNodeHandler(auth));
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-app.all('/api/auth/*splat', toNodeHandler(auth));
 app.use('/api/search', searchRouter);
 app.use('/api/watchlist', watchlistRouter);
 app.use('/health', healthRouter);

@@ -4,8 +4,6 @@ declare module 'fastify' {
     export interface FastifyInstance {
         config: {
             PORT: number;
-            LOG_LEVEL: string;
-            FASTIFY_CLOSE_GRACE_DELAY: number;
             DATABASE_URL: string;
             BETTER_AUTH_SECRET: string;
             BETTER_AUTH_URL: string;
@@ -15,7 +13,7 @@ declare module 'fastify' {
             TMDB_API_READ_TOKEN: string;
             SMTP_HOST: string;
             SMTP_PORT: number;
-            SMTP_SECURE: string;
+            SMTP_SECURE: boolean;
             SMTP_FROM: string;
             SMTP_USER: string;
             SMTP_PASS: string;
@@ -64,7 +62,8 @@ const schema = {
             type: 'number',
         },
         SMTP_SECURE: {
-            type: 'string',
+            type: 'boolean',
+            default: false,
         },
         SMTP_FROM: {
             type: 'string',

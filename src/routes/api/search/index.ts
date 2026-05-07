@@ -16,7 +16,16 @@ const searchResultSchema = z.object({
     watchlistItemId: z.number().int().optional(),
 });
 
-const errorSchema = z.object({ error: z.string() });
+const errorSchema = z.object({
+    error: z.string(),
+    message: z.string(),
+    statusCode: z.number(),
+    details: z.object({
+        issues: z.array(z.any()),
+        method: z.string(),
+        url: z.string(),
+    }),
+});
 
 const plugin: FastifyPluginAsyncZod = async (fastify) => {
     fastify.addHook('preHandler', requireAuth);

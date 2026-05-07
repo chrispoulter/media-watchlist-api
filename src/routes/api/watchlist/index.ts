@@ -12,7 +12,7 @@ const watchlistItemSchema = z.object({
     providerId: z.string(),
     mediaType: z.enum(['movie', 'tv-show']),
     title: z.string(),
-    posterUrl: z.string().optional(),
+    posterUrl: z.url().optional(),
     overview: z.string().optional(),
     releaseDate: z.string().optional(),
     addedAt: z.string(),
@@ -22,12 +22,21 @@ const addWatchlistItemSchema = z.object({
     providerId: z.string().min(1),
     mediaType: z.enum(['movie', 'tv-show']),
     title: z.string().min(1),
-    posterUrl: z.string().optional(),
+    posterUrl: z.url().optional(),
     overview: z.string().optional(),
     releaseDate: z.string().optional(),
 });
 
-const errorSchema = z.object({ error: z.string() });
+const errorSchema = z.object({
+    error: z.string(),
+    message: z.string(),
+    statusCode: z.number(),
+    details: z.object({
+        issues: z.array(z.any()),
+        method: z.string(),
+        url: z.string(),
+    }),
+});
 
 const plugin: FastifyPluginAsyncZod = async (fastify) => {
     fastify.addHook('preHandler', requireAuth);

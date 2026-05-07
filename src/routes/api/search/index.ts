@@ -20,11 +20,13 @@ const errorSchema = z.object({
     error: z.string(),
     message: z.string().optional(),
     statusCode: z.number().optional(),
-    details: z.object({
-        issues: z.array(z.any()),
-        method: z.string(),
-        url: z.string(),
-    }).optional(),
+    details: z
+        .object({
+            issues: z.array(z.any()),
+            method: z.string(),
+            url: z.string(),
+        })
+        .optional(),
 });
 
 const plugin: FastifyPluginAsyncZod = async (fastify) => {

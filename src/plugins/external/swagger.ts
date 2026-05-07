@@ -1,22 +1,44 @@
 import fp from 'fastify-plugin';
-import fastifySwaggerUi from '@fastify/swagger-ui';
+import fastifyApiReference from '@scalar/fastify-api-reference';
 import fastifySwagger from '@fastify/swagger';
 import { jsonSchemaTransform } from 'fastify-type-provider-zod';
+import { version } from '../../lib/config';
 
 export default fp(async function (fastify) {
     await fastify.register(fastifySwagger, {
-        hideUntagged: true,
         openapi: {
             info: {
-                title: 'Fastify demo API',
-                description: 'The official Fastify demo API',
-                version: '0.0.0',
+                title: 'Media Watchlist API',
+                version,
+            },
+            components: {
+                securitySchemes: {
+                    bearerAuth: {
+                        type: 'http',
+                        scheme: 'bearer',
+                        description:
+                            'Session token returned by sign-in endpoints.',
+                    },
+                },
             },
         },
         transform: jsonSchemaTransform,
     });
 
-    await fastify.register(fastifySwaggerUi, {
-        routePrefix: '/api/docs',
+    fastify.get(
+        '/openapi.json',
+        {
+            schema: {
+                hide: true,
+            },
+        },
+        async () => {
+            return fastify.swagger();
+        }
+    );
+
+    await fastify.register(fastifyApiReference, {
+        routePrefix: '/reference',
+        logLevel: 'silent',
     });
 });

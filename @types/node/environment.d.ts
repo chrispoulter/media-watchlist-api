@@ -13,7 +13,7 @@ declare global {
             TMDB_API_READ_TOKEN: string;
             SMTP_HOST: string;
             SMTP_PORT: number;
-            SMTP_SECURE: boolean;
+            SMTP_SECURE: string;
             SMTP_FROM: string;
             SMTP_USER: string;
             SMTP_PASS: string;

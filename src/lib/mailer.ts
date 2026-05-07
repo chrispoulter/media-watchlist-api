@@ -6,7 +6,7 @@ import { type HealthcheckResult } from './health.js';
 export const mailer = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT,
-    secure: process.env.SMTP_SECURE,
+    secure: process.env.SMTP_SECURE === 'true',
     auth:
         process.env.SMTP_USER && process.env.SMTP_PASS
             ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }

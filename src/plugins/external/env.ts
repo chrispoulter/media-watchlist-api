@@ -15,7 +15,7 @@ declare module 'fastify' {
             TMDB_API_READ_TOKEN: string;
             SMTP_HOST: string;
             SMTP_PORT: number;
-            SMTP_SECURE: boolean;
+            SMTP_SECURE: string;
             SMTP_FROM: string;
             SMTP_USER: string;
             SMTP_PASS: string;
@@ -64,7 +64,7 @@ const schema = {
             type: 'number',
         },
         SMTP_SECURE: {
-            type: 'boolean',
+            type: 'string',
         },
         SMTP_FROM: {
             type: 'string',

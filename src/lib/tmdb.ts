@@ -1,6 +1,6 @@
 import { config } from './config.js';
 import { logger } from './logger.js';
-import { type HealthcheckResult } from './health.js';
+import { type Healthcheck } from './health.js';
 
 const API_URL = 'https://api.themoviedb.org/3';
 const IMAGE_URL = 'https://image.tmdb.org/t/p/w300';
@@ -28,7 +28,7 @@ interface SearchResult {
     releaseDate: string | null;
 }
 
-export const healthCheck = async (): Promise<HealthcheckResult> => {
+export const healthCheck = async (): Promise<Healthcheck> => {
     try {
         const response = await fetch(`${API_URL}/configuration`, {
             headers: { Authorization: `Bearer ${config.TMDB_API_READ_TOKEN}` },

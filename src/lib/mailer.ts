@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react';
 import nodemailer from 'nodemailer';
 import { render } from '@react-email/render';
-import { type HealthcheckResult } from './health.js';
+import { type Healthcheck } from './health.js';
 import { logger } from './logger.js';
 import { config } from './config.js';
 
@@ -17,7 +17,7 @@ export const mailer = nodemailer.createTransport({
 
 export const shutdown = () => mailer.close();
 
-export const healthCheck = async (): Promise<HealthcheckResult> => {
+export const healthCheck = async (): Promise<Healthcheck> => {
     try {
         await mailer.verify();
         return { service: 'mailer', success: true };

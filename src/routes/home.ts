@@ -5,9 +5,7 @@ const plugin: FastifyPluginAsyncZod = async (fastify) => {
     fastify.get(
         '/',
         {
-
             schema: {
-                hide: true,
                 response: {
                     200: z.object({
                         message: z.string(),

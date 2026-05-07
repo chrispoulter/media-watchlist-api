@@ -6,6 +6,7 @@ import { version } from '../../lib/config';
 
 export default fp(async function (fastify) {
     await fastify.register(fastifySwagger, {
+        hideUntagged: true,
         openapi: {
             info: {
                 title: 'Media Watchlist API',
@@ -29,11 +30,6 @@ export default fp(async function (fastify) {
 
     fastify.get(
         '/openapi.json',
-        {
-            schema: {
-                hide: true,
-            },
-        },
         () => fastify.swagger()
     );
 

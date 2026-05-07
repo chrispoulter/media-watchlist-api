@@ -28,10 +28,7 @@ export default fp(async function (fastify) {
         transform: jsonSchemaTransform,
     });
 
-    fastify.get(
-        '/openapi.json',
-        () => fastify.swagger()
-    );
+    fastify.get('/openapi.json', () => fastify.swagger());
 
     await fastify.register(fastifyApiReference, {
         routePrefix: '/reference',

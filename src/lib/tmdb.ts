@@ -1,4 +1,5 @@
 import { type HealthcheckResult } from './health.js';
+import { logger } from './logger.js';
 
 const API_URL = 'https://api.themoviedb.org/3';
 const IMAGE_URL = 'https://image.tmdb.org/t/p/w300';
@@ -43,7 +44,7 @@ export const healthCheck = async (): Promise<HealthcheckResult> => {
 
         return { service: 'tmdb', success: true };
     } catch (err) {
-        console.error(
+        logger.error(
             { error: err instanceof Error ? err.message : err },
             'TMDB health check failed'
         );
@@ -68,7 +69,7 @@ export const search = async (query: string) => {
         });
 
         if (!response.ok) {
-            console.error(
+            logger.error(
                 {
                     query: normalizedQuery,
                     status: response.status,
@@ -104,7 +105,7 @@ export const search = async (query: string) => {
         return results;
     } catch (err) {
         if (err instanceof Error && err.name === 'TimeoutError') {
-            console.error(
+            logger.error(
                 { query: normalizedQuery, timeoutMs: FETCH_TIMEOUT_MS },
                 'TMDB request timed out'
             );

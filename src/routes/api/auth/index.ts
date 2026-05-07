@@ -5,7 +5,7 @@ import { auth } from '../../../lib/auth.js';
 const plugin: FastifyPluginAsyncZod = async (fastify) => {
     fastify.route({
         method: ['GET', 'POST'],
-        url: '/api/auth/*',
+        url: '/*',
         async handler(request, reply) {
             try {
                 // Construct request URL

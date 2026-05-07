@@ -107,6 +107,7 @@ router.post('/', async (req, res) => {
                 },
                 'Duplicate watchlist item'
             );
+
             res.status(409).json({ error: 'Item already exists in watchlist' });
             return;
         }

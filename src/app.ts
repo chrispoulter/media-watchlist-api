@@ -2,6 +2,8 @@ import path from 'node:path';
 import fastifyAutoload from '@fastify/autoload';
 import { FastifyError, FastifyInstance, FastifyPluginOptions } from 'fastify';
 import {
+    hasZodFastifySchemaValidationErrors,
+    isResponseSerializationError,
     serializerCompiler,
     validatorCompiler,
 } from 'fastify-type-provider-zod';
@@ -31,6 +33,32 @@ export default async function serviceApp(
     });
 
     fastify.setErrorHandler((err: FastifyError, request, reply) => {
+        if (hasZodFastifySchemaValidationErrors(err)) {
+            return reply.code(400).send({
+                error: 'Request Validation Error',
+                message: "Request doesn't match the schema",
+                statusCode: 400,
+                details: {
+                    issues: err.validation,
+                    method: request.method,
+                    url: request.url,
+                },
+            });
+        }
+
+        if (isResponseSerializationError(err)) {
+            return reply.code(500).send({
+                error: 'Internal Server Error',
+                message: "Response doesn't match the schema",
+                statusCode: 500,
+                details: {
+                    issues: err.cause.issues,
+                    method: request.method,
+                    url: request.url,
+                },
+            });
+        }
+
         fastify.log.error(
             {
                 err,

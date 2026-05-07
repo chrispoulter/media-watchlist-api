@@ -2,7 +2,7 @@ import fp from 'fastify-plugin';
 import fastifyApiReference from '@scalar/fastify-api-reference';
 import fastifySwagger from '@fastify/swagger';
 import { jsonSchemaTransform } from 'fastify-type-provider-zod';
-import { version } from '../../lib/config';
+import { version } from '../../lib/config.js';
 
 export default fp(async function (fastify) {
     await fastify.register(fastifySwagger, {

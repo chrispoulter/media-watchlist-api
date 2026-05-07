@@ -1,4 +1,4 @@
-import { FastifyPluginAsyncZod } from '@fastify/type-provider-zod';
+import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import z from 'zod';
 
 const plugin: FastifyPluginAsyncZod = async (fastify) => {

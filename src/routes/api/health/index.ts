@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { FastifyPluginAsyncZod } from '@fastify/type-provider-zod';
+import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { healthCheck as checkDatabase } from '../../../db/index.js';
 import { healthCheck as checkTmdb } from '../../../lib/tmdb.js';
 import { healthCheck as checkMailer } from '../../../lib/mailer.js';

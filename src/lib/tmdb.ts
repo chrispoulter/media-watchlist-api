@@ -43,7 +43,7 @@ export const healthCheck = async (): Promise<HealthcheckResult> => {
 
         return { service: 'tmdb', success: true };
     } catch (err) {
-        logger.error(
+        console.error(
             { error: err instanceof Error ? err.message : err },
             'TMDB health check failed'
         );

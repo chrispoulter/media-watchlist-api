@@ -1,4 +1,4 @@
-import type { FastifyPluginAsyncZod } from '@fastify/type-provider-zod';
+import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { fromNodeHeaders } from 'better-auth/node';
 import { auth } from '../../../lib/auth.js';
 

@@ -1,6 +1,6 @@
 import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
-import type { FastifyPluginAsyncZod } from '@fastify/type-provider-zod';
+import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { requireAuth } from '../../../plugins/app/authorization.js';
 import { db } from '../../../db/index.js';
 import { watchlistItem } from '../../../db/schema.js';

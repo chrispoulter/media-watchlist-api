@@ -1,22 +1,29 @@
 import path from 'node:path';
 import fastifyAutoload from '@fastify/autoload';
 import { FastifyError, FastifyInstance, FastifyPluginOptions } from 'fastify';
+import {
+    serializerCompiler,
+    validatorCompiler,
+} from 'fastify-type-provider-zod';
 
 export default async function serviceApp(
     fastify: FastifyInstance,
     opts: FastifyPluginOptions
 ) {
-    await fastify.register(fastifyAutoload, {
+    fastify.setValidatorCompiler(validatorCompiler);
+    fastify.setSerializerCompiler(serializerCompiler);
+
+    fastify.register(fastifyAutoload, {
         dir: path.join(import.meta.dirname, 'plugins/external'),
         options: {},
     });
 
-    await fastify.register(fastifyAutoload, {
+    fastify.register(fastifyAutoload, {
         dir: path.join(import.meta.dirname, 'plugins/app'),
         options: { ...opts },
     });
 
-    await fastify.register(fastifyAutoload, {
+    fastify.register(fastifyAutoload, {
         dir: path.join(import.meta.dirname, 'routes'),
         autoHooks: true,
         cascadeHooks: true,

@@ -1,9 +1,5 @@
 import fp from 'fastify-plugin';
-import type {
-    FastifyRequest,
-    FastifyReply,
-    HookHandlerDoneFunction,
-} from 'fastify';
+import type { FastifyRequest, FastifyReply } from 'fastify';
 import { auth, User } from '../../lib/auth.js';
 
 declare module 'fastify' {
@@ -14,14 +10,11 @@ declare module 'fastify' {
 
 export async function requireAuth(
     request: FastifyRequest,
-    reply: FastifyReply,
-    done: HookHandlerDoneFunction
+    reply: FastifyReply
 ) {
     if (!request.user) {
         return reply.code(401).send({ error: 'Unauthorized' });
     }
-
-    done();
 }
 
 export default fp(

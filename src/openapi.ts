@@ -18,7 +18,19 @@ export const openApiSpec: OpenAPIV3.Document = {
             },
         },
         schemas: {
-            HealthcheckResult: {
+            Error: {
+                type: 'object',
+                properties: {
+                    error: { type: 'string' },
+                    details: {
+                        type: 'array',
+                        items: { type: 'object' },
+                        nullable: true,
+                    },
+                },
+                required: ['error'],
+            },
+            Healthcheck: {
                 type: 'object',
                 properties: {
                     status: { type: 'string', enum: ['ok', 'unhealthy'] },
@@ -51,17 +63,18 @@ export const openApiSpec: OpenAPIV3.Document = {
                     'services',
                 ],
             },
-            Error: {
+            SearchResult: {
                 type: 'object',
                 properties: {
-                    error: { type: 'string' },
-                    details: {
-                        type: 'array',
-                        items: { type: 'object' },
-                        nullable: true,
-                    },
+                    providerId: { type: 'string' },
+                    mediaType: { type: 'string', enum: ['movie', 'tv-show'] },
+                    title: { type: 'string' },
+                    posterUrl: { type: 'string', nullable: true },
+                    overview: { type: 'string', nullable: true },
+                    releaseDate: { type: 'string', nullable: true },
+                    watchlistItemId: { type: 'integer', nullable: true },
                 },
-                required: ['error'],
+                required: ['providerId', 'mediaType'],
             },
             WatchlistItem: {
                 type: 'object',
@@ -77,18 +90,28 @@ export const openApiSpec: OpenAPIV3.Document = {
                 },
                 required: ['id', 'providerId', 'mediaType', 'title'],
             },
-            SearchResult: {
+            AddWatchlistItemRequest: {
                 type: 'object',
                 properties: {
-                    providerId: { type: 'string' },
-                    mediaType: { type: 'string', enum: ['movie', 'tv-show'] },
-                    title: { type: 'string' },
-                    posterUrl: { type: 'string', nullable: true },
-                    overview: { type: 'string', nullable: true },
-                    releaseDate: { type: 'string', nullable: true },
-                    watchlistItemId: { type: 'integer', nullable: true },
+                    providerId: { type: 'string', example: 'tmdb:1396' },
+                    mediaType: {
+                        type: 'string',
+                        enum: ['movie', 'tv-show'],
+                        example: 'tv-show',
+                    },
+                    title: { type: 'string', example: 'Breaking Bad' },
+                    posterUrl: {
+                        type: 'string',
+                        example:
+                            'https://image.tmdb.org/t/p/w300/ztkUQFLlC19CCMYHW9o1zWhJRNq.jpg',
+                    },
+                    overview: {
+                        type: 'string',
+                        example: 'A high school chemistry teacher...',
+                    },
+                    releaseDate: { type: 'string', example: '2008-01-20' },
                 },
-                required: ['providerId', 'mediaType'],
+                required: ['providerId', 'mediaType', 'title'],
             },
         },
     },
@@ -112,7 +135,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    $ref: '#/components/schemas/HealthcheckResult',
+                                    $ref: '#/components/schemas/Healthcheck',
                                 },
                             },
                         },
@@ -122,7 +145,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    $ref: '#/components/schemas/HealthcheckResult',
+                                    $ref: '#/components/schemas/Healthcheck',
                                 },
                             },
                         },
@@ -246,37 +269,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                     content: {
                         'application/json': {
                             schema: {
-                                type: 'object',
-                                properties: {
-                                    providerId: {
-                                        type: 'string',
-                                        example: 'tmdb:1396',
-                                    },
-                                    mediaType: {
-                                        type: 'string',
-                                        enum: ['movie', 'tv-show'],
-                                        example: 'tv-show',
-                                    },
-                                    title: {
-                                        type: 'string',
-                                        example: 'Breaking Bad',
-                                    },
-                                    posterUrl: {
-                                        type: 'string',
-                                        example:
-                                            'https://image.tmdb.org/t/p/w300/ztkUQFLlC19CCMYHW9o1zWhJRNq.jpg',
-                                    },
-                                    overview: {
-                                        type: 'string',
-                                        example:
-                                            'A high school chemistry teacher...',
-                                    },
-                                    releaseDate: {
-                                        type: 'string',
-                                        example: '2008-01-20',
-                                    },
-                                },
-                                required: ['providerId', 'mediaType', 'title'],
+                                $ref: '#/components/schemas/AddWatchlistItemRequest',
                             },
                         },
                     },

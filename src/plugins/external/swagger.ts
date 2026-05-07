@@ -3,6 +3,7 @@ import fastifyApiReference from '@scalar/fastify-api-reference';
 import fastifySwagger from '@fastify/swagger';
 import { jsonSchemaTransform } from 'fastify-type-provider-zod';
 import { version } from '../../lib/config.js';
+import { auth } from '../../lib/auth.js';
 
 export default fp(async function (fastify) {
     await fastify.register(fastifySwagger, {
@@ -28,12 +29,34 @@ export default fp(async function (fastify) {
         transform: jsonSchemaTransform,
     });
 
-    fastify.get('/openapi.json', () => fastify.swagger());
+    fastify.get('/openapi.json', async () => {
+        const appSpec = fastify.swagger();
+
+        const authResponse = await auth.api.generateOpenAPISchema();
+
+        return {
+            ...appSpec,
+            paths: {
+                ...appSpec.paths,
+                ...Object.fromEntries(
+                    Object.entries(authResponse.paths ?? {}).map(
+                        ([path, val]) => [`/api/auth${path}`, val]
+                    )
+                ),
+            },
+            components: {
+                schemas: {
+                    ...authResponse.components?.schemas,
+                },
+            },
+        };
+    });
 
     await fastify.register(fastifyApiReference, {
         routePrefix: '/reference',
         configuration: {
             pageTitle: 'Media Watchlist API',
+            url: '/openapi.json',
         },
     });
 });

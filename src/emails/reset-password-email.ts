@@ -12,7 +12,7 @@ import {
     Hr,
     Link,
     Preview,
-} from '@react-email/components';
+} from 'react-email';
 
 type ResetPasswordEmailProps = {
     url: string;

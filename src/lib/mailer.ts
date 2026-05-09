@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 import nodemailer from 'nodemailer';
-import { render } from '@react-email/render';
+import { render } from 'react-email';
 import { type Healthcheck } from './health.js';
 import { logger } from './logger.js';
 import { config } from './config.js';

@@ -4,10 +4,10 @@ import { toNodeHandler } from 'better-auth/node';
 import { requestLogger } from './middleware/request-logger.js';
 import { notFoundHandler } from './middleware/not-found-handler.js';
 import { errorHandler } from './middleware/error-handler.js';
-import searchRouter from './routes/search-router.js';
-import watchlistRouter from './routes/watchlist-router.js';
-import healthRouter from './routes/health-router.js';
-import docsRouter from './routes/docs-router.js';
+import searchRoutes from './routes/search-routes.js';
+import watchlistRoutes from './routes/watchlist-routes.js';
+import healthRoutes from './routes/health-routes.js';
+import docsRoutes from './routes/docs-routes.js';
 import { auth } from './lib/auth.js';
 import { config } from './lib/config.js';
 
@@ -33,10 +33,10 @@ app.all('/api/auth/*splat', toNodeHandler(auth));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/api/search', searchRouter);
-app.use('/api/watchlist', watchlistRouter);
-app.use('/health', healthRouter);
-app.use(docsRouter);
+app.use('/api/search', searchRoutes);
+app.use('/api/watchlist', watchlistRoutes);
+app.use('/health', healthRoutes);
+app.use(docsRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

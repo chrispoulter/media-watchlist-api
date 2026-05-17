@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { apiReference } from '@scalar/express-api-reference';
-import { openApiSpec } from '../docs//openapi.js';
+import { openApiSpec } from '../docs/openapi.js';
 import { auth } from '../lib/auth.js';
 
 const router = Router();

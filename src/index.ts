@@ -1,44 +1,38 @@
-import express from 'express';
-import cors from 'cors';
-import { toNodeHandler } from 'better-auth/node';
-import { requestLogger } from './middleware/request-logger.js';
-import { notFoundHandler } from './middleware/not-found-handler.js';
-import { errorHandler } from './middleware/error-handler.js';
-import searchRoutes from './routes/search-routes.js';
-import watchlistRoutes from './routes/watchlist-routes.js';
-import healthRoutes from './routes/health-routes.js';
-import docsRoutes from './routes/docs-routes.js';
-import { auth } from './lib/auth.js';
+import app from './app.js';
 import { config } from './lib/config.js';
+import { logger } from './lib/logger.js';
 
-const app = express();
+import { shutdown as shutdownDb } from './db/index.js';
+import { shutdown as shutdownMailer } from './lib/mailer.js';
 
-// app.use(async (_req, _res, next) => {
-//   await new Promise((resolve) => setTimeout(resolve, 1000 * 3));
-//   next();
-// });
+const SHUTDOWN_TIMEOUT_MS = 10_000;
 
-app.use(
-    cors({
-        origin: config.CLIENT_ORIGIN.split(','),
-        methods: ['GET', 'POST', 'PUT', 'DELETE'],
-        credentials: true,
-    })
-);
+const server = app.listen(config.PORT, () => {
+    logger.info(
+        { port: config.PORT, local: `http://localhost:${config.PORT}` },
+        'Server started'
+    );
+});
 
-app.use(requestLogger);
+const shutdown = async (signal: string) => {
+    logger.info({ signal }, 'Shutdown signal received');
 
-app.all('/api/auth/*splat', toNodeHandler(auth));
+    server.close(async () => {
+        try {
+            await Promise.all([shutdownDb(), shutdownMailer()]);
+            logger.info('Shutdown complete');
+            process.exit(0);
+        } catch (err) {
+            logger.error({ err }, 'Error during shutdown');
+            process.exit(1);
+        }
+    });
 
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
+    setTimeout(() => {
+        logger.error('Shutdown timeout exceeded, forcing exit');
+        process.exit(1);
+    }, SHUTDOWN_TIMEOUT_MS).unref();
+};
 
-app.use('/api/search', searchRoutes);
-app.use('/api/watchlist', watchlistRoutes);
-app.use('/health', healthRoutes);
-app.use(docsRoutes);
-
-app.use(notFoundHandler);
-app.use(errorHandler);
-
-export default app;
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));

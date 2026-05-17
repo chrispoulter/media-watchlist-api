@@ -1,6 +1,6 @@
+import { type Healthcheck } from '../types/health.js';
 import { config } from './config.js';
 import { logger } from './logger.js';
-import { type Healthcheck } from './health.js';
 
 const API_URL = 'https://api.themoviedb.org/3';
 const IMAGE_URL = 'https://image.tmdb.org/t/p/w300';

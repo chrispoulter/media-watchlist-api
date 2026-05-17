@@ -1,9 +1,9 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { DefaultLogger, sql } from 'drizzle-orm';
 import { Pool } from 'pg';
-import { type Healthcheck } from '../lib/health.js';
-import { logger } from '../lib/logger.js';
+import { type Healthcheck } from '../types/health.js';
 import { config } from '../lib/config.js';
+import { logger } from '../lib/logger.js';
 
 export const db = drizzle(config.DATABASE_URL, {
     logger: new DefaultLogger({

@@ -126,7 +126,7 @@ export const openApiSpec: OpenAPIV3.Document = {
     ],
     paths: {
         // ── Health ───────────────────────────────────────────────────────────────
-        '/api/health': {
+        '/health': {
             get: {
                 tags: ['Health'],
                 summary: 'Health check',

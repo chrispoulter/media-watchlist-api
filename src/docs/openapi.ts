@@ -1,5 +1,5 @@
 import type { OpenAPIV3 } from 'openapi-types';
-import { version } from './lib/config.js';
+import { version } from '../lib/config.js';
 
 export const openApiSpec: OpenAPIV3.Document = {
     openapi: '3.0.3',
@@ -126,7 +126,7 @@ export const openApiSpec: OpenAPIV3.Document = {
     ],
     paths: {
         // ── Health ───────────────────────────────────────────────────────────────
-        '/api/health': {
+        '/health': {
             get: {
                 tags: ['Health'],
                 summary: 'Health check',

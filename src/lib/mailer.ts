@@ -1,9 +1,9 @@
 import type { ReactElement } from 'react';
 import nodemailer from 'nodemailer';
 import { render } from 'react-email';
-import { type Healthcheck } from './health.js';
-import { logger } from './logger.js';
+import { type Healthcheck } from '../types/health.js';
 import { config } from './config.js';
+import { logger } from './logger.js';
 
 export const mailer = nodemailer.createTransport({
     host: config.SMTP_HOST,

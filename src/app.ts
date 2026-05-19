@@ -35,7 +35,8 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/search', searchRoutes);
 app.use('/api/watchlist', watchlistRoutes);
-app.use('/health', healthRoutes);
+
+app.use(healthRoutes);
 app.use(docsRoutes);
 
 app.use(notFoundHandler);

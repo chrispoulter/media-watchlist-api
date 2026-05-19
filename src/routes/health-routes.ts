@@ -7,7 +7,7 @@ import { healthCheck as checkMailer } from '../lib/mailer.js';
 
 const router = Router();
 
-router.get('/', async (_req, res) => {
+router.get('/health', async (_req, res) => {
     const services = await Promise.all([
         checkDatabase(),
         checkTmdb(),
@@ -22,6 +22,15 @@ router.get('/', async (_req, res) => {
         environment,
         uptime: process.uptime(),
         services,
+    });
+});
+
+router.get('/alive', (_req, res) => {
+    res.status(200).json({
+        status: 'ok',
+        version,
+        environment,
+        uptime: process.uptime(),
     });
 });
 

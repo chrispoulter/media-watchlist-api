@@ -30,7 +30,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                 },
                 required: ['error'],
             },
-            Healthcheck: {
+            HealthCheck: {
                 type: 'object',
                 properties: {
                     status: { type: 'string', enum: ['ok', 'unhealthy'] },
@@ -63,6 +63,19 @@ export const openApiSpec: OpenAPIV3.Document = {
                     'uptime',
                     'services',
                 ],
+            },
+            AliveCheck: {
+                type: 'object',
+                properties: {
+                    status: { type: 'string', enum: ['ok'] },
+                    version: { type: 'string', example: '1.0.0' },
+                    environment: { type: 'string', example: 'production' },
+                    uptime: {
+                        type: 'number',
+                        description: 'Process uptime in seconds',
+                    },
+                },
+                required: ['status', 'version', 'environment', 'uptime'],
             },
             SearchResult: {
                 type: 'object',
@@ -136,7 +149,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    $ref: '#/components/schemas/Healthcheck',
+                                    $ref: '#/components/schemas/HealthCheck',
                                 },
                             },
                         },
@@ -146,7 +159,27 @@ export const openApiSpec: OpenAPIV3.Document = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    $ref: '#/components/schemas/Healthcheck',
+                                    $ref: '#/components/schemas/HealthCheck',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        '/alive': {
+            get: {
+                tags: ['Health'],
+                summary: 'Liveness probe',
+                description:
+                    'Lightweight liveness check — always returns 200 without checking downstream services.',
+                responses: {
+                    '200': {
+                        description: 'Service is alive.',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    $ref: '#/components/schemas/AliveCheck',
                                 },
                             },
                         },

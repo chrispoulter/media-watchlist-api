@@ -1,4 +1,4 @@
-import { type Healthcheck } from '../types/health.js';
+import { type HealthCheck } from '../types/health.js';
 import { config } from './config.js';
 import { logger } from './logger.js';
 
@@ -28,7 +28,7 @@ interface SearchResult {
     releaseDate: string | null;
 }
 
-export const healthCheck = async (): Promise<Healthcheck> => {
+export const healthCheck = async (): Promise<HealthCheck> => {
     try {
         const response = await fetch(`${API_URL}/configuration`, {
             headers: { Authorization: `Bearer ${config.TMDB_API_READ_TOKEN}` },

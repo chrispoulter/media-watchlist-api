@@ -38,6 +38,3 @@ Thumbs.db
 .eslintcache
 eslint.config.ts
 .prettierrc
-
-# Deployment config
-vercel.json

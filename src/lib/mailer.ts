@@ -44,5 +44,18 @@ interface SendMailOptions {
 
 export const sendMail = async ({ to, subject, template }: SendMailOptions) => {
     const html = await render(template);
-    return mailer.sendMail({ from: config.SMTP_FROM, to, subject, html });
+
+    try {
+        await mailer.sendMail({
+            from: config.SMTP_FROM,
+            to,
+            subject,
+            html,
+        });
+    } catch (err) {
+        logger.error(
+            { error: err instanceof Error ? err.message : err },
+            'Mail sending failed'
+        );
+    }
 };

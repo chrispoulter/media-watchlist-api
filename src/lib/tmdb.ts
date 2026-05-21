@@ -1,4 +1,3 @@
-import { type HealthCheck } from '../types/health.js';
 import { config } from './config.js';
 import { logger } from './logger.js';
 
@@ -28,7 +27,10 @@ interface SearchResult {
     releaseDate: string | null;
 }
 
-export const healthCheck = async (): Promise<HealthCheck> => {
+export const check = async (): Promise<{
+    service: string;
+    status: 'ok' | 'unhealthy';
+}> => {
     try {
         const response = await fetch(`${API_URL}/configuration`, {
             headers: { Authorization: `Bearer ${config.TMDB_API_READ_TOKEN}` },
@@ -41,7 +43,7 @@ export const healthCheck = async (): Promise<HealthCheck> => {
             );
         }
 
-        return { service: 'tmdb', success: true };
+        return { service: 'tmdb', status: 'ok' };
     } catch (err) {
         logger.error(
             { error: err instanceof Error ? err.message : err },
@@ -50,7 +52,7 @@ export const healthCheck = async (): Promise<HealthCheck> => {
 
         return {
             service: 'tmdb',
-            success: false,
+            status: 'unhealthy',
         };
     }
 };

@@ -1,26 +1,28 @@
 import type { ReactElement } from 'react';
 import nodemailer from 'nodemailer';
 import { render } from 'react-email';
-import { type HealthCheck } from '../types/health.js';
 import { config } from './config.js';
 import { logger } from './logger.js';
 
-export const mailer = nodemailer.createTransport({
+const mailer = nodemailer.createTransport({
     host: config.SMTP_HOST,
     port: config.SMTP_PORT,
     secure: config.SMTP_SECURE,
-    auth:
-        config.SMTP_USER && config.SMTP_PASS
-            ? { user: config.SMTP_USER, pass: config.SMTP_PASS }
-            : undefined,
+    auth: {
+        user: config.SMTP_USER,
+        pass: config.SMTP_PASS,
+    },
 });
 
 export const shutdown = () => mailer.close();
 
-export const healthCheck = async (): Promise<HealthCheck> => {
+export const check = async (): Promise<{
+    service: string;
+    status: 'ok' | 'unhealthy';
+}> => {
     try {
         await mailer.verify();
-        return { service: 'mailer', success: true };
+        return { service: 'mailer', status: 'ok' };
     } catch (err) {
         logger.error(
             { error: err instanceof Error ? err.message : err },
@@ -29,7 +31,7 @@ export const healthCheck = async (): Promise<HealthCheck> => {
 
         return {
             service: 'mailer',
-            success: false,
+            status: 'unhealthy',
         };
     }
 };

@@ -1,6 +1,7 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { DefaultLogger, sql } from 'drizzle-orm';
 import { Pool } from 'pg';
+import { HealthStatus } from '../types/health.js';
 import { config } from '../lib/config.js';
 import { logger } from '../lib/logger.js';
 
@@ -19,13 +20,10 @@ export const shutdown = async () => {
     }
 };
 
-export const check = async (): Promise<{
-    service: string;
-    status: 'ok' | 'unhealthy';
-}> => {
+export const check = async (): Promise<HealthStatus> => {
     try {
         await db.execute(sql`SELECT 1`);
-        return { service: 'database', status: 'ok' };
+        return { name: 'database', status: 'ok' };
     } catch (err) {
         logger.error(
             { error: err instanceof Error ? err.message : err },
@@ -33,7 +31,7 @@ export const check = async (): Promise<{
         );
 
         return {
-            service: 'database',
+            name: 'database',
             status: 'unhealthy',
         };
     }

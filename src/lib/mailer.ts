@@ -1,6 +1,7 @@
 import type { ReactElement } from 'react';
 import nodemailer from 'nodemailer';
 import { render } from 'react-email';
+import type { HealthStatus } from '../types/health.js';
 import { config } from './config.js';
 import { logger } from './logger.js';
 
@@ -8,21 +9,18 @@ const mailer = nodemailer.createTransport({
     host: config.SMTP_HOST,
     port: config.SMTP_PORT,
     secure: config.SMTP_SECURE,
-    auth: {
-        user: config.SMTP_USER,
-        pass: config.SMTP_PASS,
-    },
+    auth:
+        config.SMTP_USER && config.SMTP_PASS
+            ? { user: config.SMTP_USER, pass: config.SMTP_PASS }
+            : undefined,
 });
 
 export const shutdown = () => mailer.close();
 
-export const check = async (): Promise<{
-    service: string;
-    status: 'ok' | 'unhealthy';
-}> => {
+export const check = async (): Promise<HealthStatus> => {
     try {
         await mailer.verify();
-        return { service: 'mailer', status: 'ok' };
+        return { name: 'mailer', status: 'ok' };
     } catch (err) {
         logger.error(
             { error: err instanceof Error ? err.message : err },
@@ -30,7 +28,7 @@ export const check = async (): Promise<{
         );
 
         return {
-            service: 'mailer',
+            name: 'mailer',
             status: 'unhealthy',
         };
     }

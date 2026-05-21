@@ -4,7 +4,6 @@ import { logger } from '../lib/logger.js';
 
 export const requestLogger = pinoHttp({
     logger,
-    genReqId: (req) => req.headers['x-vercel-id'] ?? crypto.randomUUID(),
     customLogLevel: (_req, res, err) => {
         if (err || res.statusCode >= 500) {
             return 'error';

@@ -82,7 +82,7 @@ jobs:
                   cache-to: type=gha,mode=max
 
             - name: Docker metadata (migrator)
-              id: meta-migrator
+              id: meta_migrator
               uses: docker/metadata-action@v5
               with:
                   images: ghcr.io/${{ github.repository }}
@@ -95,8 +95,8 @@ jobs:
                   context: .
                   target: migrator
                   push: true
-                  tags: ${{ steps.meta-migrator.outputs.tags }}
-                  labels: ${{ steps.meta-migrator.outputs.labels }}
+                  tags: ${{ steps.meta_migrator.outputs.tags }}
+                  labels: ${{ steps.meta_migrator.outputs.labels }}
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
 

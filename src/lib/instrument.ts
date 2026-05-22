@@ -11,6 +11,6 @@ if (config.SENTRY_DSN) {
             Sentry.postgresIntegration(),
             Sentry.pinoIntegration(),
         ],
-        tracesSampleRate: 1.0,
+        tracesSampleRate: 0.1,
     });
 }

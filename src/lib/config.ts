@@ -5,7 +5,7 @@ import { join } from 'node:path';
 
 const require = createRequire(join(process.cwd(), 'package.json'));
 
-const gitCommitSha = process.env.GIT_COMMIT_SHA;
+const gitCommitSha = process.env.GIT_COMMIT_SHA || undefined;
 
 export const version =
     gitCommitSha?.slice(0, 7) ?? require('./package.json').version;

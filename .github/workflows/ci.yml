@@ -113,7 +113,7 @@ jobs:
               with:
                   creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-            - name: Update and start migration job
+            - name: Run database migrations
               run: |
                   az containerapp job update \
                     --name "${{ secrets.AZURE_MIGRATE_JOB_NAME }}" \
@@ -124,7 +124,7 @@ jobs:
                     --name "${{ secrets.AZURE_MIGRATE_JOB_NAME }}" \
                     --resource-group "${{ secrets.AZURE_RESOURCE_GROUP }}"
 
-            - name: Update Container App
+            - name: Update Container App image
               run: |
                   az containerapp update \
                     --name "${{ secrets.AZURE_CONTAINER_APP_NAME }}" \

@@ -40,7 +40,7 @@ jobs:
             contents: read
             packages: write
         outputs:
-            image_tag: ${{ steps.image_tag.outputs.tag }}
+            image_tag: ${{ steps.meta.outputs.version }}
 
         steps:
             - name: Checkout
@@ -65,10 +65,6 @@ jobs:
                       type=sha,prefix=,format=short
                       type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
                       type=ref,event=branch,enable=${{ github.ref != 'refs/heads/main' }}
-
-            - name: Set image tag output
-              id: image_tag
-              run: echo "tag=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
 
             - name: Build and push
               uses: docker/build-push-action@v6

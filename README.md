@@ -36,7 +36,7 @@ A REST API for tracking movies and TV shows you want to watch. Built with Expres
 
 ## Getting Started
 
-### Docker Compose (recommended)
+### Docker Compose
 
 Starts the API, a PostgreSQL database, and [Mailpit](https://mailpit.axllent.org) for local email testing:
 

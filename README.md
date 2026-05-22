@@ -90,9 +90,10 @@ Interactive documentation with a request explorer is available at `GET /` when t
 
 ### Health
 
-| Method | Path          | Auth | Description                                  |
-| ------ | ------------- | ---- | -------------------------------------------- |
-| GET    | `/api/health` | No   | Returns server status, uptime, and timestamp |
+| Method | Path          | Auth | Description                                                              |
+| ------ | ------------- | ---- | ------------------------------------------------------------------------ |
+| GET    | `/health`     | No   | Checks database, mailer, and TMDB — returns 503 if any service is down   |
+| GET    | `/alive`      | No   | Lightweight liveness probe — always returns 200, no downstream checks    |
 
 ### Authentication (`/api/auth/*`)
 

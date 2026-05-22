@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { toNodeHandler } from 'better-auth/node';
+import * as Sentry from '@sentry/node';
 import { requestLogger } from './middleware/request-logger.js';
 import { notFoundHandler } from './middleware/not-found-handler.js';
 import { errorHandler } from './middleware/error-handler.js';
@@ -12,6 +13,16 @@ import { auth } from './lib/auth.js';
 import { config } from './lib/config.js';
 
 const app = express();
+
+app.use((_req, res, next) => {
+    if (config.SENTRY_DSN) {
+        res.on('finish', () => {
+            Sentry.flush(2000);
+        });
+    }
+
+    next();
+});
 
 // app.use(async (_req, _res, next) => {
 //   await new Promise((resolve) => setTimeout(resolve, 1000 * 3));
@@ -40,6 +51,8 @@ app.use(healthRoutes);
 app.use(docsRoutes);
 
 app.use(notFoundHandler);
+
+Sentry.setupExpressErrorHandler(app);
 app.use(errorHandler);
 
 export default app;

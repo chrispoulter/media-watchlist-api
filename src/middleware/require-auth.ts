@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { fromNodeHeaders } from 'better-auth/node';
+import * as Sentry from '@sentry/node';
 import { auth } from '../lib/auth.js';
 
 export const requireAuth = async (
@@ -21,6 +22,8 @@ export const requireAuth = async (
     req.session = sessionData.session;
 
     req.log = req.log.child({ userId: sessionData.user.id });
+
+    Sentry.setUser({ id: sessionData.user.id, email: sessionData.user.email });
 
     next();
 };

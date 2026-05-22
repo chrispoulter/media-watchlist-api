@@ -35,7 +35,6 @@ export const openApiSpec: OpenAPIV3.Document = {
                 properties: {
                     status: { type: 'string', enum: ['ok', 'unhealthy'] },
                     version: { type: 'string', example: '1.0.0' },
-                    environment: { type: 'string', example: 'production' },
                     uptime: {
                         type: 'number',
                         description: 'Process uptime in seconds',
@@ -55,26 +54,19 @@ export const openApiSpec: OpenAPIV3.Document = {
                         },
                     },
                 },
-                required: [
-                    'status',
-                    'version',
-                    'environment',
-                    'uptime',
-                    'services',
-                ],
+                required: ['status', 'version', 'uptime', 'services'],
             },
             AliveCheck: {
                 type: 'object',
                 properties: {
                     status: { type: 'string', enum: ['ok'] },
                     version: { type: 'string', example: '1.0.0' },
-                    environment: { type: 'string', example: 'production' },
                     uptime: {
                         type: 'number',
                         description: 'Process uptime in seconds',
                     },
                 },
-                required: ['status', 'version', 'environment', 'uptime'],
+                required: ['status', 'version', 'uptime'],
             },
             SearchResult: {
                 type: 'object',

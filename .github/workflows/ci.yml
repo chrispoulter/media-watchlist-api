@@ -4,6 +4,7 @@ on:
     push:
         branches:
             - '**'
+    pull_request:
     workflow_dispatch:
 
 jobs:
@@ -41,8 +42,6 @@ jobs:
         permissions:
             contents: read
             packages: write
-        outputs:
-            image_tag: ${{ steps.meta.outputs.version }}
 
         steps:
             - name: Checkout
@@ -93,8 +92,9 @@ jobs:
                   creds: ${{ secrets.AZURE_CREDENTIALS }}
 
             - name: Deploy to Azure Container Apps
-              uses: azure/container-apps-deploy-action@v1
-              with:
-                  containerAppName: ${{ secrets.AZURE_CONTAINER_APP_NAME }}
-                  resourceGroup: ${{ secrets.AZURE_RESOURCE_GROUP }}
-                  imageToDeploy: ghcr.io/${{ github.repository }}:${{ needs.docker.outputs.image_tag }}
+              run: |
+                  az containerapp update \
+                    --name "${{ secrets.AZURE_CONTAINER_APP_NAME }}" \
+                    --resource-group "${{ secrets.AZURE_RESOURCE_GROUP }}" \
+                    --image "ghcr.io/${{ github.repository }}:${GITHUB_SHA::7}" \
+                    --revision-suffix "r${{ github.run_number }}-${{ github.run_attempt }}"

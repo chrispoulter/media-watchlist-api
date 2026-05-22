@@ -51,9 +51,10 @@ services:
         restart: always
         healthcheck:
             test: ['CMD', 'pg_isready']
-            interval: 10s
+            interval: 30s
             timeout: 5s
-            retries: 3
+            retries: 5
+            start_period: 30s
 
     mailpit:
         image: axllent/mailpit:v1.22.3

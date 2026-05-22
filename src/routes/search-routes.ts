@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
 
     if (!result.success) {
         res.status(400).json({
-            error: 'Invalid request body',
+            error: 'Invalid request query',
             details: result.error.issues,
         });
         return;

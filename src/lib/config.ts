@@ -11,9 +11,6 @@ const gitCommitSha =
 export const release =
     gitCommitSha?.slice(0, 7) ?? require('./package.json').version;
 
-export const environment =
-    process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? 'development';
-
 const configSchema = z.object({
     PORT: z.coerce.number().default(3000),
     DATABASE_URL: z.url(),

@@ -4,7 +4,6 @@ import { logger } from '../lib/logger.js';
 
 export const requestLogger = pinoHttp({
     logger,
-    genReqId: (req) => req.headers['x-vercel-id'] ?? crypto.randomUUID(),
     customProps: (req: Request) => ({
         userId: req.user?.id,
     }),
@@ -20,6 +19,6 @@ export const requestLogger = pinoHttp({
         return 'info';
     },
     autoLogging: {
-        ignore: (req) => req.url === '/api/health',
+        ignore: (req) => req.url === '/health' || req.url === '/alive',
     },
 });

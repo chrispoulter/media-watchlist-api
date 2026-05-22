@@ -1,5 +1,5 @@
 import pino from 'pino';
-import { config, environment, release } from './config.js';
+import { config, release } from './config.js';
 
 const isDev = process.env['NODE_ENV'] !== 'production';
 
@@ -11,7 +11,7 @@ export const logger = pino(
     {
         level: config.LOG_LEVEL,
         timestamp: pino.stdTimeFunctions.isoTime,
-        base: { service: 'media-watchlist-api', environment, release },
+        base: { service: 'media-watchlist-api', release },
         redact: {
             paths: [
                 'req.headers.authorization',

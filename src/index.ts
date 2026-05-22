@@ -7,15 +7,14 @@ import * as Sentry from '@sentry/node';
 import { requestLogger } from './middleware/request-logger.js';
 import { auth } from './lib/auth.js';
 import apiRouter from './routes/index.js';
+import app from './app.js';
 import { config } from './lib/config.js';
-import { openApiSpec } from './openapi.js';
+import { logger } from './lib/logger.js';
 
-const app = express();
+import { shutdown as shutdownDb } from './db/index.js';
+import { shutdown as shutdownMailer } from './lib/mailer.js';
 
-// app.use(async (_req, _res, next) => {
-//   await new Promise((resolve) => setTimeout(resolve, 1000 * 3));
-//   next();
-// });
+const SHUTDOWN_TIMEOUT_MS = 10_000;
 
 app.use(requestLogger);
 
@@ -57,28 +56,32 @@ app.get('/openapi.json', async (_req, res) => {
             `/api/auth${path}`,
             pathItem,
         ])
+const server = app.listen(config.PORT, () => {
+    logger.info(
+        { port: config.PORT, local: `http://localhost:${config.PORT}` },
+        'Server started'
     );
-
-    res.json({
-        ...openApiSpec,
-        paths: { ...authPaths, ...openApiSpec.paths },
-        components: {
-            ...openApiSpec.components,
-            schemas: {
-                ...authSchema.components.schemas,
-                ...openApiSpec.components.schemas,
-            },
-        },
-    });
 });
 
-app.use(
-    '/',
-    apiReference({
-        url: '/openapi.json',
-        pageTitle: 'Media Watchlist API',
-    })
-);
+const shutdown = async (signal: string) => {
+    logger.info({ signal }, 'Shutdown signal received');
+
+    server.close(async () => {
+        try {
+            await Promise.all([shutdownDb(), shutdownMailer()]);
+            logger.info('Shutdown complete');
+            process.exit(0);
+        } catch (err) {
+            logger.error({ err }, 'Error during shutdown');
+            process.exit(1);
+        }
+    });
+
+    setTimeout(() => {
+        logger.error('Shutdown timeout exceeded, forcing exit');
+        process.exit(1);
+    }, SHUTDOWN_TIMEOUT_MS).unref();
+};
 
 Sentry.setupExpressErrorHandler(app);
 
@@ -95,3 +98,5 @@ app.use(
 );
 
 export default app;
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));

@@ -36,7 +36,7 @@ A REST API for tracking movies and TV shows you want to watch. Built with Expres
 
 ## Getting Started
 
-### Docker Compose (recommended)
+### Docker Compose
 
 Starts the API, a PostgreSQL database, and [Mailpit](https://mailpit.axllent.org) for local email testing:
 
@@ -49,8 +49,7 @@ docker-compose up
 | Service            | URL                   |
 | ------------------ | --------------------- |
 | API                | http://localhost:3000 |
-| Interactive docs   | http://localhost:3000 |
-| Mailpit (email UI) | http://localhost:8025 |
+| Mailpit            | http://localhost:8025 |
 
 ### Manual Setup
 
@@ -90,9 +89,10 @@ Interactive documentation with a request explorer is available at `GET /` when t
 
 ### Health
 
-| Method | Path          | Auth | Description                                  |
-| ------ | ------------- | ---- | -------------------------------------------- |
-| GET    | `/api/health` | No   | Returns server status, uptime, and timestamp |
+| Method | Path          | Auth | Description                                                              |
+| ------ | ------------- | ---- | ------------------------------------------------------------------------ |
+| GET    | `/health`     | No   | Checks database, mailer, and TMDB — returns 503 if any service is down   |
+| GET    | `/alive`      | No   | Lightweight liveness probe — always returns 200, no downstream checks    |
 
 ### Authentication (`/api/auth/*`)
 

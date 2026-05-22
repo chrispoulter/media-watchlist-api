@@ -35,7 +35,7 @@ const addWatchlistItemSchema = z.object({
     providerId: z.string().min(1),
     mediaType: z.enum(['movie', 'tv-show']),
     title: z.string().min(1),
-    posterUrl: z.string().optional(),
+    posterUrl: z.url().optional(),
     overview: z.string().optional(),
     releaseDate: z.string().optional(),
 });
@@ -107,6 +107,7 @@ router.post('/', async (req, res) => {
                 },
                 'Duplicate watchlist item'
             );
+
             res.status(409).json({ error: 'Item already exists in watchlist' });
             return;
         }

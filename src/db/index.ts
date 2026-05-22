@@ -1,18 +1,29 @@
-import { drizzle } from 'drizzle-orm/postgres-js';
-import { sql } from 'drizzle-orm';
-import postgres from 'postgres';
-import { type HealthcheckResult } from '../lib/health.js';
-import { logger } from '../lib/logger.js';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { DefaultLogger, sql } from 'drizzle-orm';
+import { Pool } from 'pg';
+import { HealthStatus } from '../types/health.js';
 import { config } from '../lib/config.js';
+import { logger } from '../lib/logger.js';
 
-const client = postgres(config.DATABASE_URL);
+export const db = drizzle(config.DATABASE_URL, {
+    logger: new DefaultLogger({
+        writer: {
+            write: (message) => logger.debug({ sql: message }, 'query'),
+        },
+    }),
+});
 
-export const db = drizzle(client);
+export const shutdown = async () => {
+    const client = db.$client;
+    if (client instanceof Pool) {
+        await client.end();
+    }
+};
 
-export const healthCheck = async (): Promise<HealthcheckResult> => {
+export const check = async (): Promise<HealthStatus> => {
     try {
         await db.execute(sql`SELECT 1`);
-        return { service: 'database', success: true };
+        return { name: 'database', status: 'ok' };
     } catch (err) {
         logger.error(
             { error: err instanceof Error ? err.message : err },
@@ -20,8 +31,8 @@ export const healthCheck = async (): Promise<HealthcheckResult> => {
         );
 
         return {
-            service: 'database',
-            success: false,
+            name: 'database',
+            status: 'unhealthy',
         };
     }
 };

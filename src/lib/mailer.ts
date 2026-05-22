@@ -1,11 +1,11 @@
 import type { ReactElement } from 'react';
 import nodemailer from 'nodemailer';
-import { render } from '@react-email/render';
-import { type HealthcheckResult } from './health.js';
-import { logger } from './logger.js';
+import { render } from 'react-email';
+import type { HealthStatus } from '../types/health.js';
 import { config } from './config.js';
+import { logger } from './logger.js';
 
-export const mailer = nodemailer.createTransport({
+const mailer = nodemailer.createTransport({
     host: config.SMTP_HOST,
     port: config.SMTP_PORT,
     secure: config.SMTP_SECURE,
@@ -15,10 +15,12 @@ export const mailer = nodemailer.createTransport({
             : undefined,
 });
 
-export const healthCheck = async (): Promise<HealthcheckResult> => {
+export const shutdown = () => mailer.close();
+
+export const check = async (): Promise<HealthStatus> => {
     try {
         await mailer.verify();
-        return { service: 'mailer', success: true };
+        return { name: 'mailer', status: 'ok' };
     } catch (err) {
         logger.error(
             { error: err instanceof Error ? err.message : err },
@@ -26,8 +28,8 @@ export const healthCheck = async (): Promise<HealthcheckResult> => {
         );
 
         return {
-            service: 'mailer',
-            success: false,
+            name: 'mailer',
+            status: 'unhealthy',
         };
     }
 };
@@ -40,5 +42,18 @@ interface SendMailOptions {
 
 export const sendMail = async ({ to, subject, template }: SendMailOptions) => {
     const html = await render(template);
-    return mailer.sendMail({ from: config.SMTP_FROM, to, subject, html });
+
+    try {
+        await mailer.sendMail({
+            from: config.SMTP_FROM,
+            to,
+            subject,
+            html,
+        });
+    } catch (err) {
+        logger.error(
+            { error: err instanceof Error ? err.message : err },
+            'Mail sending failed'
+        );
+    }
 };

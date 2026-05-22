@@ -49,8 +49,7 @@ docker-compose up
 | Service            | URL                   |
 | ------------------ | --------------------- |
 | API                | http://localhost:3000 |
-| Interactive docs   | http://localhost:3000 |
-| Mailpit (email UI) | http://localhost:8025 |
+| Mailpit            | http://localhost:8025 |
 
 ### Manual Setup
 

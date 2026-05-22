@@ -1,13 +1,17 @@
 import * as Sentry from '@sentry/node';
-import { config, release, environment } from './config.js';
+import { config, version, environment } from './config.js';
 
 if (config.SENTRY_DSN) {
     Sentry.init({
         dsn: config.SENTRY_DSN,
-        release,
+        release: version,
         environment,
         sendDefaultPii: true,
-        integrations: [Sentry.expressIntegration()],
+        integrations: [
+            Sentry.expressIntegration(),
+            Sentry.postgresIntegration(),
+            Sentry.pinoIntegration(),
+        ],
         tracesSampleRate: 1.0,
     });
 }

@@ -8,7 +8,11 @@ const require = createRequire(join(process.cwd(), 'package.json'));
 const gitCommitSha =
     process.env.VERCEL_GIT_COMMIT_SHA ?? process.env.GIT_COMMIT_SHA;
 
+<<<<<<< HEAD
 export const release =
+=======
+export const version =
+>>>>>>> 0b28bda715210065fa1339c86d94f7bdbd831190
     gitCommitSha?.slice(0, 7) ?? require('./package.json').version;
 
 const configSchema = z.object({

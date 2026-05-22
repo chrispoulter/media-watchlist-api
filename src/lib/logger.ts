@@ -1,5 +1,5 @@
 import pino from 'pino';
-import { config, environment, version } from './config.js';
+import { config, version } from './config.js';
 
 const isDev = process.env['NODE_ENV'] !== 'production';
 
@@ -11,7 +11,7 @@ export const logger = pino(
     {
         level: config.LOG_LEVEL,
         timestamp: pino.stdTimeFunctions.isoTime,
-        base: { environment, version },
+        base: { version },
         redact: {
             paths: [
                 'req.headers.authorization',

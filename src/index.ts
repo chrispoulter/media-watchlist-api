@@ -6,7 +6,6 @@ import { apiReference } from '@scalar/express-api-reference';
 import * as Sentry from '@sentry/node';
 import { requestLogger } from './middleware/request-logger.js';
 import { auth } from './lib/auth.js';
-import apiRouter from './routes/index.js';
 import app from './app.js';
 import { config } from './lib/config.js';
 import { logger } from './lib/logger.js';

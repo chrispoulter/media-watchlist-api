@@ -46,10 +46,10 @@ cp .env.example .env
 docker-compose up
 ```
 
-| Service            | URL                   |
-| ------------------ | --------------------- |
-| API                | http://localhost:3000 |
-| Mailpit            | http://localhost:8025 |
+| Service | URL                   |
+| ------- | --------------------- |
+| API     | http://localhost:3000 |
+| Mailpit | http://localhost:8025 |
 
 ### Manual Setup
 
@@ -89,10 +89,10 @@ Interactive documentation with a request explorer is available at `GET /` when t
 
 ### Health
 
-| Method | Path          | Auth | Description                                                              |
-| ------ | ------------- | ---- | ------------------------------------------------------------------------ |
-| GET    | `/health`     | No   | Checks database, mailer, and TMDB — returns 503 if any service is down   |
-| GET    | `/alive`      | No   | Lightweight liveness probe — always returns 200, no downstream checks    |
+| Method | Path      | Auth | Description                                                            |
+| ------ | --------- | ---- | ---------------------------------------------------------------------- |
+| GET    | `/health` | No   | Checks database, mailer, and TMDB — returns 503 if any service is down |
+| GET    | `/alive`  | No   | Lightweight liveness probe — always returns 200, no downstream checks  |
 
 ### Authentication (`/api/auth/*`)
 

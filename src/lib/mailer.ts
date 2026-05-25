@@ -34,13 +34,13 @@ export const check = async (): Promise<HealthStatus> => {
     }
 };
 
-interface SendMailOptions {
+interface MailMessage {
     to: string;
     subject: string;
     template: ReactElement;
 }
 
-export const sendMail = async ({ to, subject, template }: SendMailOptions) => {
+export const sendMail = async ({ to, subject, template }: MailMessage) => {
     const html = await render(template);
 
     try {

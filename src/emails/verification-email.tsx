@@ -12,10 +12,10 @@ import {
     Preview,
 } from 'react-email';
 
-type VerificationEmailProps = {
+interface VerificationEmailProps {
     url: string;
     username: string;
-};
+}
 
 VerificationEmail.PreviewProps = {
     url: 'https://example.com/verify-email?token=abc123xyz',

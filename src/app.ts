@@ -1,4 +1,5 @@
 import { OpenAPIHono } from '@hono/zod-openapi';
+import { requestId } from 'hono/request-id';
 import { cors } from 'hono/cors';
 import { requestLogger } from './middleware/request-logger.js';
 import { notFoundHandler } from './middleware/not-found-handler.js';
@@ -12,6 +13,8 @@ import { config } from './lib/config.js';
 import type { AppEnv } from './types/hono.js';
 
 const app = new OpenAPIHono<AppEnv>();
+
+app.use('*', requestId());
 
 app.use(
     '*',

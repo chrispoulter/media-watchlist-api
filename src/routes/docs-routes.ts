@@ -1,11 +1,8 @@
 import { Hono } from 'hono';
 import { Scalar } from '@scalar/hono-api-reference';
-import { openApiSpec } from '../docs/openapi.js';
 import { auth } from '../lib/auth.js';
 
 const docsRoutes = new Hono();
-
-docsRoutes.get('/openapi.json', (c) => c.json(openApiSpec));
 
 docsRoutes.get('/auth-openapi.json', async (c) => {
     const authSchema = await auth.api.generateOpenAPISchema();

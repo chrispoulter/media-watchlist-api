@@ -1,22 +1,63 @@
-import { Hono } from 'hono';
-import { zValidator } from '@hono/zod-validator';
+import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi';
 import { and, eq, inArray } from 'drizzle-orm';
-import { z } from 'zod';
 import { db } from '../db/index.js';
 import { watchlistItem } from '../db/schema.js';
 import { requireAuth } from '../middleware/require-auth.js';
 import { search } from '../lib/tmdb.js';
+import { ErrorSchema } from '../lib/schemas.js';
 import type { AppEnv } from '../types/hono.js';
 
-const searchRoutes = new Hono<AppEnv>();
+const SearchResultSchema = z
+    .object({
+        providerId: z.string(),
+        mediaType: z.enum(['movie', 'tv-show']),
+        title: z.string().optional(),
+        posterUrl: z.string().url().nullable().optional(),
+        overview: z.string().nullable().optional(),
+        releaseDate: z.string().nullable().optional(),
+        watchlistItemId: z.number().int().nullable().optional(),
+    })
+    .openapi('SearchResult');
 
-searchRoutes.use('*', requireAuth);
+const searchRoutes = new OpenAPIHono<AppEnv>();
 
-const searchSchema = z.object({
-    query: z.string().min(1),
+const searchQuerySchema = z.object({
+    query: z.string().min(1).openapi({ example: 'Breaking Bad' }),
 });
 
-searchRoutes.get('/search', zValidator('query', searchSchema), async (c) => {
+const searchRoute = createRoute({
+    method: 'get',
+    path: '/search',
+    tags: ['Search'],
+    summary: 'Search for movies and TV shows',
+    security: [{ bearerAuth: [] }],
+    middleware: [requireAuth] as const,
+    request: {
+        query: searchQuerySchema,
+    },
+    responses: {
+        200: {
+            content: {
+                'application/json': { schema: z.array(SearchResultSchema) },
+            },
+            description: 'Search results.',
+        },
+        400: {
+            content: { 'application/json': { schema: ErrorSchema } },
+            description: 'Invalid request query.',
+        },
+        401: {
+            content: { 'application/json': { schema: ErrorSchema } },
+            description: 'Unauthorized.',
+        },
+        500: {
+            content: { 'application/json': { schema: ErrorSchema } },
+            description: 'Internal Server Error.',
+        },
+    },
+});
+
+searchRoutes.openapi(searchRoute, async (c) => {
     const { query } = c.req.valid('query');
     const data = await search(query);
 
@@ -47,7 +88,8 @@ searchRoutes.get('/search', zValidator('query', searchSchema), async (c) => {
             watchlistItemId:
                 watchlistMap.get(`${item.providerId}-${item.mediaType}`) ??
                 undefined,
-        }))
+        })),
+        200
     );
 });
 

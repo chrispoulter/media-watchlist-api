@@ -1,24 +1,26 @@
-import type { Request } from 'express';
-import { pinoHttp } from 'pino-http';
+import { pinoLogger } from 'hono-pino';
 import { logger } from '../lib/logger.js';
 
-export const requestLogger = pinoHttp({
-    logger,
-    customLogLevel: (_req, res, err) => {
-        if (err || res.statusCode >= 500) {
-            return 'error';
-        }
-
-        if (res.statusCode >= 400) {
-            return 'warn';
-        }
-
-        return 'info';
-    },
-    customProps: (req: Request) => ({
-        userId: req.user?.id,
-    }),
-    autoLogging: {
-        ignore: (req) => req.url === '/health' || req.url === '/alive',
+export const requestLogger = pinoLogger({
+    pino: logger,
+    http: {
+        onResLevel: (c) => {
+            if (c.req.path === '/health' || c.req.path === '/alive') {
+                return 'trace';
+            }
+            if (c.error || c.res.status >= 500) {
+                return 'error';
+            }
+            if (c.res.status >= 400) {
+                return 'warn';
+            }
+            return 'info';
+        },
+        onResBindings: (c) => ({
+            userId: c.get('user')?.id,
+            res: {
+                status: c.res.status,
+            },
+        }),
     },
 });

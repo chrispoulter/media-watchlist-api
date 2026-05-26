@@ -1,26 +1,24 @@
-import type { Request, Response, NextFunction } from 'express';
-import { fromNodeHeaders } from 'better-auth/node';
+import { createMiddleware } from 'hono/factory';
 import { auth } from '../lib/auth.js';
+import type { AppEnv } from '../types/hono.js';
 
-export const requireAuth = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const requireAuth = createMiddleware<AppEnv>(async (c, next) => {
     const sessionData = await auth.api.getSession({
-        headers: fromNodeHeaders(req.headers),
+        headers: c.req.raw.headers,
     });
 
     if (!sessionData) {
-        req.log.warn({ path: req.path }, 'Unauthenticated request rejected');
-        res.status(401).json({ error: 'Unauthorized' });
-        return;
+        c.get('logger').warn(
+            { path: c.req.path },
+            'Unauthenticated request rejected'
+        );
+        return c.json({ error: 'Unauthorized' }, 401);
     }
 
-    req.user = sessionData.user;
-    req.session = sessionData.session;
+    c.set('user', sessionData.user);
+    c.set('session', sessionData.session);
 
-    req.log = req.log.child({ userId: sessionData.user.id });
+    c.get('logger').assign({ userId: sessionData.user.id });
 
-    next();
-};
+    await next();
+});

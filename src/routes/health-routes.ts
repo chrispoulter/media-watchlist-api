@@ -1,13 +1,12 @@
-import { Router } from 'express';
+import { Hono } from 'hono';
 import { version } from '../lib/config.js';
-
 import { check as checkDatabase } from '../db/index.js';
 import { check as checkMailer } from '../lib/mailer.js';
 import { check as checkTmdb } from '../lib/tmdb.js';
 
-const router = Router();
+const healthRoutes = new Hono();
 
-router.get('/health', async (_req, res) => {
+healthRoutes.get('/health', async (c) => {
     const services = await Promise.all([
         checkDatabase(),
         checkMailer(),
@@ -16,20 +15,23 @@ router.get('/health', async (_req, res) => {
 
     const failing = services.some((s) => s.status !== 'ok');
 
-    res.status(failing ? 503 : 200).json({
-        status: failing ? 'unhealthy' : 'ok',
-        version,
-        uptime: process.uptime(),
-        services,
-    });
+    return c.json(
+        {
+            status: failing ? 'unhealthy' : 'ok',
+            version,
+            uptime: process.uptime(),
+            services,
+        },
+        failing ? 503 : 200
+    );
 });
 
-router.get('/alive', (_req, res) => {
-    res.status(200).json({
+healthRoutes.get('/alive', (c) => {
+    return c.json({
         status: 'ok',
         version,
         uptime: process.uptime(),
     });
 });
 
-export default router;
+export default healthRoutes;

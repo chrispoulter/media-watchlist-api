@@ -1,6 +1,5 @@
-import express from 'express';
-import cors from 'cors';
-import { toNodeHandler } from 'better-auth/node';
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
 import { requestLogger } from './middleware/request-logger.js';
 import { notFoundHandler } from './middleware/not-found-handler.js';
 import { errorHandler } from './middleware/error-handler.js';
@@ -10,36 +9,30 @@ import healthRoutes from './routes/health-routes.js';
 import docsRoutes from './routes/docs-routes.js';
 import { auth } from './lib/auth.js';
 import { config } from './lib/config.js';
+import type { AppEnv } from './types/hono.js';
 
-const app = express();
-
-// app.use(async (_req, _res, next) => {
-//   await new Promise((resolve) => setTimeout(resolve, 1000 * 3));
-//   next();
-// });
+const app = new Hono<AppEnv>();
 
 app.use(
+    '*',
     cors({
         origin: config.CLIENT_ORIGIN.split(','),
-        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
         credentials: true,
     })
 );
 
-app.use(requestLogger);
+app.use('*', requestLogger);
 
-app.all('/api/auth/*splat', toNodeHandler(auth));
+app.all('/api/auth/**', (c) => auth.handler(c.req.raw));
 
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
+app.route('/api', searchRoutes);
+app.route('/api', watchlistRoutes);
 
-app.use('/api/search', searchRoutes);
-app.use('/api/watchlist', watchlistRoutes);
+app.route('/', healthRoutes);
+app.route('/', docsRoutes);
 
-app.use(healthRoutes);
-app.use(docsRoutes);
-
-app.use(notFoundHandler);
-app.use(errorHandler);
+app.notFound(notFoundHandler);
+app.onError(errorHandler);
 
 export default app;

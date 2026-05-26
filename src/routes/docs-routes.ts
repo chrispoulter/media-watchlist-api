@@ -1,31 +1,28 @@
-import { Router } from 'express';
-import { apiReference } from '@scalar/express-api-reference';
+import { Hono } from 'hono';
+import { Scalar } from '@scalar/hono-api-reference';
 import { openApiSpec } from '../docs/openapi.js';
 import { auth } from '../lib/auth.js';
 
-const router = Router();
+const docsRoutes = new Hono();
 
-router.get('/openapi.json', async (_req, res) => res.json(openApiSpec));
+docsRoutes.get('/openapi.json', (c) => c.json(openApiSpec));
 
-router.get('/auth-openapi.json', async (_req, res) => {
+docsRoutes.get('/auth-openapi.json', async (c) => {
     const authSchema = await auth.api.generateOpenAPISchema();
-    res.json(authSchema);
+    return c.json(authSchema);
 });
 
-router.use(
+docsRoutes.use(
     '/reference',
-    apiReference({
+    Scalar({
         pageTitle: 'Media Watchlist API',
         sources: [
             { url: '/openapi.json', title: 'Media Watchlist API' },
-            {
-                url: '/auth-openapi.json',
-                title: 'Better Auth',
-            },
+            { url: '/auth-openapi.json', title: 'Better Auth' },
         ],
     })
 );
 
-router.get('/', (_req, res) => res.redirect('/reference'));
+docsRoutes.get('/', (c) => c.redirect('/reference'));
 
-export default router;
+export default docsRoutes;

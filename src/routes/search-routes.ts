@@ -1,28 +1,28 @@
-import { Router } from 'express';
+import { Hono } from 'hono';
 import { and, eq, inArray } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../db/index.js';
 import { watchlistItem } from '../db/schema.js';
 import { requireAuth } from '../middleware/require-auth.js';
 import { search } from '../lib/tmdb.js';
+import type { AppEnv } from '../types/hono.js';
 
-const router = Router();
+const searchRoutes = new Hono<AppEnv>();
 
-router.use(requireAuth);
+searchRoutes.use('*', requireAuth);
 
 const searchSchema = z.object({
     query: z.string().min(1),
 });
 
-router.get('/', async (req, res) => {
-    const result = searchSchema.safeParse(req.query);
+searchRoutes.get('/search', async (c) => {
+    const result = searchSchema.safeParse({ query: c.req.query('query') });
 
     if (!result.success) {
-        res.status(400).json({
-            error: 'Invalid request query',
-            details: result.error.issues,
-        });
-        return;
+        return c.json(
+            { error: 'Invalid request query', details: result.error.issues },
+            400
+        );
     }
 
     const data = await search(result.data.query);
@@ -34,7 +34,7 @@ router.get('/', async (req, res) => {
         .from(watchlistItem)
         .where(
             and(
-                eq(watchlistItem.userId, req.user!.id),
+                eq(watchlistItem.userId, c.get('user').id),
                 inArray(watchlistItem.providerId, providerIds)
             )
         );
@@ -43,7 +43,7 @@ router.get('/', async (req, res) => {
         watchlistItems.map((w) => [`${w.providerId}-${w.mediaType}`, w.id])
     );
 
-    res.json(
+    return c.json(
         data.map((item) => ({
             providerId: item.providerId,
             mediaType: item.mediaType,
@@ -58,4 +58,4 @@ router.get('/', async (req, res) => {
     );
 });
 
-export default router;
+export default searchRoutes;

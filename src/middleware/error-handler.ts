@@ -1,6 +1,9 @@
-import { ErrorRequestHandler } from 'express';
+import type { Context } from 'hono';
+import { logger } from '../lib/logger.js';
+import type { AppEnv } from '../types/hono.js';
 
-export const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
-    req.log.error({ err, userId: req.user?.id }, 'Unhandled error');
-    res.status(500).json({ error: 'Internal Server Error' });
+export const errorHandler = (err: Error, c: Context<AppEnv>) => {
+    const log = c.get('logger') ?? logger;
+    log.error({ err, userId: c.get('user')?.id }, 'Unhandled error');
+    return c.json({ error: 'Internal Server Error' }, 500);
 };

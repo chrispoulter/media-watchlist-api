@@ -1,3 +1,4 @@
+import { serve } from '@hono/node-server';
 import app from './app.js';
 import { config } from './lib/config.js';
 import { logger } from './lib/logger.js';
@@ -7,9 +8,9 @@ import { shutdown as shutdownMailer } from './lib/mailer.js';
 
 const SHUTDOWN_TIMEOUT_MS = 10_000;
 
-const server = app.listen(config.PORT, () => {
+const server = serve({ fetch: app.fetch, port: config.PORT }, (info) => {
     logger.info(
-        { port: config.PORT, local: `http://localhost:${config.PORT}` },
+        { port: info.port, local: `http://localhost:${info.port}` },
         'Server started'
     );
 });

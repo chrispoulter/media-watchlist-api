@@ -10,7 +10,7 @@ if (!databaseUrl) {
 }
 
 const pool = new Pool({ connectionString: databaseUrl });
-const db = drizzle({ client: pool });
+const db = drizzle({ client: pool, logger: true });
 
 await migrate(db, { migrationsFolder: './drizzle' });
 await pool.end();

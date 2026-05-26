@@ -1,7 +1,7 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { DefaultLogger, sql } from 'drizzle-orm';
 import { Pool } from 'pg';
-import { HealthStatus } from '../types/health.js';
+import { type HealthStatus } from '../types/health.js';
 import { config } from '../lib/config.js';
 import { logger } from '../lib/logger.js';
 

@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { zValidator } from '@hono/zod-validator';
 import { and, eq, inArray } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../db/index.js';
@@ -15,17 +16,9 @@ const searchSchema = z.object({
     query: z.string().min(1),
 });
 
-searchRoutes.get('/search', async (c) => {
-    const result = searchSchema.safeParse({ query: c.req.query('query') });
-
-    if (!result.success) {
-        return c.json(
-            { error: 'Invalid request query', details: result.error.issues },
-            400
-        );
-    }
-
-    const data = await search(result.data.query);
+searchRoutes.get('/search', zValidator('query', searchSchema), async (c) => {
+    const { query } = c.req.valid('query');
+    const data = await search(query);
 
     const providerIds = data.map((item) => item.providerId);
 

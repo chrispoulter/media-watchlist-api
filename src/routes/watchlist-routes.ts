@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { zValidator } from '@hono/zod-validator';
 import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '../db/index.js';
@@ -41,120 +42,113 @@ const addWatchlistItemSchema = z.object({
     releaseDate: z.string().optional(),
 });
 
-watchlistRoutes.post('/watchlist', async (c) => {
-    const body = await c.req.json();
-    const result = addWatchlistItemSchema.safeParse(body);
+watchlistRoutes.post(
+    '/watchlist',
+    zValidator('json', addWatchlistItemSchema),
+    async (c) => {
+        const body = c.req.valid('json');
+        const userId = c.get('user').id;
 
-    if (!result.success) {
-        return c.json(
-            { error: 'Invalid request body', details: result.error.issues },
-            400
+        const count = await db.$count(
+            watchlistItem,
+            eq(watchlistItem.userId, userId)
         );
-    }
 
-    const userId = c.get('user').id;
-
-    const count = await db.$count(
-        watchlistItem,
-        eq(watchlistItem.userId, userId)
-    );
-
-    if (count >= WATCHLIST_ITEM_LIMIT) {
-        return c.json(
-            {
-                error: `Watchlist limit of ${WATCHLIST_ITEM_LIMIT} items reached`,
-            },
-            429
-        );
-    }
-
-    try {
-        const [created] = await db
-            .insert(watchlistItem)
-            .values({ ...result.data, userId })
-            .returning();
-
-        if (!created) {
-            return c.json({ error: 'Failed to add item to watchlist' }, 500);
+        if (count >= WATCHLIST_ITEM_LIMIT) {
+            return c.json(
+                {
+                    error: `Watchlist limit of ${WATCHLIST_ITEM_LIMIT} items reached`,
+                },
+                429
+            );
         }
 
-        c.get('logger').info(
-            {
-                itemId: created.id,
-                providerId: created.providerId,
-                mediaType: created.mediaType,
-                title: created.title,
-            },
-            'Watchlist item added'
-        );
+        try {
+            const [created] = await db
+                .insert(watchlistItem)
+                .values({ ...body, userId })
+                .returning();
 
-        return c.json(
-            {
-                id: created.id,
-                providerId: created.providerId,
-                mediaType: created.mediaType,
-                title: created.title,
-                posterUrl: created.posterUrl ?? undefined,
-                overview: created.overview ?? undefined,
-                releaseDate: created.releaseDate ?? undefined,
-                addedAt: created.addedAt,
-            },
-            201
-        );
-    } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : '';
+            if (!created) {
+                return c.json(
+                    { error: 'Failed to add item to watchlist' },
+                    500
+                );
+            }
 
-        if (message.includes('watchlist_user_provider_idx')) {
-            c.get('logger').warn(
+            c.get('logger').info(
                 {
-                    providerId: result.data.providerId,
-                    mediaType: result.data.mediaType,
+                    itemId: created.id,
+                    providerId: created.providerId,
+                    mediaType: created.mediaType,
+                    title: created.title,
                 },
-                'Duplicate watchlist item'
+                'Watchlist item added'
             );
 
-            return c.json({ error: 'Item already exists in watchlist' }, 409);
-        }
+            return c.json(
+                {
+                    id: created.id,
+                    providerId: created.providerId,
+                    mediaType: created.mediaType,
+                    title: created.title,
+                    posterUrl: created.posterUrl ?? undefined,
+                    overview: created.overview ?? undefined,
+                    releaseDate: created.releaseDate ?? undefined,
+                    addedAt: created.addedAt,
+                },
+                201
+            );
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : '';
 
-        throw err;
+            if (message.includes('watchlist_user_provider_idx')) {
+                c.get('logger').warn(
+                    {
+                        providerId: body.providerId,
+                        mediaType: body.mediaType,
+                    },
+                    'Duplicate watchlist item'
+                );
+
+                return c.json(
+                    { error: 'Item already exists in watchlist' },
+                    409
+                );
+            }
+
+            throw err;
+        }
     }
-});
+);
 
 const deleteWatchlistItemSchema = z.object({
     id: z.coerce.number().int().positive(),
 });
 
-watchlistRoutes.delete('/watchlist/:id', async (c) => {
-    const result = deleteWatchlistItemSchema.safeParse({
-        id: c.req.param('id'),
-    });
+watchlistRoutes.delete(
+    '/watchlist/:id',
+    zValidator('param', deleteWatchlistItemSchema),
+    async (c) => {
+        const { id } = c.req.valid('param');
+        const userId = c.get('user').id;
 
-    if (!result.success) {
-        return c.json(
-            {
-                error: 'Invalid request parameters',
-                details: result.error.issues,
-            },
-            400
-        );
+        const [deleted] = await db
+            .delete(watchlistItem)
+            .where(
+                and(eq(watchlistItem.id, id), eq(watchlistItem.userId, userId))
+            )
+            .returning();
+
+        if (!deleted) {
+            c.get('logger').warn({ itemId: id }, 'Watchlist item not found');
+            return c.json({ error: 'Item not found in watchlist' }, 404);
+        }
+
+        c.get('logger').info({ itemId: deleted.id }, 'Watchlist item removed');
+
+        return c.body(null, 204);
     }
-
-    const { id } = result.data;
-    const userId = c.get('user').id;
-
-    const [deleted] = await db
-        .delete(watchlistItem)
-        .where(and(eq(watchlistItem.id, id), eq(watchlistItem.userId, userId)))
-        .returning();
-
-    if (!deleted) {
-        c.get('logger').warn({ itemId: id }, 'Watchlist item not found');
-        return c.json({ error: 'Item not found in watchlist' }, 404);
-    }
-
-    c.get('logger').info({ itemId: deleted.id }, 'Watchlist item removed');
-
-    return c.body(null, 204);
-});
+);
 
 export default watchlistRoutes;

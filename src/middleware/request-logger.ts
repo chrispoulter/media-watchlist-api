@@ -16,11 +16,15 @@ export const requestLogger = pinoLogger({
             }
             return 'info';
         },
-        onResBindings: (c) => ({
-            userId: c.get('user')?.id,
-            res: {
-                status: c.res.status,
-            },
-        }),
+        onResBindings: (c) => {
+            const user = c.get('user');
+
+            return {
+                userId: user?.id,
+                res: {
+                    status: c.res.status,
+                },
+            };
+        },
     },
 });

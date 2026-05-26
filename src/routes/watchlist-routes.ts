@@ -40,8 +40,6 @@ const AddWatchlistItemRequestSchema = z
 
 const watchlistRoutes = new OpenAPIHono<AppEnv>();
 
-// ── GET /watchlist ────────────────────────────────────────────────────────────
-
 const getWatchlistRoute = createRoute({
     method: 'get',
     path: '/watchlist',
@@ -68,10 +66,12 @@ const getWatchlistRoute = createRoute({
 });
 
 watchlistRoutes.openapi(getWatchlistRoute, async (c) => {
+    const user = c.get('user');
+
     const data = await db
         .select()
         .from(watchlistItem)
-        .where(eq(watchlistItem.userId, c.get('user').id));
+        .where(eq(watchlistItem.userId, user.id));
 
     return c.json(
         data.map((item) => ({
@@ -87,8 +87,6 @@ watchlistRoutes.openapi(getWatchlistRoute, async (c) => {
         200
     );
 });
-
-// ── POST /watchlist ───────────────────────────────────────────────────────────
 
 const addWatchlistItemRoute = createRoute({
     method: 'post',
@@ -135,11 +133,12 @@ const addWatchlistItemRoute = createRoute({
 
 watchlistRoutes.openapi(addWatchlistItemRoute, async (c) => {
     const body = c.req.valid('json');
-    const userId = c.get('user').id;
+    const user = c.get('user');
+    const log = c.get('logger');
 
     const count = await db.$count(
         watchlistItem,
-        eq(watchlistItem.userId, userId)
+        eq(watchlistItem.userId, user.id)
     );
 
     if (count >= WATCHLIST_ITEM_LIMIT) {
@@ -161,7 +160,7 @@ watchlistRoutes.openapi(addWatchlistItemRoute, async (c) => {
             return c.json({ error: 'Failed to add item to watchlist' }, 500);
         }
 
-        c.get('logger').info(
+        log.info(
             {
                 itemId: created.id,
                 providerId: created.providerId,
@@ -188,7 +187,7 @@ watchlistRoutes.openapi(addWatchlistItemRoute, async (c) => {
         const message = err instanceof Error ? err.message : '';
 
         if (message.includes('watchlist_user_provider_idx')) {
-            c.get('logger').warn(
+            log.warn(
                 {
                     providerId: body.providerId,
                     mediaType: body.mediaType,
@@ -202,8 +201,6 @@ watchlistRoutes.openapi(addWatchlistItemRoute, async (c) => {
         throw err;
     }
 });
-
-// ── DELETE /watchlist/:id ─────────────────────────────────────────────────────
 
 const deleteWatchlistItemParamsSchema = z.object({
     id: z.coerce.number().int().positive().openapi({ example: 42 }),
@@ -244,19 +241,20 @@ const deleteWatchlistItemRoute = createRoute({
 
 watchlistRoutes.openapi(deleteWatchlistItemRoute, async (c) => {
     const { id } = c.req.valid('param');
-    const userId = c.get('user').id;
+    const user = c.get('user');
+    const log = c.get('logger');
 
     const [deleted] = await db
         .delete(watchlistItem)
-        .where(and(eq(watchlistItem.id, id), eq(watchlistItem.userId, userId)))
+        .where(and(eq(watchlistItem.id, id), eq(watchlistItem.userId, user.id)))
         .returning();
 
     if (!deleted) {
-        c.get('logger').warn({ itemId: id }, 'Watchlist item not found');
+        log.warn({ itemId: id }, 'Watchlist item not found');
         return c.json({ error: 'Item not found in watchlist' }, 404);
     }
 
-    c.get('logger').info({ itemId: deleted.id }, 'Watchlist item removed');
+    log.info({ itemId: deleted.id }, 'Watchlist item removed');
 
     return c.body(null, 204);
 });

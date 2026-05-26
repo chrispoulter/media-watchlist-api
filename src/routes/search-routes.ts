@@ -59,6 +59,8 @@ const searchRoute = createRoute({
 
 searchRoutes.openapi(searchRoute, async (c) => {
     const { query } = c.req.valid('query');
+    const user = c.get('user');
+
     const data = await search(query);
 
     const providerIds = data.map((item) => item.providerId);
@@ -68,7 +70,7 @@ searchRoutes.openapi(searchRoute, async (c) => {
         .from(watchlistItem)
         .where(
             and(
-                eq(watchlistItem.userId, c.get('user').id),
+                eq(watchlistItem.userId, user.id),
                 inArray(watchlistItem.providerId, providerIds)
             )
         );

@@ -4,10 +4,12 @@ import { db } from '../db/index.js';
 import { watchlistItem } from '../db/schema.js';
 import { requireAuth } from '../middleware/require-auth.js';
 import { search } from '../lib/tmdb.js';
-import { ErrorSchema } from '../lib/schemas.js';
+import { errorSchema } from '../lib/schemas.js';
 import type { AppEnv } from '../types/hono.js';
 
-const SearchResultSchema = z
+const searchRoutes = new OpenAPIHono<AppEnv>();
+
+const searchResultSchema = z
     .object({
         providerId: z.string(),
         mediaType: z.enum(['movie', 'tv-show']),
@@ -18,8 +20,6 @@ const SearchResultSchema = z
         watchlistItemId: z.number().int().nullable().optional(),
     })
     .openapi('SearchResult');
-
-const searchRoutes = new OpenAPIHono<AppEnv>();
 
 const searchQuerySchema = z.object({
     query: z.string().min(1).openapi({ example: 'Breaking Bad' }),
@@ -38,20 +38,20 @@ const searchRoute = createRoute({
     responses: {
         200: {
             content: {
-                'application/json': { schema: z.array(SearchResultSchema) },
+                'application/json': { schema: z.array(searchResultSchema) },
             },
             description: 'Search results.',
         },
         400: {
-            content: { 'application/json': { schema: ErrorSchema } },
+            content: { 'application/json': { schema: errorSchema } },
             description: 'Invalid request query.',
         },
         401: {
-            content: { 'application/json': { schema: ErrorSchema } },
+            content: { 'application/json': { schema: errorSchema } },
             description: 'Unauthorized.',
         },
         500: {
-            content: { 'application/json': { schema: ErrorSchema } },
+            content: { 'application/json': { schema: errorSchema } },
             description: 'Internal Server Error.',
         },
     },

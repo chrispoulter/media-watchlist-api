@@ -3,12 +3,14 @@ import { and, eq } from 'drizzle-orm';
 import { db } from '../db/index.js';
 import { watchlistItem } from '../db/schema.js';
 import { requireAuth } from '../middleware/require-auth.js';
-import { ErrorSchema } from '../lib/schemas.js';
+import { errorSchema } from '../lib/schemas.js';
 import type { AppEnv } from '../types/hono.js';
 
 const WATCHLIST_ITEM_LIMIT = 100;
 
-const WatchlistItemSchema = z
+const watchlistRoutes = new OpenAPIHono<AppEnv>();
+
+const watchlistItemSchema = z
     .object({
         id: z.number().int(),
         providerId: z.string(),
@@ -21,7 +23,7 @@ const WatchlistItemSchema = z
     })
     .openapi('WatchlistItem');
 
-const AddWatchlistItemRequestSchema = z
+const addWatchlistItemRequestSchema = z
     .object({
         providerId: z.string().min(1).openapi({ example: 'tmdb:1396' }),
         mediaType: z.enum(['movie', 'tv-show']).openapi({ example: 'tv-show' }),
@@ -38,8 +40,6 @@ const AddWatchlistItemRequestSchema = z
     })
     .openapi('AddWatchlistItemRequest');
 
-const watchlistRoutes = new OpenAPIHono<AppEnv>();
-
 const getWatchlistRoute = createRoute({
     method: 'get',
     path: '/watchlist',
@@ -50,16 +50,16 @@ const getWatchlistRoute = createRoute({
     responses: {
         200: {
             content: {
-                'application/json': { schema: z.array(WatchlistItemSchema) },
+                'application/json': { schema: z.array(watchlistItemSchema) },
             },
             description: 'List of watchlist items.',
         },
         401: {
-            content: { 'application/json': { schema: ErrorSchema } },
+            content: { 'application/json': { schema: errorSchema } },
             description: 'Unauthorized.',
         },
         500: {
-            content: { 'application/json': { schema: ErrorSchema } },
+            content: { 'application/json': { schema: errorSchema } },
             description: 'Internal Server Error.',
         },
     },
@@ -99,33 +99,33 @@ const addWatchlistItemRoute = createRoute({
         body: {
             required: true,
             content: {
-                'application/json': { schema: AddWatchlistItemRequestSchema },
+                'application/json': { schema: addWatchlistItemRequestSchema },
             },
         },
     },
     responses: {
         201: {
-            content: { 'application/json': { schema: WatchlistItemSchema } },
+            content: { 'application/json': { schema: watchlistItemSchema } },
             description: 'Item added to watchlist.',
         },
         400: {
-            content: { 'application/json': { schema: ErrorSchema } },
+            content: { 'application/json': { schema: errorSchema } },
             description: 'Invalid request body.',
         },
         401: {
-            content: { 'application/json': { schema: ErrorSchema } },
+            content: { 'application/json': { schema: errorSchema } },
             description: 'Unauthorized.',
         },
         409: {
-            content: { 'application/json': { schema: ErrorSchema } },
+            content: { 'application/json': { schema: errorSchema } },
             description: 'Item already exists in watchlist.',
         },
         429: {
-            content: { 'application/json': { schema: ErrorSchema } },
+            content: { 'application/json': { schema: errorSchema } },
             description: 'Watchlist limit of items reached.',
         },
         500: {
-            content: { 'application/json': { schema: ErrorSchema } },
+            content: { 'application/json': { schema: errorSchema } },
             description: 'Internal Server Error.',
         },
     },
@@ -153,7 +153,7 @@ watchlistRoutes.openapi(addWatchlistItemRoute, async (c) => {
     try {
         const [created] = await db
             .insert(watchlistItem)
-            .values({ ...body, userId })
+            .values({ ...body, userId: user.id })
             .returning();
 
         if (!created) {
@@ -221,19 +221,19 @@ const deleteWatchlistItemRoute = createRoute({
             description: 'Item removed.',
         },
         400: {
-            content: { 'application/json': { schema: ErrorSchema } },
+            content: { 'application/json': { schema: errorSchema } },
             description: 'Invalid request parameters.',
         },
         401: {
-            content: { 'application/json': { schema: ErrorSchema } },
+            content: { 'application/json': { schema: errorSchema } },
             description: 'Unauthorized.',
         },
         404: {
-            content: { 'application/json': { schema: ErrorSchema } },
+            content: { 'application/json': { schema: errorSchema } },
             description: 'Item not found in watchlist.',
         },
         500: {
-            content: { 'application/json': { schema: ErrorSchema } },
+            content: { 'application/json': { schema: errorSchema } },
             description: 'Internal Server Error.',
         },
     },

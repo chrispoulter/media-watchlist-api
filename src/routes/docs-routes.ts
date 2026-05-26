@@ -1,6 +1,35 @@
 import { Hono } from 'hono';
+import { type OpenAPIHono } from '@hono/zod-openapi';
 import { Scalar } from '@scalar/hono-api-reference';
 import { auth } from '../lib/auth.js';
+import { version } from '../lib/config.js';
+import type { AppEnv } from '../types/hono.js';
+
+export function registerDocs(app: OpenAPIHono<AppEnv>): void {
+    app.openAPIRegistry.registerComponent('securitySchemes', 'bearerAuth', {
+        type: 'http',
+        scheme: 'bearer',
+        description: 'Session token returned by sign-in endpoints.',
+    });
+
+    app.doc('/openapi.json', {
+        openapi: '3.0.3',
+        info: {
+            title: 'Media Watchlist API',
+            version,
+            description: 'REST API for managing a personal media watchlist.',
+        },
+        servers: [{ url: '/' }],
+        tags: [
+            { name: 'Health', description: 'Service health check' },
+            { name: 'Search', description: 'Search for movies and TV shows' },
+            {
+                name: 'Watchlist',
+                description: 'Manage your personal media watchlist',
+            },
+        ],
+    });
+}
 
 const docsRoutes = new Hono();
 

@@ -8,7 +8,8 @@ import { logger } from '../lib/logger.js';
 export const db = drizzle(config.DATABASE_URL, {
     logger: new DefaultLogger({
         writer: {
-            write: (message) => logger.debug({ sql: message }, 'query'),
+            write: (message) =>
+                logger.withMetadata({ sql: message }).debug('query'),
         },
     }),
 });
@@ -25,10 +26,9 @@ export const check = async (): Promise<HealthStatus> => {
         await db.execute(sql`SELECT 1`);
         return { name: 'database', status: 'ok' };
     } catch (err) {
-        logger.error(
-            { error: err instanceof Error ? err.message : err },
-            'Database health check failed'
-        );
+        logger
+            .withError(err instanceof Error ? err : new Error(String(err)))
+            .error('Database health check failed');
 
         return {
             name: 'database',

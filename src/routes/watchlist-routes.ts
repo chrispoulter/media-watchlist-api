@@ -134,7 +134,7 @@ const addWatchlistItemRoute = createRoute({
 watchlistRoutes.openapi(addWatchlistItemRoute, async (c) => {
     const body = c.req.valid('json');
     const user = c.get('user');
-    const log = c.get('logger');
+    const log = c.var.logger;
 
     const count = await db.$count(
         watchlistItem,
@@ -160,15 +160,12 @@ watchlistRoutes.openapi(addWatchlistItemRoute, async (c) => {
             return c.json({ error: 'Failed to add item to watchlist' }, 500);
         }
 
-        log.info(
-            {
-                itemId: created.id,
-                providerId: created.providerId,
-                mediaType: created.mediaType,
-                title: created.title,
-            },
-            'Watchlist item added'
-        );
+        log.withMetadata({
+            itemId: created.id,
+            providerId: created.providerId,
+            mediaType: created.mediaType,
+            title: created.title,
+        }).info('Watchlist item added');
 
         return c.json(
             {
@@ -187,13 +184,10 @@ watchlistRoutes.openapi(addWatchlistItemRoute, async (c) => {
         const message = err instanceof Error ? err.message : '';
 
         if (message.includes('watchlist_user_provider_idx')) {
-            log.warn(
-                {
-                    providerId: body.providerId,
-                    mediaType: body.mediaType,
-                },
-                'Duplicate watchlist item'
-            );
+            log.withMetadata({
+                providerId: body.providerId,
+                mediaType: body.mediaType,
+            }).warn('Duplicate watchlist item');
 
             return c.json({ error: 'Item already exists in watchlist' }, 409);
         }
@@ -242,7 +236,7 @@ const deleteWatchlistItemRoute = createRoute({
 watchlistRoutes.openapi(deleteWatchlistItemRoute, async (c) => {
     const { id } = c.req.valid('param');
     const user = c.get('user');
-    const log = c.get('logger');
+    const log = c.var.logger;
 
     const [deleted] = await db
         .delete(watchlistItem)
@@ -250,11 +244,11 @@ watchlistRoutes.openapi(deleteWatchlistItemRoute, async (c) => {
         .returning();
 
     if (!deleted) {
-        log.warn({ itemId: id }, 'Watchlist item not found');
+        log.withMetadata({ itemId: id }).warn('Watchlist item not found');
         return c.json({ error: 'Item not found in watchlist' }, 404);
     }
 
-    log.info({ itemId: deleted.id }, 'Watchlist item removed');
+    log.withMetadata({ itemId: deleted.id }).info('Watchlist item removed');
 
     return c.body(null, 204);
 });

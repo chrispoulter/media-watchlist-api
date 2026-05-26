@@ -9,14 +9,11 @@ import { shutdown as shutdownMailer } from './lib/mailer.js';
 const SHUTDOWN_TIMEOUT_MS = 10_000;
 
 const server = serve({ fetch: app.fetch, port: config.PORT }, (info) => {
-    logger.info(
-        { port: info.port, local: `http://localhost:${info.port}` },
-        'Server started'
-    );
+    logger.withMetadata({ port: info.port, local: `http://localhost:${info.port}` }).info('Server started');
 });
 
 const shutdown = async (signal: string) => {
-    logger.info({ signal }, 'Shutdown signal received');
+    logger.withMetadata({ signal }).info('Shutdown signal received');
 
     server.close(async () => {
         try {
@@ -24,7 +21,7 @@ const shutdown = async (signal: string) => {
             logger.info('Shutdown complete');
             process.exit(0);
         } catch (err) {
-            logger.error({ err }, 'Error during shutdown');
+            logger.withError(err instanceof Error ? err : new Error(String(err))).error('Error during shutdown');
             process.exit(1);
         }
     });

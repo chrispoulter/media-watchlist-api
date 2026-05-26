@@ -1,4 +1,7 @@
 import pino from 'pino';
+import { LogLayer } from 'loglayer';
+import { PinoTransport } from '@loglayer/transport-pino';
+import { serializeError } from 'serialize-error';
 import { config, version } from './config.js';
 
 const isDev = process.env['NODE_ENV'] !== 'production';
@@ -7,7 +10,7 @@ const destination = isDev
     ? undefined
     : pino.destination({ dest: 1, sync: true });
 
-export const logger = pino(
+export const pinoInstance = pino(
     {
         level: config.LOG_LEVEL,
         timestamp: pino.stdTimeFunctions.isoTime,
@@ -36,3 +39,8 @@ export const logger = pino(
     },
     destination
 );
+
+export const logger = new LogLayer({
+    errorSerializer: serializeError,
+    transport: new PinoTransport({ logger: pinoInstance }),
+});

@@ -43,10 +43,7 @@ export const check = async (): Promise<HealthStatus> => {
 
         return { name: 'tmdb', status: 'ok' };
     } catch (err) {
-        logger.error(
-            { error: err instanceof Error ? err.message : err },
-            'TMDB health check failed'
-        );
+        logger.withError(err instanceof Error ? err : new Error(String(err))).error('TMDB health check failed');
 
         return {
             name: 'tmdb',
@@ -66,14 +63,11 @@ export const search = async (query: string) => {
         });
 
         if (!response.ok) {
-            logger.error(
-                {
-                    query: normalizedQuery,
-                    status: response.status,
-                    statusText: response.statusText,
-                },
-                'TMDB API error'
-            );
+            logger.withMetadata({
+                query: normalizedQuery,
+                status: response.status,
+                statusText: response.statusText,
+            }).error('TMDB API error');
             throw new Error(
                 `TMDB API error: ${response.status} ${response.statusText}`
             );
@@ -102,10 +96,7 @@ export const search = async (query: string) => {
         return results;
     } catch (err) {
         if (err instanceof Error && err.name === 'TimeoutError') {
-            logger.error(
-                { query: normalizedQuery, timeoutMs: FETCH_TIMEOUT_MS },
-                'TMDB request timed out'
-            );
+            logger.withMetadata({ query: normalizedQuery, timeoutMs: FETCH_TIMEOUT_MS }).error('TMDB request timed out');
         }
         throw err;
     }

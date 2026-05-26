@@ -4,7 +4,11 @@ import type { AppEnv } from '../types/hono.js';
 
 export const errorHandler = (err: Error, c: Context<AppEnv>) => {
     const user = c.get('user');
-    const log = c.get('logger') ?? logger;
-    log.error({ err, userId: user?.id }, 'Unhandled error');
+    const log = c.var.logger ?? logger;
+
+    log.withError(err)
+        .withMetadata({ userId: user?.id })
+        .error('Unhandled error');
+
     return c.json({ error: 'Internal Server Error' }, 500);
 };

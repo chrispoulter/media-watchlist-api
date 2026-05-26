@@ -25,10 +25,7 @@ export const check = async (): Promise<HealthStatus> => {
         await db.execute(sql`SELECT 1`);
         return { name: 'database', status: 'ok' };
     } catch (err) {
-        logger.error(
-            { error: err instanceof Error ? err.message : err },
-            'Database health check failed'
-        );
+        logger.error({ err }, 'Database health check failed');
 
         return {
             name: 'database',

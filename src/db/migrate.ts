@@ -16,3 +16,5 @@ const db = drizzle({ client: pool });
 
 await migrate(db, { migrationsFolder: './drizzle' });
 await pool.end();
+
+console.log('Database migrated successfully');

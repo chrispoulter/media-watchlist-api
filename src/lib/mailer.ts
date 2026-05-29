@@ -22,7 +22,7 @@ export const check = async (): Promise<HealthStatus> => {
         await mailer.verify();
         return { name: 'mailer', status: 'ok' };
     } catch (err) {
-        logger.withError(err instanceof Error ? err : new Error(String(err))).error('Mailer health check failed');
+        logger.withError(err).error('Mailer health check failed');
 
         return {
             name: 'mailer',
@@ -48,6 +48,6 @@ export const sendMail = async ({ to, subject, template }: MailMessage) => {
             html,
         });
     } catch (err) {
-        logger.withError(err instanceof Error ? err : new Error(String(err))).error('Mail sending failed');
+        logger.withError(err).error('Mail sending failed');
     }
 };

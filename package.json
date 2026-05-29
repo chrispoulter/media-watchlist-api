@@ -9,8 +9,6 @@
         "typecheck": "tsc --noEmit",
         "lint": "eslint --cache .",
         "format": "prettier --write .",
-        "db:create": "node scripts/db-create.js",
-        "db:drop": "node scripts/db-drop.js",
         "db:generate": "drizzle-kit generate",
         "db:migrate": "drizzle-kit migrate",
         "db:studio": "drizzle-kit studio",

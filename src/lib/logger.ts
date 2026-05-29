@@ -15,6 +15,9 @@ export const pinoInstance = pino(
         level: config.LOG_LEVEL,
         timestamp: pino.stdTimeFunctions.isoTime,
         base: { version },
+        serializers: {
+            err: pino.stdSerializers.err,
+        },
         redact: {
             paths: [
                 'req.headers.authorization',

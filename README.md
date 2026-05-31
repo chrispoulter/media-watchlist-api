@@ -95,7 +95,7 @@ Interactive documentation with a request explorer is available at `GET /` when t
 
 ### Authentication (`/api/auth/*`)
 
-All auth routes are handled by Better Auth. Requests requiring authentication use a Bearer token in the `Authorization` header.
+All auth routes are handled by Better Auth.
 
 | Method | Path                               | Description                           |
 | ------ | ---------------------------------- | ------------------------------------- |

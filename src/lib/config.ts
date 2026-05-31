@@ -17,7 +17,7 @@ const configSchema = z.object({
     PORT: z.coerce.number().default(3000),
     DATABASE_URL: z.url(),
     BETTER_AUTH_SECRET: z.string().min(32),
-    BETTER_AUTH_URL: z.url().default('http://localhost:3000'),
+    BETTER_AUTH_URL: z.string().default('http://localhost:3000'),
     CLIENT_ORIGIN: z.string().default('http://localhost:5173'),
     GOOGLE_CLIENT_ID: z.string().optional(),
     GOOGLE_CLIENT_SECRET: z.string().optional(),

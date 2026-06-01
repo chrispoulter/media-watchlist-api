@@ -32,7 +32,7 @@ app.use((_req, res, next) => {
 app.use(
     cors({
         origin: config.CLIENT_ORIGIN.split(','),
-        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
         credentials: true,
     })
 );

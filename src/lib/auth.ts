@@ -10,9 +10,6 @@ import { sendMail } from './mailer.js';
 import ResetPasswordEmail from '../emails/reset-password-email.js';
 import VerificationEmail from '../emails/verification-email.js';
 
-console.log('allowedHosts', config.BETTER_AUTH_URL.split(','));
-console.log('Fallback host:', config.BETTER_AUTH_URL.split(',')[0]);
-
 export const auth = betterAuth({
     baseURL: {
         allowedHosts: config.BETTER_AUTH_URL.split(','),

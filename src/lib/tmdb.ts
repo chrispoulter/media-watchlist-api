@@ -43,10 +43,7 @@ export const check = async (): Promise<HealthStatus> => {
 
         return { name: 'tmdb', status: 'ok' };
     } catch (err) {
-        logger.error(
-            { error: err instanceof Error ? err.message : err },
-            'TMDB health check failed'
-        );
+        logger.error({ err }, 'TMDB health check failed');
 
         return {
             name: 'tmdb',

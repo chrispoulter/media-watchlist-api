@@ -12,10 +12,10 @@ import {
     Preview,
 } from 'react-email';
 
-type ResetPasswordEmailProps = {
+interface ResetPasswordEmailProps {
     url: string;
     username: string;
-};
+}
 
 ResetPasswordEmail.PreviewProps = {
     url: 'https://example.com/reset-password?token=abc123xyz',

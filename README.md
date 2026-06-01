@@ -58,7 +58,6 @@ npm install
 cp .env.example .env
 # Fill in required values in .env
 
-npm run db:create
 npm run db:migrate
 npm run dev
 ```
@@ -96,7 +95,7 @@ Interactive documentation with a request explorer is available at `GET /` when t
 
 ### Authentication (`/api/auth/*`)
 
-All auth routes are handled by Better Auth. Requests requiring authentication use a Bearer token in the `Authorization` header.
+All auth routes are handled by Better Auth.
 
 | Method | Path                               | Description                           |
 | ------ | ---------------------------------- | ------------------------------------- |
@@ -148,8 +147,6 @@ All auth routes are handled by Better Auth. Requests requiring authentication us
 | `npm run typecheck`   | Run TypeScript type checking             |
 | `npm run lint`        | Run ESLint                               |
 | `npm run format`      | Format code with Prettier                |
-| `npm run db:create`   | Create the database                      |
-| `npm run db:drop`     | Drop the database                        |
 | `npm run db:generate` | Generate a new Drizzle migration         |
 | `npm run db:migrate`  | Apply pending migrations                 |
 | `npm run db:studio`   | Open Drizzle Studio                      |

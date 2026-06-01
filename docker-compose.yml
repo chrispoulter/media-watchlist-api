@@ -5,7 +5,7 @@ services:
             context: .
         environment:
             PORT: 3000
-            DATABASE_URL: postgresql://postgres:password@postgres:5432/media-watchlist
+            DATABASE_URL: postgresql://postgres:password@postgres:5432/media_watchlist
             BETTER_AUTH_URL: http://localhost:3000
             BETTER_AUTH_SECRET: change-me-to-a-secret-that-is-at-least-32-chars
             CLIENT_ORIGIN: http://localhost:3000,http://localhost:5173
@@ -32,7 +32,7 @@ services:
             context: .
             target: migrator
         environment:
-            DATABASE_URL: postgresql://postgres:password@postgres:5432/media-watchlist
+            DATABASE_URL: postgresql://postgres:password@postgres:5432/media_watchlist
         depends_on:
             postgres:
                 condition: service_healthy
@@ -42,12 +42,12 @@ services:
         image: postgres:17.6
         user: postgres
         environment:
-            POSTGRES_DB: media-watchlist
+            POSTGRES_DB: media_watchlist
             POSTGRES_PASSWORD: password
         ports:
             - 5432:5432
         volumes:
-            - postgres:/var/lib/postgresql/data
+            - postgres_data:/var/lib/postgresql/data
         restart: always
         healthcheck:
             test: ['CMD', 'pg_isready']
@@ -64,11 +64,9 @@ services:
             - 1025:1025
             - 8025:8025
         volumes:
-            - mailpit:/data
+            - mailpit_data:/data
         restart: always
 
 volumes:
-    postgres:
-        name: media-watchlist-postgres
-    mailpit:
-        name: media-watchlist-mailpit
+    postgres_data:
+    mailpit_data:

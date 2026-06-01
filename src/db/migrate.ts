@@ -9,8 +9,12 @@ if (!databaseUrl) {
     throw new Error('DATABASE_URL is not set');
 }
 
+console.log('Migrating database...');
+
 const pool = new Pool({ connectionString: databaseUrl });
 const db = drizzle({ client: pool });
 
 await migrate(db, { migrationsFolder: './drizzle' });
 await pool.end();
+
+console.log('Database migrated successfully');

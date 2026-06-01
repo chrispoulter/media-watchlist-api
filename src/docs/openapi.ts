@@ -14,7 +14,15 @@ export const openApiSpec: OpenAPIV3.Document = {
             bearerAuth: {
                 type: 'http',
                 scheme: 'bearer',
-                description: 'Session token returned by sign-in endpoints.',
+                description:
+                    'Pass the session token from the sign-in response body as `Authorization: Bearer <token>`.',
+            },
+            cookieAuth: {
+                type: 'apiKey',
+                in: 'cookie',
+                name: 'better-auth.session_token',
+                description:
+                    'Session cookie set automatically by the browser after sign-in.',
             },
         },
         schemas: {
@@ -184,7 +192,7 @@ export const openApiSpec: OpenAPIV3.Document = {
             get: {
                 tags: ['Search'],
                 summary: 'Search for movies and TV shows',
-                security: [{ bearerAuth: [] }],
+                security: [{ bearerAuth: [] }, { cookieAuth: [] }],
                 parameters: [
                     {
                         name: 'query',
@@ -248,7 +256,7 @@ export const openApiSpec: OpenAPIV3.Document = {
             get: {
                 tags: ['Watchlist'],
                 summary: 'Get all watchlist items for the current user',
-                security: [{ bearerAuth: [] }],
+                security: [{ bearerAuth: [] }, { cookieAuth: [] }],
                 responses: {
                     '200': {
                         description: 'List of watchlist items.',
@@ -288,7 +296,7 @@ export const openApiSpec: OpenAPIV3.Document = {
             post: {
                 tags: ['Watchlist'],
                 summary: 'Add an item to the watchlist',
-                security: [{ bearerAuth: [] }],
+                security: [{ bearerAuth: [] }, { cookieAuth: [] }],
                 requestBody: {
                     required: true,
                     content: {
@@ -367,7 +375,7 @@ export const openApiSpec: OpenAPIV3.Document = {
             delete: {
                 tags: ['Watchlist'],
                 summary: 'Remove an item from the watchlist',
-                security: [{ bearerAuth: [] }],
+                security: [{ bearerAuth: [] }, { cookieAuth: [] }],
                 parameters: [
                     {
                         name: 'id',

@@ -11,10 +11,7 @@ import ResetPasswordEmail from '../emails/reset-password-email.js';
 import VerificationEmail from '../emails/verification-email.js';
 
 export const auth = betterAuth({
-    baseURL: {
-        allowedHosts: config.BETTER_AUTH_URL.split(','),
-        fallback: config.BETTER_AUTH_URL.split(',')[0],
-    },
+    baseURL: config.BETTER_AUTH_URL,
     secret: config.BETTER_AUTH_SECRET,
     trustedOrigins: config.CLIENT_ORIGIN.split(','),
     database: drizzleAdapter(db, {

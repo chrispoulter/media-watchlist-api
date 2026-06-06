@@ -14,7 +14,9 @@ console.log('Migrating database...');
 const pool = new Pool({ connectionString: databaseUrl });
 const db = drizzle({ client: pool });
 
-await migrate(db, { migrationsFolder: './drizzle' });
-await pool.end();
-
-console.log('Database migrated successfully');
+try {
+    await migrate(db, { migrationsFolder: './drizzle' });
+    console.log('Database migrated successfully');
+} finally {
+    await pool.end();
+}

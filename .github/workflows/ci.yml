@@ -79,22 +79,3 @@ jobs:
                   build-args: GIT_COMMIT_SHA=${{ github.sha }}
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
-
-            - name: Docker metadata (migrator)
-              id: meta_migrator
-              uses: docker/metadata-action@v5
-              with:
-                  images: ghcr.io/${{ github.repository }}
-                  tags: |
-                      type=sha,prefix=migrator-,format=short
-
-            - name: Build and push migrator
-              uses: docker/build-push-action@v6
-              with:
-                  context: .
-                  target: migrator
-                  push: true
-                  tags: ${{ steps.meta_migrator.outputs.tags }}
-                  labels: ${{ steps.meta_migrator.outputs.labels }}
-                  cache-from: type=gha
-                  cache-to: type=gha,mode=max

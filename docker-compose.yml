@@ -27,10 +27,10 @@ services:
                 condition: service_completed_successfully
 
     media-watchlist-migrate:
-        image: media-watchlist-api:migrator
+        image: media-watchlist-api:latest
         build:
             context: .
-            target: migrator
+        command: node dist/src/db/migrate.js
         environment:
             DATABASE_URL: postgresql://postgres:password@postgres:5432/media_watchlist
         depends_on:

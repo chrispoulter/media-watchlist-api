@@ -1,19 +1,5 @@
 import { relations } from 'drizzle-orm';
-import {
-    boolean,
-    index,
-    pgTable,
-    serial,
-    text,
-    timestamp,
-    uniqueIndex,
-} from 'drizzle-orm/pg-core';
-
-// ---------------------------------------------------------------------------
-// better-auth core tables
-// These must match the field names expected by the better-auth Drizzle adapter.
-// Run `npx @better-auth/cli generate` to regenerate if you add plugins.
-// ---------------------------------------------------------------------------
+import { pgTable, text, timestamp, boolean, index } from 'drizzle-orm/pg-core';
 
 export const user = pgTable('user', {
     id: text('id').primaryKey(),
@@ -131,28 +117,3 @@ export const twoFactorRelations = relations(twoFactor, ({ one }) => ({
         references: [user.id],
     }),
 }));
-
-export const watchlistItem = pgTable(
-    'watchlist_item',
-    {
-        id: serial('id').primaryKey(),
-        userId: text('user_id')
-            .notNull()
-            .references(() => user.id, { onDelete: 'cascade' }),
-        providerId: text('provider_id').notNull(),
-        mediaType: text('media_type', { enum: ['movie', 'tv-show'] }).notNull(),
-        title: text('title').notNull(),
-        posterUrl: text('poster_url'),
-        overview: text('overview'),
-        releaseDate: text('release_date'),
-        addedAt: timestamp('added_at').defaultNow().notNull(),
-    },
-    (table) => [
-        uniqueIndex('watchlist_user_provider_idx').on(
-            table.userId,
-            table.providerId,
-            table.mediaType
-        ),
-        index('watchlist_user_idx').on(table.userId),
-    ]
-);

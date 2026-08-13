@@ -16,6 +16,7 @@ services:
             SMTP_PORT: 1025
             SMTP_FROM: noreply@example.com
             LOG_LEVEL: info
+            OTEL_EXPORTER_OTLP_ENDPOINT: http://aspire-dashboard:4317
         ports:
             - 3000:3000
         depends_on:
@@ -72,12 +73,12 @@ services:
     aspire-dashboard:
         image: mcr.microsoft.com/dotnet/aspire-dashboard:latest
         environment:
-        DASHBOARD__FRONTEND__AUTHMODE: Unsecured
-        DASHBOARD__OTLP__AUTHMODE: Unsecured
+            DASHBOARD__FRONTEND__AUTHMODE: Unsecured
+            DASHBOARD__OTLP__AUTHMODE: Unsecured
         ports:
-        - 18888:18888 
-        - 4317:18889 
-        - 4318:18890
+            - 18888:18888 
+            - 4317:18889 
+            - 4318:18890
         restart: always
 
 volumes:

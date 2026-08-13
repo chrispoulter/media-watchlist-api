@@ -16,6 +16,13 @@
         "vercel-build": "tsx src/db/migrate.ts"
     },
     "dependencies": {
+        "@opentelemetry/auto-instrumentations-node": "^0.76.0",
+        "@opentelemetry/exporter-logs-otlp-grpc": "^0.218.0",
+        "@opentelemetry/exporter-metrics-otlp-grpc": "^0.218.0",
+        "@opentelemetry/exporter-trace-otlp-grpc": "^0.218.0",
+        "@opentelemetry/sdk-logs": "^0.218.0",
+        "@opentelemetry/sdk-metrics": "^2.7.1",
+        "@opentelemetry/sdk-node": "^0.218.0",
         "@react-email/ui": "^6.6.5",
         "@scalar/express-api-reference": "^0.10.7",
         "better-auth": "^1.6.23",

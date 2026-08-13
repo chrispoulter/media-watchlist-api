@@ -23,6 +23,8 @@ services:
                 condition: service_healthy
             mailpit:
                 condition: service_started
+            aspire-dashboard:
+                condition: service_started
             media-watchlist-migrate:
                 condition: service_completed_successfully
 
@@ -65,6 +67,17 @@ services:
             - 8025:8025
         volumes:
             - mailpit_data:/data
+        restart: always
+
+    aspire-dashboard:
+        image: mcr.microsoft.com/dotnet/aspire-dashboard:latest
+        environment:
+        DASHBOARD__FRONTEND__AUTHMODE: Unsecured
+        DASHBOARD__OTLP__AUTHMODE: Unsecured
+        ports:
+        - 18888:18888 
+        - 4317:18889 
+        - 4318:18890
         restart: always
 
 volumes:

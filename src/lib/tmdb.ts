@@ -19,15 +19,6 @@ interface TmdbSearchResponse {
     }[];
 }
 
-interface SearchResult {
-    providerId: string;
-    mediaType: 'movie' | 'tv-show';
-    title: string;
-    posterUrl: string | null;
-    overview: string | null;
-    releaseDate: string | null;
-}
-
 export const check = async (): Promise<HealthStatus> => {
     try {
         const response = await fetch(`${API_URL}/configuration`, {
@@ -85,9 +76,7 @@ export const search = async (query: string) => {
             )
             .map((item) => ({
                 providerId: `tmdb:${item.id}`,
-                mediaType: (item.media_type == 'movie'
-                    ? 'movie'
-                    : 'tv-show') as SearchResult['mediaType'],
+                mediaType: item.media_type == 'movie' ? 'movie' : 'tv-show',
                 title: item.title || item.name,
                 posterUrl: item.poster_path
                     ? `${IMAGE_URL}${item.poster_path}`

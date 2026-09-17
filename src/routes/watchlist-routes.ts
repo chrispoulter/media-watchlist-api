@@ -12,7 +12,7 @@ const router = Router();
 
 router.use(requireAuth);
 
-type WatchlistItemResponse = {
+type WatchlistResponse = {
     id: number;
     providerId: string;
     mediaType: 'movie' | 'tv-show';
@@ -39,7 +39,7 @@ router.get('/', async (req, res) => {
             overview: item.overview ?? undefined,
             releaseDate: item.releaseDate ?? undefined,
             addedAt: item.addedAt,
-        })) satisfies WatchlistItemResponse
+        })) satisfies WatchlistResponse
     );
 });
 

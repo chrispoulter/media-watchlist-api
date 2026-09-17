@@ -1,5 +1,5 @@
 import { ErrorRequestHandler } from 'express';
-import { ErrorResponse } from '../types/index.js';
+import type { ErrorResponse } from '../types/index.js';
 
 export const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
     req.log.error({ err, userId: req.user?.id }, 'Unhandled error');

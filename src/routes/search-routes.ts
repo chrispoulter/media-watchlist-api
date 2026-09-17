@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { db } from '../db/index.js';
 import { watchlistItem } from '../db/schema.js';
 import { requireAuth } from '../middleware/require-auth.js';
-import { ErrorResponse, MediaType } from '../types/index.js';
+import type { ErrorResponse, MediaType } from '../types/index.js';
 import { search } from '../lib/tmdb.js';
 
 const router = Router();

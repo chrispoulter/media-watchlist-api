@@ -1,4 +1,8 @@
-export type MediaType = 'movie' | 'tv-show';
+import { z } from 'zod';
+
+export const mediaTypeSchema = z.enum(['movie', 'tv-show']);
+
+export type MediaType = z.infer<typeof mediaTypeSchema>;
 
 export interface ErrorResponse {
     error: string;

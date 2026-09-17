@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { fromNodeHeaders } from 'better-auth/node';
+import type { ErrorResponse } from '../types/index.js';
 import { auth } from '../lib/auth.js';
 
 export const requireAuth = async (
@@ -13,7 +14,7 @@ export const requireAuth = async (
 
     if (!sessionData) {
         req.log.warn({ path: req.path }, 'Unauthenticated request rejected');
-        res.status(401).json({ error: 'Unauthorized' });
+        res.status(401).json({ error: 'Unauthorized' } satisfies ErrorResponse);
         return;
     }
 

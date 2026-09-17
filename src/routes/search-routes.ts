@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { db } from '../db/index.js';
 import { watchlistItem } from '../db/schema.js';
 import { requireAuth } from '../middleware/require-auth.js';
+import { ErrorResponse } from '../types/index.js';
 import { search } from '../lib/tmdb.js';
 
 const router = Router();
@@ -14,6 +15,16 @@ const searchSchema = z.object({
     query: z.string().min(1),
 });
 
+type SearchResponse = {
+    providerId: string;
+    mediaType: string;
+    title: string;
+    posterUrl?: string;
+    overview?: string;
+    releaseDate?: string;
+    watchlistItemId?: number;
+}[];
+
 router.get('/', async (req, res) => {
     const result = searchSchema.safeParse(req.query);
 
@@ -21,7 +32,7 @@ router.get('/', async (req, res) => {
         res.status(400).json({
             error: 'Invalid request query',
             details: result.error.issues,
-        });
+        } satisfies ErrorResponse);
         return;
     }
 
@@ -54,7 +65,7 @@ router.get('/', async (req, res) => {
             watchlistItemId:
                 watchlistMap.get(`${item.providerId}-${item.mediaType}`) ??
                 undefined,
-        }))
+        })) satisfies SearchResponse
     );
 });
 

@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react';
 import nodemailer from 'nodemailer';
 import { render } from 'react-email';
-import type { HealthStatus } from '../types/health.js';
+import type { HealthStatus } from '../types/index.js';
 import { config } from './config.js';
 import { logger } from './logger.js';
 

@@ -4,12 +4,24 @@ import { z } from 'zod';
 import { db } from '../db/index.js';
 import { watchlistItem } from '../db/schema.js';
 import { requireAuth } from '../middleware/require-auth.js';
+import { ErrorResponse } from '../types/index.js';
 
 const WATCHLIST_ITEM_LIMIT = 100;
 
 const router = Router();
 
 router.use(requireAuth);
+
+type WatchlistItemResponse = {
+    id: number;
+    providerId: string;
+    mediaType: 'movie' | 'tv-show';
+    title: string;
+    posterUrl?: string;
+    overview?: string;
+    releaseDate?: string;
+    addedAt: Date;
+}[];
 
 router.get('/', async (req, res) => {
     const data = await db
@@ -27,7 +39,7 @@ router.get('/', async (req, res) => {
             overview: item.overview ?? undefined,
             releaseDate: item.releaseDate ?? undefined,
             addedAt: item.addedAt,
-        }))
+        })) satisfies WatchlistItemResponse
     );
 });
 
@@ -40,6 +52,17 @@ const addWatchlistItemSchema = z.object({
     releaseDate: z.string().optional(),
 });
 
+interface AddWatchListItemResponse {
+    id: number;
+    providerId: string;
+    mediaType: 'movie' | 'tv-show';
+    title: string;
+    posterUrl?: string;
+    overview?: string;
+    releaseDate?: string;
+    addedAt: Date;
+}
+
 router.post('/', async (req, res) => {
     const result = addWatchlistItemSchema.safeParse(req.body);
 
@@ -47,7 +70,7 @@ router.post('/', async (req, res) => {
         res.status(400).json({
             error: 'Invalid request body',
             details: result.error.issues,
-        });
+        } satisfies ErrorResponse);
         return;
     }
 
@@ -61,7 +84,7 @@ router.post('/', async (req, res) => {
     if (count >= WATCHLIST_ITEM_LIMIT) {
         res.status(429).json({
             error: `Watchlist limit of ${WATCHLIST_ITEM_LIMIT} items reached`,
-        });
+        } satisfies ErrorResponse);
         return;
     }
 
@@ -72,7 +95,9 @@ router.post('/', async (req, res) => {
             .returning();
 
         if (!created) {
-            res.status(500).json({ error: 'Failed to add item to watchlist' });
+            res.status(500).json({
+                error: 'Failed to add item to watchlist',
+            } satisfies ErrorResponse);
             return;
         }
 
@@ -85,7 +110,7 @@ router.post('/', async (req, res) => {
             overview: created.overview ?? undefined,
             releaseDate: created.releaseDate ?? undefined,
             addedAt: created.addedAt,
-        });
+        } satisfies AddWatchListItemResponse);
 
         req.log.info(
             {
@@ -108,7 +133,9 @@ router.post('/', async (req, res) => {
                 'Duplicate watchlist item'
             );
 
-            res.status(409).json({ error: 'Item already exists in watchlist' });
+            res.status(409).json({
+                error: 'Item already exists in watchlist',
+            } satisfies ErrorResponse);
             return;
         }
 
@@ -127,7 +154,7 @@ router.delete('/:id', async (req, res) => {
         res.status(400).json({
             error: 'Invalid request parameters',
             details: result.error.issues,
-        });
+        } satisfies ErrorResponse);
         return;
     }
 
@@ -141,7 +168,9 @@ router.delete('/:id', async (req, res) => {
 
     if (!deleted) {
         req.log.warn({ itemId: id }, 'Watchlist item not found');
-        res.status(404).json({ error: 'Item not found in watchlist' });
+        res.status(404).json({
+            error: 'Item not found in watchlist',
+        } satisfies ErrorResponse);
         return;
     }
 

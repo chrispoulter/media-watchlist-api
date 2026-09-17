@@ -26,7 +26,7 @@ export const openApiSpec: OpenAPIV3.Document = {
             },
         },
         schemas: {
-            Error: {
+            ErrorResponse: {
                 type: 'object',
                 properties: {
                     error: { type: 'string' },
@@ -38,7 +38,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                 },
                 required: ['error'],
             },
-            HealthCheck: {
+            HealthResponse: {
                 type: 'object',
                 properties: {
                     status: { type: 'string', enum: ['ok', 'unhealthy'] },
@@ -64,7 +64,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                 },
                 required: ['status', 'version', 'uptime', 'services'],
             },
-            AliveCheck: {
+            AliveResponse: {
                 type: 'object',
                 properties: {
                     status: { type: 'string', enum: ['ok'] },
@@ -76,32 +76,50 @@ export const openApiSpec: OpenAPIV3.Document = {
                 },
                 required: ['status', 'version', 'uptime'],
             },
-            SearchResult: {
-                type: 'object',
-                properties: {
-                    providerId: { type: 'string' },
-                    mediaType: { type: 'string', enum: ['movie', 'tv-show'] },
-                    title: { type: 'string' },
-                    posterUrl: { type: 'string', nullable: true },
-                    overview: { type: 'string', nullable: true },
-                    releaseDate: { type: 'string', nullable: true },
-                    watchlistItemId: { type: 'integer', nullable: true },
+            SearchResponse: {
+                type: 'array',
+                items: {
+                    type: 'object',
+                    properties: {
+                        providerId: { type: 'string' },
+                        mediaType: {
+                            type: 'string',
+                            enum: ['movie', 'tv-show'],
+                        },
+                        title: { type: 'string' },
+                        posterUrl: { type: 'string' },
+                        overview: { type: 'string' },
+                        releaseDate: { type: 'string' },
+                        watchlistItemId: { type: 'integer', nullable: true },
+                    },
+                    required: ['providerId', 'mediaType', 'title'],
                 },
-                required: ['providerId', 'mediaType'],
             },
-            WatchlistItem: {
-                type: 'object',
-                properties: {
-                    id: { type: 'integer' },
-                    providerId: { type: 'string' },
-                    mediaType: { type: 'string', enum: ['movie', 'tv-show'] },
-                    title: { type: 'string' },
-                    posterUrl: { type: 'string', nullable: true },
-                    overview: { type: 'string', nullable: true },
-                    releaseDate: { type: 'string', nullable: true },
-                    addedAt: { type: 'string', format: 'date-time' },
+            WatchlistResponse: {
+                type: 'array',
+                items: {
+                    type: 'object',
+                    properties: {
+                        id: { type: 'integer' },
+                        providerId: { type: 'string' },
+                        mediaType: {
+                            type: 'string',
+                            enum: ['movie', 'tv-show'],
+                        },
+                        title: { type: 'string' },
+                        posterUrl: { type: 'string' },
+                        overview: { type: 'string' },
+                        releaseDate: { type: 'string' },
+                        addedAt: { type: 'string', format: 'date-time' },
+                    },
+                    required: [
+                        'id',
+                        'providerId',
+                        'mediaType',
+                        'title',
+                        'addedAt',
+                    ],
                 },
-                required: ['id', 'providerId', 'mediaType', 'title'],
             },
             AddWatchlistItemRequest: {
                 type: 'object',
@@ -115,6 +133,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                     title: { type: 'string', example: 'Breaking Bad' },
                     posterUrl: {
                         type: 'string',
+                        format: 'uri',
                         example:
                             'https://image.tmdb.org/t/p/w300/ztkUQFLlC19CCMYHW9o1zWhJRNq.jpg',
                     },
@@ -125,6 +144,23 @@ export const openApiSpec: OpenAPIV3.Document = {
                     releaseDate: { type: 'string', example: '2008-01-20' },
                 },
                 required: ['providerId', 'mediaType', 'title'],
+            },
+            AddWatchlistItemResponse: {
+                type: 'object',
+                properties: {
+                    id: { type: 'integer' },
+                    providerId: { type: 'string' },
+                    mediaType: {
+                        type: 'string',
+                        enum: ['movie', 'tv-show'],
+                    },
+                    title: { type: 'string' },
+                    posterUrl: { type: 'string' },
+                    overview: { type: 'string' },
+                    releaseDate: { type: 'string' },
+                    addedAt: { type: 'string', format: 'date-time' },
+                },
+                required: ['id', 'providerId', 'mediaType', 'title', 'addedAt'],
             },
         },
     },
@@ -148,7 +184,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    $ref: '#/components/schemas/HealthCheck',
+                                    $ref: '#/components/schemas/HealthResponse',
                                 },
                             },
                         },
@@ -158,7 +194,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    $ref: '#/components/schemas/HealthCheck',
+                                    $ref: '#/components/schemas/HealthResponse',
                                 },
                             },
                         },
@@ -178,7 +214,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    $ref: '#/components/schemas/AliveCheck',
+                                    $ref: '#/components/schemas/AliveResponse',
                                 },
                             },
                         },
@@ -209,10 +245,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    type: 'array',
-                                    items: {
-                                        $ref: '#/components/schemas/SearchResult',
-                                    },
+                                    $ref: '#/components/schemas/SearchResponse',
                                 },
                             },
                         },
@@ -222,7 +255,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    $ref: '#/components/schemas/Error',
+                                    $ref: '#/components/schemas/ErrorResponse',
                                 },
                             },
                         },
@@ -232,7 +265,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    $ref: '#/components/schemas/Error',
+                                    $ref: '#/components/schemas/ErrorResponse',
                                 },
                             },
                         },
@@ -242,7 +275,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    $ref: '#/components/schemas/Error',
+                                    $ref: '#/components/schemas/ErrorResponse',
                                 },
                             },
                         },
@@ -263,10 +296,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    type: 'array',
-                                    items: {
-                                        $ref: '#/components/schemas/WatchlistItem',
-                                    },
+                                    $ref: '#/components/schemas/WatchlistResponse',
                                 },
                             },
                         },
@@ -276,7 +306,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    $ref: '#/components/schemas/Error',
+                                    $ref: '#/components/schemas/ErrorResponse',
                                 },
                             },
                         },
@@ -286,7 +316,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    $ref: '#/components/schemas/Error',
+                                    $ref: '#/components/schemas/ErrorResponse',
                                 },
                             },
                         },
@@ -313,7 +343,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    $ref: '#/components/schemas/WatchlistItem',
+                                    $ref: '#/components/schemas/AddWatchlistItemResponse',
                                 },
                             },
                         },
@@ -323,7 +353,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    $ref: '#/components/schemas/Error',
+                                    $ref: '#/components/schemas/ErrorResponse',
                                 },
                             },
                         },
@@ -333,7 +363,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    $ref: '#/components/schemas/Error',
+                                    $ref: '#/components/schemas/ErrorResponse',
                                 },
                             },
                         },
@@ -343,7 +373,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    $ref: '#/components/schemas/Error',
+                                    $ref: '#/components/schemas/ErrorResponse',
                                 },
                             },
                         },
@@ -353,7 +383,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    $ref: '#/components/schemas/Error',
+                                    $ref: '#/components/schemas/ErrorResponse',
                                 },
                             },
                         },
@@ -363,7 +393,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    $ref: '#/components/schemas/Error',
+                                    $ref: '#/components/schemas/ErrorResponse',
                                 },
                             },
                         },
@@ -393,7 +423,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    $ref: '#/components/schemas/Error',
+                                    $ref: '#/components/schemas/ErrorResponse',
                                 },
                             },
                         },
@@ -403,7 +433,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    $ref: '#/components/schemas/Error',
+                                    $ref: '#/components/schemas/ErrorResponse',
                                 },
                             },
                         },
@@ -413,7 +443,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    $ref: '#/components/schemas/Error',
+                                    $ref: '#/components/schemas/ErrorResponse',
                                 },
                             },
                         },
@@ -423,7 +453,7 @@ export const openApiSpec: OpenAPIV3.Document = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    $ref: '#/components/schemas/Error',
+                                    $ref: '#/components/schemas/ErrorResponse',
                                 },
                             },
                         },

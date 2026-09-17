@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { db } from '../db/index.js';
 import { watchlistItem } from '../db/schema.js';
 import { requireAuth } from '../middleware/require-auth.js';
-import { ErrorResponse } from '../types/index.js';
+import { ErrorResponse, MediaType } from '../types/index.js';
 import { search } from '../lib/tmdb.js';
 
 const router = Router();
@@ -17,7 +17,7 @@ const searchSchema = z.object({
 
 type SearchResponse = {
     providerId: string;
-    mediaType: string;
+    mediaType: MediaType;
     title: string;
     posterUrl?: string;
     overview?: string;

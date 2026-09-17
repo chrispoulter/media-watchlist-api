@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { db } from '../db/index.js';
 import { watchlistItem } from '../db/schema.js';
 import { requireAuth } from '../middleware/require-auth.js';
-import { ErrorResponse } from '../types/index.js';
+import { ErrorResponse, MediaType } from '../types/index.js';
 
 const WATCHLIST_ITEM_LIMIT = 100;
 
@@ -15,7 +15,7 @@ router.use(requireAuth);
 type WatchlistResponse = {
     id: number;
     providerId: string;
-    mediaType: 'movie' | 'tv-show';
+    mediaType: MediaType;
     title: string;
     posterUrl?: string;
     overview?: string;
@@ -55,7 +55,7 @@ const addWatchlistItemSchema = z.object({
 interface AddWatchListItemResponse {
     id: number;
     providerId: string;
-    mediaType: 'movie' | 'tv-show';
+    mediaType: MediaType;
     title: string;
     posterUrl?: string;
     overview?: string;

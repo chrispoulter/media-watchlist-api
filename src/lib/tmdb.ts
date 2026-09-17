@@ -1,4 +1,4 @@
-import type { HealthStatus } from '../types/index.js';
+import type { HealthStatus, MediaType } from '../types/index.js';
 import { config } from './config.js';
 import { logger } from './logger.js';
 
@@ -76,7 +76,9 @@ export const search = async (query: string) => {
             )
             .map((item) => ({
                 providerId: `tmdb:${item.id}`,
-                mediaType: item.media_type == 'movie' ? 'movie' : 'tv-show',
+                mediaType: (item.media_type == 'movie'
+                    ? 'movie'
+                    : 'tv-show') as MediaType,
                 title: item.title || item.name,
                 posterUrl: item.poster_path
                     ? `${IMAGE_URL}${item.poster_path}`

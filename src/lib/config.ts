@@ -24,7 +24,7 @@ const configSchema = z.object({
     TMDB_API_READ_TOKEN: z.string(),
     SMTP_HOST: z.string().default('localhost'),
     SMTP_PORT: z.coerce.number().default(587),
-    SMTP_SECURE: z.coerce.boolean().default(false),
+    SMTP_SECURE: z.stringbool().default(false),
     SMTP_USER: z.string().optional(),
     SMTP_PASS: z.string().optional(),
     SMTP_FROM: z.email(),

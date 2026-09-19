@@ -1,16 +1,18 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { DefaultLogger, sql } from 'drizzle-orm';
+import { type Logger, sql } from 'drizzle-orm';
 import { Pool } from 'pg';
-import { HealthStatus } from '../types/index.js';
+import type { HealthStatus } from '../types/index.js';
 import { config } from '../lib/config.js';
 import { logger } from '../lib/logger.js';
 
+class DrizzleQueryLogger implements Logger {
+    logQuery(query: string, params: unknown[]): void {
+        logger.debug({ query, params }, 'query');
+    }
+}
+
 export const db = drizzle(config.DATABASE_URL, {
-    logger: new DefaultLogger({
-        writer: {
-            write: (message) => logger.debug({ sql: message }, 'query'),
-        },
-    }),
+    logger: new DrizzleQueryLogger(),
 });
 
 export const shutdown = async () => {

@@ -29,7 +29,7 @@ const configSchema = z.object({
     SMTP_PASS: z.string().optional(),
     SMTP_FROM: z.email(),
     LOG_LEVEL: z
-        .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace'])
+        .enum(['fatal', 'error', 'warning', 'info', 'debug', 'trace'])
         .default('info'),
 });
 

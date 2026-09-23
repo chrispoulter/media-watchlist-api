@@ -1,45 +1,47 @@
-import express from 'express';
-import cors from 'cors';
-import { toNodeHandler } from 'better-auth/node';
-import { requestLogger } from './middleware/request-logger.js';
-import { notFoundHandler } from './middleware/not-found-handler.js';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Hono } from 'hono';
+import { OpenAPIHono } from '@hono/zod-openapi';
+import { cors } from 'hono/cors';
+import { honoLogger } from '@logtape/hono';
 import { errorHandler } from './middleware/error-handler.js';
-import searchRoutes from './routes/search-routes.js';
-import watchlistRoutes from './routes/watchlist-routes.js';
-import healthRoutes from './routes/health-routes.js';
-import docsRoutes from './routes/docs-routes.js';
-import { auth } from './lib/auth.js';
+import { notFoundHandler } from './middleware/not-found-handler.js';
 import { config } from './lib/config.js';
 
-const app = express();
+import './lib/logger.js';
 
-// app.use(async (_req, _res, next) => {
-//   await new Promise((resolve) => setTimeout(resolve, 1000 * 3));
-//   next();
-// });
+import { registerDocRoutes } from './routes/docs-routes.js';
+import healthRoutes from './routes/health-routes.js';
+import authRoutes from './routes/auth-routes.js';
+import searchRoutes from './routes/search-routes.js';
+import watchlistRoutes from './routes/watchlist-routes.js';
+
+const app = new OpenAPIHono();
+
+app.onError(errorHandler);
+app.notFound(notFoundHandler);
 
 app.use(
     cors({
         origin: config.CLIENT_ORIGIN.split(','),
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
         credentials: true,
     })
 );
 
-app.use(requestLogger);
+app.use(
+    honoLogger({
+        skip: (c) => c.req.path === '/health' || c.req.path === '/alive',
+        context: true,
+    })
+);
 
-app.all('/api/auth/*splat', toNodeHandler(auth));
+app.route('/api/auth', authRoutes);
+app.route('/api/search', searchRoutes);
+app.route('/api/watchlist', watchlistRoutes);
+app.route('/', healthRoutes);
 
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
+registerDocRoutes(app);
 
-app.use('/api/search', searchRoutes);
-app.use('/api/watchlist', watchlistRoutes);
-
-app.use(healthRoutes);
-app.use(docsRoutes);
-
-app.use(notFoundHandler);
-app.use(errorHandler);
+app.get('/', (c) => c.redirect('/reference'));
 
 export default app;

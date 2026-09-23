@@ -19,17 +19,11 @@ export const auth = betterAuth({
         schema,
     }),
     user: {
-        changeEmail: {
-            enabled: true,
-        },
-        deleteUser: {
-            enabled: true,
-        },
+        changeEmail: { enabled: true },
+        deleteUser: { enabled: true },
     },
     account: {
-        accountLinking: {
-            allowDifferentEmails: true,
-        },
+        accountLinking: { allowDifferentEmails: true },
     },
     emailAndPassword: {
         enabled: true,
@@ -64,20 +58,17 @@ export const auth = betterAuth({
         },
     },
     plugins: [
-        twoFactor({
-            issuer: 'Media Watchlist',
-        }),
-        openAPI({
-            disableDefaultReference: true,
-        }),
+        twoFactor({ issuer: 'Media Watchlist' }),
+        openAPI({ disableDefaultReference: true }),
     ],
     advanced: {
-        defaultCookieAttributes: {
-            sameSite: 'none',
-            secure: true,
-        },
+        defaultCookieAttributes: { sameSite: 'none', secure: true },
     },
 });
 
-export type Session = typeof auth.$Infer.Session.session;
-export type User = typeof auth.$Infer.Session.user;
+export interface AuthEnv {
+    Variables: {
+        user: typeof auth.$Infer.Session.user;
+        session: typeof auth.$Infer.Session.session;
+    };
+}

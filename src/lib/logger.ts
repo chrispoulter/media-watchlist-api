@@ -1,41 +1,53 @@
-import pino from 'pino';
-import { config, version } from './config.js';
+import { AsyncLocalStorage } from 'node:async_hooks';
+import {
+    configure,
+    getConsoleSink,
+    ansiColorFormatter,
+    jsonLinesFormatter,
+} from '@logtape/logtape';
+import {
+    redactByPattern,
+    redactByField,
+    EMAIL_ADDRESS_PATTERN,
+    JWT_PATTERN,
+} from '@logtape/redaction';
+import { config } from './config.js';
 
 const isDev = process.env['NODE_ENV'] !== 'production';
+const formatter = isDev ? ansiColorFormatter : jsonLinesFormatter;
 
-const destination = isDev
-    ? undefined
-    : pino.destination({ dest: 1, sync: true });
-
-export const logger = pino(
-    {
-        level: config.LOG_LEVEL,
-        timestamp: pino.stdTimeFunctions.isoTime,
-        base: { version },
-        serializers: {
-            err: pino.stdSerializers.err,
-        },
-        redact: {
-            paths: [
-                'req.headers.authorization',
-                'req.headers.cookie',
-                'req.headers["set-cookie"]',
-                'req.body.password',
-                'req.body.newPassword',
-                'req.body.token',
-                '*.secret',
-                '*.accessToken',
-                '*.refreshToken',
-                '*.backupCodes',
-            ],
-            censor: '[REDACTED]',
-        },
-        ...(isDev && {
-            transport: {
-                target: 'pino-pretty',
-                options: { colorize: true, translateTime: 'SYS:standard' },
-            },
-        }),
-    },
-    destination
+const consoleSink = redactByField(
+    getConsoleSink({
+        formatter: redactByPattern(formatter, [
+            EMAIL_ADDRESS_PATTERN,
+            JWT_PATTERN,
+        ]),
+    })
 );
+
+await configure({
+    sinks: { console: consoleSink },
+    loggers: [
+        {
+            category: ['hono'],
+            sinks: ['console'],
+            lowestLevel: config.LOG_LEVEL,
+        },
+        {
+            category: ['api'],
+            sinks: ['console'],
+            lowestLevel: config.LOG_LEVEL,
+        },
+        {
+            category: ['drizzle-orm'],
+            sinks: ['console'],
+            lowestLevel: config.LOG_LEVEL,
+        },
+        {
+            category: ['logtape', 'meta'],
+            sinks: ['console'],
+            lowestLevel: 'warning',
+        },
+    ],
+    contextLocalStorage: new AsyncLocalStorage(),
+});

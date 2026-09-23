@@ -1,6 +1,6 @@
 # Media Watchlist API
 
-A REST API for tracking movies and TV shows you want to watch. Built with Express, TypeScript, and PostgreSQL.
+A REST API for tracking movies and TV shows you want to watch. Built with Hono, TypeScript, and PostgreSQL.
 
 ## Features
 
@@ -18,7 +18,7 @@ A REST API for tracking movies and TV shows you want to watch. Built with Expres
 | Layer            | Technology                  |
 | ---------------- | --------------------------- |
 | Runtime          | Node.js 24, TypeScript      |
-| Framework        | Express 5                   |
+| Framework        | Hono 4                      |
 | Database         | PostgreSQL 17 + Drizzle ORM |
 | Authentication   | Better Auth                 |
 | Media Search     | TMDB API                    |

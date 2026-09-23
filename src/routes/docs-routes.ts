@@ -1,31 +1,42 @@
-import { Router } from 'express';
-import { apiReference } from '@scalar/express-api-reference';
-import { openApiSpec } from '../docs/openapi.js';
+import type { OpenAPIHono } from '@hono/zod-openapi';
+import { Scalar } from '@scalar/hono-api-reference';
 import { auth } from '../lib/auth.js';
+import { version } from '../lib/config.js';
 
-const router = Router();
+export function registerDocRoutes(app: OpenAPIHono) {
+    app.openAPIRegistry.registerComponent('securitySchemes', 'apiKeyCookie', {
+        type: 'apiKey',
+        in: 'cookie',
+        name: 'apiKeyCookie',
+        description: 'API Key authentication via cookie',
+    });
 
-router.get('/openapi.json', async (_req, res) => res.json(openApiSpec));
+    app.openAPIRegistry.registerComponent('securitySchemes', 'bearerAuth', {
+        type: 'http',
+        scheme: 'bearer',
+        description: 'Bearer token authentication',
+    });
 
-router.get('/auth-openapi.json', async (_req, res) => {
-    const authSchema = await auth.api.generateOpenAPISchema();
-    res.json(authSchema);
-});
+    app.doc('/openapi.json', {
+        openapi: '3.0.3',
+        info: {
+            title: 'Media Watchlist API',
+            version,
+        },
+    });
 
-router.use(
-    '/reference',
-    apiReference({
-        pageTitle: 'Media Watchlist API',
-        sources: [
-            { url: '/openapi.json', title: 'Media Watchlist API' },
-            {
-                url: '/auth-openapi.json',
-                title: 'Better Auth',
-            },
-        ],
-    })
-);
+    app.get('/auth-openapi.json', async (c) =>
+        c.json(await auth.api.generateOpenAPISchema())
+    );
 
-router.get('/', (_req, res) => res.redirect('/reference'));
-
-export default router;
+    app.get(
+        '/reference',
+        Scalar({
+            pageTitle: 'Media Watchlist API',
+            sources: [
+                { url: '/openapi.json', title: 'Media Watchlist API' },
+                { url: '/auth-openapi.json', title: 'Better Auth' },
+            ],
+        })
+    );
+}

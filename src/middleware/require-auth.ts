@@ -1,27 +1,19 @@
-import type { Request, Response, NextFunction } from 'express';
-import { fromNodeHeaders } from 'better-auth/node';
+import { createMiddleware } from 'hono/factory';
+import { withContext } from '@logtape/logtape';
 import type { ErrorResponse } from '../types/index.js';
-import { auth } from '../lib/auth.js';
+import { auth, type AuthEnv } from '../lib/auth.js';
 
-export const requireAuth = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const requireAuth = createMiddleware<AuthEnv>(async (c, next) => {
     const sessionData = await auth.api.getSession({
-        headers: fromNodeHeaders(req.headers),
+        headers: c.req.raw.headers,
     });
 
     if (!sessionData) {
-        req.log.warn({ path: req.path }, 'Unauthenticated request rejected');
-        res.status(401).json({ error: 'Unauthorized' } satisfies ErrorResponse);
-        return;
+        return c.json<ErrorResponse>({ error: 'Unauthorized' }, 401);
     }
 
-    req.user = sessionData.user;
-    req.session = sessionData.session;
+    c.set('user', sessionData.user);
+    c.set('session', sessionData.session);
 
-    req.log = req.log.child({ userId: sessionData.user.id });
-
-    next();
-};
+    await withContext({ userId: sessionData.user.id }, next);
+});

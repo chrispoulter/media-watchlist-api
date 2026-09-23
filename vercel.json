@@ -1,5 +1,5 @@
 {
     "$schema": "https://openapi.vercel.sh/vercel.json",
-    "framework": "express",
+    "framework": "hono",
     "buildCommand": "npx tsx src/db/migrate.ts"
 }

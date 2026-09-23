@@ -64,23 +64,23 @@ npm run dev
 
 ## Environment Variables
 
-| Variable               | Required | Default                 | Description                                                      |
-| ---------------------- | -------- | ----------------------- | ---------------------------------------------------------------- |
-| `PORT`                 | No       | `3000`                  | Port the server listens on                                       |
-| `DATABASE_URL`         | Yes      | —                       | PostgreSQL connection string                                     |
-| `BETTER_AUTH_SECRET`   | Yes      | —                       | Auth signing secret (min 32 chars)                               |
-| `BETTER_AUTH_URL`      | No       | `http://localhost:3000` | Public base URL of the API                                       |
-| `CLIENT_ORIGIN`        | No       | `http://localhost:5173` | Allowed CORS origin(s), comma-separated                          |
-| `GOOGLE_CLIENT_ID`     | No       | —                       | Google OAuth client ID                                           |
-| `GOOGLE_CLIENT_SECRET` | No       | —                       | Google OAuth client secret                                       |
-| `TMDB_API_READ_TOKEN`  | Yes      | —                       | TMDB API read access token                                       |
-| `SMTP_HOST`            | No       | `localhost`             | SMTP server host                                                 |
-| `SMTP_PORT`            | No       | `587`                   | SMTP server port                                                 |
-| `SMTP_SECURE`          | No       | `false`                 | Use TLS/SSL for SMTP                                             |
-| `SMTP_FROM`            | Yes      | —                       | From address for outgoing emails                                 |
-| `SMTP_USER`            | No       | —                       | SMTP username                                                    |
-| `SMTP_PASS`            | No       | —                       | SMTP password                                                    |
-| `LOG_LEVEL`            | No       | `info`                  | Log level: `fatal`, `error`, `warn`, `info`, `debug`, or `trace` |
+| Variable               | Required | Default                 | Description                                                         |
+| ---------------------- | -------- | ----------------------- | ------------------------------------------------------------------- |
+| `PORT`                 | No       | `3000`                  | Port the server listens on                                          |
+| `DATABASE_URL`         | Yes      | —                       | PostgreSQL connection string                                        |
+| `BETTER_AUTH_SECRET`   | Yes      | —                       | Auth signing secret (min 32 chars)                                  |
+| `BETTER_AUTH_URL`      | No       | `http://localhost:3000` | Public base URL of the API                                          |
+| `CLIENT_ORIGIN`        | No       | `http://localhost:5173` | Allowed CORS origin(s), comma-separated                             |
+| `GOOGLE_CLIENT_ID`     | No       | —                       | Google OAuth client ID                                              |
+| `GOOGLE_CLIENT_SECRET` | No       | —                       | Google OAuth client secret                                          |
+| `TMDB_API_READ_TOKEN`  | Yes      | —                       | TMDB API read access token                                          |
+| `SMTP_HOST`            | No       | `localhost`             | SMTP server host                                                    |
+| `SMTP_PORT`            | No       | `587`                   | SMTP server port                                                    |
+| `SMTP_SECURE`          | No       | `false`                 | Use TLS/SSL for SMTP                                                |
+| `SMTP_FROM`            | Yes      | —                       | From address for outgoing emails                                    |
+| `SMTP_USER`            | No       | —                       | SMTP username                                                       |
+| `SMTP_PASS`            | No       | —                       | SMTP password                                                       |
+| `LOG_LEVEL`            | No       | `info`                  | Log level: `fatal`, `error`, `warning`, `info`, `debug`, or `trace` |
 
 ## API Overview
 

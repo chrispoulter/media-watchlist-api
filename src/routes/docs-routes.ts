@@ -4,17 +4,19 @@ import { auth } from '../lib/auth.js';
 import { version } from '../lib/config.js';
 
 export function registerDocRoutes(app: OpenAPIHono) {
-    app.openAPIRegistry.registerComponent('securitySchemes', 'apiKeyCookie', {
-        type: 'apiKey',
-        in: 'cookie',
-        name: 'apiKeyCookie',
-        description: 'API Key authentication via cookie',
-    });
-
     app.openAPIRegistry.registerComponent('securitySchemes', 'bearerAuth', {
         type: 'http',
         scheme: 'bearer',
-        description: 'Bearer token authentication',
+        description:
+            'Pass the session token from the sign-in response body as `Authorization: Bearer <token>`.',
+    });
+
+    app.openAPIRegistry.registerComponent('securitySchemes', 'cookieAuth', {
+        type: 'apiKey',
+        in: 'cookie',
+        name: 'better-auth.session_token',
+        description:
+            'Session cookie set automatically by the browser after sign-in.',
     });
 
     app.doc('/openapi.json', {

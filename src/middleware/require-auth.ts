@@ -1,7 +1,14 @@
 import { createMiddleware } from 'hono/factory';
 import { withContext } from '@logtape/logtape';
 import type { ErrorResponse } from '../types/index.js';
-import { auth, type AuthEnv } from '../lib/auth.js';
+import { auth, type User, type Session } from '../lib/auth.js';
+
+export interface AuthEnv {
+    Variables: {
+        user: User;
+        session: Session;
+    };
+}
 
 export const requireAuth = createMiddleware<AuthEnv>(async (c, next) => {
     const sessionData = await auth.api.getSession({

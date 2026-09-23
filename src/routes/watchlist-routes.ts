@@ -5,7 +5,7 @@ import { db } from '../db/index.js';
 import { watchlistItem } from '../db/schema.js';
 import { requireAuth } from '../middleware/require-auth.js';
 import { errorResponseSchema, mediaTypeSchema } from '../types/index.js';
-import { createRouter } from '../lib/create-router.js';
+import { authSecurity, createRouter } from '../lib/create-router.js';
 
 const WATCHLIST_ITEM_LIMIT = 100;
 
@@ -33,7 +33,7 @@ const listRoute = createRoute({
     path: '/',
     tags: ['Watchlist'],
     summary: 'Get all watchlist items for the current user',
-    security: [{ bearerAuth: [] }],
+    security: authSecurity,
     responses: {
         200: {
             description: 'List of watchlist items.',
@@ -53,10 +53,10 @@ const listRoute = createRoute({
 });
 
 const addWatchlistItemSchema = z.object({
-    providerId: z.string(),
+    providerId: z.string().min(1),
     mediaType: mediaTypeSchema,
-    title: z.string(),
-    posterUrl: z.string().optional(),
+    title: z.string().min(1),
+    posterUrl: z.url().optional(),
     overview: z.string().optional(),
     releaseDate: z.string().optional(),
 });
@@ -87,7 +87,7 @@ const addRoute = createRoute({
     path: '/',
     tags: ['Watchlist'],
     summary: 'Add an item to the watchlist',
-    security: [{ bearerAuth: [] }],
+    security: authSecurity,
     request: {
         body: {
             required: true,
@@ -204,7 +204,7 @@ const deleteRoute = createRoute({
     path: '/{id}',
     tags: ['Watchlist'],
     summary: 'Remove an item from the watchlist',
-    security: [{ bearerAuth: [] }],
+    security: authSecurity,
     request: {
         params: z.object({
             id: z.coerce.number().int().positive(),

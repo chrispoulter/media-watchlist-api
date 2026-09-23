@@ -4,7 +4,7 @@ import { db } from '../db/index.js';
 import { watchlistItem } from '../db/schema.js';
 import { requireAuth } from '../middleware/require-auth.js';
 import { errorResponseSchema, mediaTypeSchema } from '../types/index.js';
-import { createRouter } from '../lib/create-router.js';
+import { authSecurity, createRouter } from '../lib/create-router.js';
 import { search } from '../lib/tmdb.js';
 
 const router = createRouter();
@@ -28,7 +28,7 @@ const searchRoute = createRoute({
     path: '/',
     tags: ['Search'],
     summary: 'Search for movies and TV shows',
-    security: [{ bearerAuth: [] }],
+    security: authSecurity,
     request: {
         query: z.object({
             query: z.string().min(1),

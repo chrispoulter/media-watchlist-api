@@ -2,9 +2,11 @@
 import { Hono } from 'hono';
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { cors } from 'hono/cors';
+import { bodyLimit } from 'hono/body-limit';
 import { honoLogger } from '@logtape/hono';
 import { errorHandler } from './middleware/error-handler.js';
 import { notFoundHandler } from './middleware/not-found-handler.js';
+import type { ErrorResponse } from './types/index.js';
 import { config } from './lib/config.js';
 
 import './lib/logger.js';
@@ -25,6 +27,14 @@ app.use(
         origin: config.CLIENT_ORIGIN.split(','),
         allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
         credentials: true,
+    })
+);
+
+app.use(
+    bodyLimit({
+        maxSize: 10 * 1024 * 1024,
+        onError: (c) =>
+            c.json<ErrorResponse>({ error: 'Payload Too Large' }, 413),
     })
 );
 

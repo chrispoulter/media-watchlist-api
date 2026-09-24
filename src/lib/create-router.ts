@@ -4,8 +4,3 @@ import { validationHook } from './validation-hook.js';
 
 export const createRouter = () =>
     new OpenAPIHono<AuthEnv>({ defaultHook: validationHook });
-
-export const authSecurity: Record<string, string[]>[] = [
-    { bearerAuth: [] },
-    { cookieAuth: [] },
-];

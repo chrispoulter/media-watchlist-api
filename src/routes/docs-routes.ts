@@ -1,22 +1,19 @@
 import type { OpenAPIHono } from '@hono/zod-openapi';
 import { Scalar } from '@scalar/hono-api-reference';
 import { auth } from '../lib/auth.js';
-import { version } from '../lib/config.js';
+import { config, version } from '../lib/config.js';
 
 export function registerDocRoutes(app: OpenAPIHono) {
-    app.openAPIRegistry.registerComponent('securitySchemes', 'bearerAuth', {
-        type: 'http',
-        scheme: 'bearer',
-        description:
-            'Pass the session token from the sign-in response body as `Authorization: Bearer <token>`.',
-    });
+    const cookiePrefix = config.BETTER_AUTH_URL.startsWith('https://')
+        ? '__Secure-'
+        : '';
 
     app.openAPIRegistry.registerComponent('securitySchemes', 'cookieAuth', {
         type: 'apiKey',
         in: 'cookie',
-        name: 'better-auth.session_token',
+        name: `${cookiePrefix}better-auth.session_token`,
         description:
-            'Session cookie set automatically by the browser after sign-in.',
+            'Signed session cookie set by Better Auth on sign-in. Sent automatically by the browser.',
     });
 
     app.doc('/openapi.json', {

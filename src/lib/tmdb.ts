@@ -1,6 +1,8 @@
+import { getLogger } from '@logtape/logtape';
 import type { HealthStatus, MediaType } from '../types/index.js';
 import { config } from './config.js';
-import { logger } from './logger.js';
+
+const logger = getLogger(['api', 'tmdb']);
 
 const API_URL = 'https://api.themoviedb.org/3';
 const IMAGE_URL = 'https://image.tmdb.org/t/p/w300';
@@ -34,12 +36,8 @@ export const check = async (): Promise<HealthStatus> => {
 
         return { name: 'tmdb', status: 'ok' };
     } catch (err) {
-        logger.error({ err }, 'TMDB health check failed');
-
-        return {
-            name: 'tmdb',
-            status: 'unhealthy',
-        };
+        logger.error('TMDB health check failed {*}', { err });
+        return { name: 'tmdb', status: 'unhealthy' };
     }
 };
 
@@ -48,20 +46,22 @@ export const search = async (query: string) => {
     const params = new URLSearchParams({ query: normalizedQuery });
 
     try {
-        const response = await fetch(`${API_URL}/search/multi?${params}`, {
-            headers: { Authorization: `Bearer ${config.TMDB_API_READ_TOKEN}` },
-            signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-        });
+        const response = await fetch(
+            `${API_URL}/search/multi?${params.toString()}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${config.TMDB_API_READ_TOKEN}`,
+                },
+                signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+            }
+        );
 
         if (!response.ok) {
-            logger.error(
-                {
-                    query: normalizedQuery,
-                    status: response.status,
-                    statusText: response.statusText,
-                },
-                'TMDB API error'
-            );
+            logger.error('TMDB API error {*}', {
+                query: normalizedQuery,
+                status: response.status,
+                statusText: response.statusText,
+            });
             throw new Error(
                 `TMDB API error: ${response.status} ${response.statusText}`
             );
@@ -69,7 +69,7 @@ export const search = async (query: string) => {
 
         const data = (await response.json()) as TmdbSearchResponse;
 
-        const results = data.results
+        return data.results
             .filter(
                 (item) =>
                     item.media_type === 'movie' || item.media_type === 'tv'
@@ -86,14 +86,12 @@ export const search = async (query: string) => {
                 overview: item.overview,
                 releaseDate: item.release_date || item.first_air_date || null,
             }));
-
-        return results;
     } catch (err) {
         if (err instanceof Error && err.name === 'TimeoutError') {
-            logger.error(
-                { query: normalizedQuery, timeoutMs: FETCH_TIMEOUT_MS },
-                'TMDB request timed out'
-            );
+            logger.error('TMDB request timed out {*}', {
+                query: normalizedQuery,
+                timeoutMs: FETCH_TIMEOUT_MS,
+            });
         }
         throw err;
     }

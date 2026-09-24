@@ -1,34 +1,49 @@
+import { serve } from '@hono/node-server';
+import { getLogger } from '@logtape/logtape';
 import app from './app.js';
 import { config } from './lib/config.js';
-import { logger } from './lib/logger.js';
 
 import { shutdown as shutdownDb } from './db/index.js';
 import { shutdown as shutdownMailer } from './lib/mailer.js';
 
 const SHUTDOWN_TIMEOUT_MS = 10_000;
 
-const server = app.listen(config.PORT, () => {
-    logger.info(
-        { port: config.PORT, local: `http://localhost:${config.PORT}` },
-        'Server started'
-    );
+const logger = getLogger(['api', 'server']);
+
+const server = serve({ fetch: app.fetch, port: config.PORT }, (info) => {
+    logger.info('Server is running on http://localhost:{port}', {
+        port: info.port,
+    });
 });
 
-const shutdown = async (signal: string) => {
-    logger.info({ signal }, 'Shutdown signal received');
+const closeServer = () =>
+    new Promise<void>((resolve, reject) => {
+        server.close((err) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve();
+            }
+        });
+    });
 
-    server.close(async () => {
+const shutdown = (signal: string) => {
+    logger.info('Shutdown signal received: {signal}', { signal });
+
+    void (async () => {
         try {
-            await Promise.all([shutdownDb(), shutdownMailer()]);
+            await Promise.all([closeServer(), shutdownDb(), shutdownMailer()]);
             logger.info('Shutdown complete');
             process.exit(0);
         } catch (err) {
-            logger.error({ err }, 'Error during shutdown');
+            logger.error('Error during shutdown {*}', { err });
             process.exit(1);
         }
-    });
+    })();
 
-    server.closeIdleConnections();
+    if ('closeIdleConnections' in server) {
+        server.closeIdleConnections();
+    }
 
     setTimeout(() => {
         logger.error('Shutdown timeout exceeded, forcing exit');
@@ -36,5 +51,9 @@ const shutdown = async (signal: string) => {
     }, SHUTDOWN_TIMEOUT_MS).unref();
 };
 
-process.on('SIGTERM', () => shutdown('SIGTERM'));
-process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGTERM', () => {
+    shutdown('SIGTERM');
+});
+process.on('SIGINT', () => {
+    shutdown('SIGINT');
+});

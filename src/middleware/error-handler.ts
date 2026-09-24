@@ -1,9 +1,10 @@
-import { ErrorRequestHandler } from 'express';
+import type { ErrorHandler } from 'hono';
+import { getLogger } from '@logtape/logtape';
 import type { ErrorResponse } from '../types/index.js';
 
-export const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
-    req.log.error({ err, userId: req.user?.id }, 'Unhandled error');
-    res.status(500).json({
-        error: 'Internal Server Error',
-    } satisfies ErrorResponse);
+const logger = getLogger(['api', 'error-handler']);
+
+export const errorHandler: ErrorHandler = (err, c) => {
+    logger.error('Unhandled error {*}', { err });
+    return c.json<ErrorResponse>({ error: 'Internal Server Error' }, 500);
 };

@@ -1,18 +1,15 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { type Logger, sql } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 import { Pool } from 'pg';
+import { getLogger } from '@logtape/logtape';
+import { getLogger as getDrizzleLogger } from '@logtape/drizzle-orm';
 import type { HealthStatus } from '../types/index.js';
 import { config } from '../lib/config.js';
-import { logger } from '../lib/logger.js';
 
-class DrizzleQueryLogger implements Logger {
-    logQuery(query: string, params: unknown[]): void {
-        logger.debug({ query, params }, 'query');
-    }
-}
+const logger = getLogger(['api', 'db']);
 
 export const db = drizzle(config.DATABASE_URL, {
-    logger: new DrizzleQueryLogger(),
+    logger: getDrizzleLogger(),
 });
 
 export const shutdown = async () => {
@@ -27,11 +24,7 @@ export const check = async (): Promise<HealthStatus> => {
         await db.execute(sql`SELECT 1`);
         return { name: 'database', status: 'ok' };
     } catch (err) {
-        logger.error({ err }, 'Database health check failed');
-
-        return {
-            name: 'database',
-            status: 'unhealthy',
-        };
+        logger.error('Database health check failed {*}', { err });
+        return { name: 'database', status: 'unhealthy' };
     }
 };

@@ -11,7 +11,7 @@ import { config } from './lib/config.js';
 
 import './lib/logger.js';
 
-import { registerDocRoutes } from './routes/docs-routes.js';
+import { registerDocRoutes } from './routes/doc-routes.js';
 import healthRoutes from './routes/health-routes.js';
 import authRoutes from './routes/auth-routes.js';
 import searchRoutes from './routes/search-routes.js';

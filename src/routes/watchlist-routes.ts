@@ -1,5 +1,5 @@
 import { createRoute, z } from '@hono/zod-openapi';
-import { and, eq } from 'drizzle-orm';
+import { and, asc, count, eq, inArray, max, sql } from 'drizzle-orm';
 import { getLogger } from '@logtape/logtape';
 import { db } from '../db/index.js';
 import { watchlistItem } from '../db/schema.js';
@@ -27,6 +27,19 @@ const watchlistItemSchema = z.object({
 });
 
 const watchlistResponseSchema = z.array(watchlistItemSchema);
+
+function toWatchlistItemDto(item: typeof watchlistItem.$inferSelect) {
+    return {
+        id: item.id,
+        providerId: item.providerId,
+        mediaType: item.mediaType,
+        title: item.title,
+        posterUrl: item.posterUrl ?? undefined,
+        overview: item.overview ?? undefined,
+        releaseDate: item.releaseDate ?? undefined,
+        addedAt: item.addedAt.toISOString(),
+    };
+}
 
 const listRoute = createRoute({
     method: 'get',
@@ -65,21 +78,10 @@ router.openapi(listRoute, async (c) => {
     const data = await db
         .select()
         .from(watchlistItem)
-        .where(eq(watchlistItem.userId, c.get('user').id));
+        .where(eq(watchlistItem.userId, c.get('user').id))
+        .orderBy(asc(watchlistItem.position), asc(watchlistItem.id));
 
-    return c.json(
-        data.map((item) => ({
-            id: item.id,
-            providerId: item.providerId,
-            mediaType: item.mediaType,
-            title: item.title,
-            posterUrl: item.posterUrl ?? undefined,
-            overview: item.overview ?? undefined,
-            releaseDate: item.releaseDate ?? undefined,
-            addedAt: item.addedAt.toISOString(),
-        })),
-        200
-    );
+    return c.json(data.map(toWatchlistItemDto), 200);
 });
 
 const addRoute = createRoute({
@@ -126,12 +128,15 @@ router.openapi(addRoute, async (c) => {
     const body = c.req.valid('json');
     const userId = c.get('user').id;
 
-    const count = await db.$count(
-        watchlistItem,
-        eq(watchlistItem.userId, userId)
-    );
+    const [stats] = await db
+        .select({
+            itemCount: count(),
+            maxPosition: max(watchlistItem.position),
+        })
+        .from(watchlistItem)
+        .where(eq(watchlistItem.userId, userId));
 
-    if (count >= WATCHLIST_ITEM_LIMIT) {
+    if ((stats?.itemCount ?? 0) >= WATCHLIST_ITEM_LIMIT) {
         return c.json(
             {
                 error: `Watchlist limit of ${WATCHLIST_ITEM_LIMIT} items reached`,
@@ -143,7 +148,12 @@ router.openapi(addRoute, async (c) => {
     try {
         const [created] = await db
             .insert(watchlistItem)
-            .values({ ...body, userId })
+            .values({
+                ...body,
+                userId,
+                // Append to the end of the user's watchlist
+                position: (stats?.maxPosition ?? -1) + 1,
+            })
             .returning();
 
         if (!created) {
@@ -162,19 +172,7 @@ router.openapi(addRoute, async (c) => {
             title: created.title,
         });
 
-        return c.json(
-            {
-                id: created.id,
-                providerId: created.providerId,
-                mediaType: created.mediaType,
-                title: created.title,
-                posterUrl: created.posterUrl ?? undefined,
-                overview: created.overview ?? undefined,
-                releaseDate: created.releaseDate ?? undefined,
-                addedAt: created.addedAt.toISOString(),
-            },
-            201
-        );
+        return c.json(toWatchlistItemDto(created), 201);
     } catch (err: unknown) {
         const message =
             err instanceof Error
@@ -197,6 +195,102 @@ router.openapi(addRoute, async (c) => {
 
         throw err;
     }
+});
+
+const reorderWatchlistSchema = z.object({
+    ids: z.array(z.number().int().positive()).max(WATCHLIST_ITEM_LIMIT),
+});
+
+const reorderRoute = createRoute({
+    method: 'put',
+    path: '/order',
+    tags: ['Watchlist'],
+    summary: 'Set the order of the watchlist',
+    description:
+        'Accepts every watchlist item id for the current user, in the desired order.',
+    security: [{ cookieAuth: [] }],
+    request: {
+        body: {
+            required: true,
+            content: { 'application/json': { schema: reorderWatchlistSchema } },
+        },
+    },
+    responses: {
+        204: { description: 'Watchlist reordered.' },
+        400: {
+            description:
+                'Invalid request body, or ids do not match the current watchlist.',
+            content: { 'application/json': { schema: errorResponseSchema } },
+        },
+        401: {
+            description: 'Unauthorized.',
+            content: { 'application/json': { schema: errorResponseSchema } },
+        },
+        500: {
+            description: 'Internal Server Error.',
+            content: { 'application/json': { schema: errorResponseSchema } },
+        },
+    },
+});
+
+router.openapi(reorderRoute, async (c) => {
+    const { ids } = c.req.valid('json');
+    const userId = c.get('user').id;
+
+    const reordered = await db.transaction(async (tx) => {
+        const existing = await tx
+            .select({ id: watchlistItem.id })
+            .from(watchlistItem)
+            .where(eq(watchlistItem.userId, userId))
+            .for('update');
+
+        const existingIds = new Set(existing.map((item) => item.id));
+
+        if (
+            ids.length !== existingIds.size ||
+            new Set(ids).size !== ids.length ||
+            !ids.every((id) => existingIds.has(id))
+        ) {
+            return false;
+        }
+
+        if (ids.length === 0) {
+            return true;
+        }
+
+        const positionCases = sql.join(
+            ids.map((id, index) => sql`when ${id} then ${index}::integer`),
+            sql` `
+        );
+
+        await tx
+            .update(watchlistItem)
+            .set({
+                position: sql`case ${watchlistItem.id} ${positionCases} end`,
+            })
+            .where(
+                and(
+                    eq(watchlistItem.userId, userId),
+                    inArray(watchlistItem.id, ids)
+                )
+            );
+
+        return true;
+    });
+
+    if (!reordered) {
+        logger.warning('Watchlist reorder ids mismatch {*}', {
+            count: ids.length,
+        });
+        return c.json(
+            { error: 'Order must include every watchlist item exactly once' },
+            400
+        );
+    }
+
+    logger.info('Watchlist reordered {*}', { count: ids.length });
+
+    return c.body(null, 204);
 });
 
 const deleteRoute = createRoute({

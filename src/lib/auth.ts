@@ -5,7 +5,6 @@ import { createElement } from 'react';
 import { db } from '../db/index.js';
 import * as schema from '../db/schema.js';
 import { config } from './config.js';
-import { ac, roles } from './permissions.js';
 import { sendMail } from './mailer.js';
 
 import ResetPasswordEmail from '../emails/reset-password-email.js';
@@ -60,12 +59,7 @@ export const auth = betterAuth({
     },
     plugins: [
         twoFactor({ issuer: 'Media Watchlist' }),
-        admin({
-            ac,
-            roles,
-            defaultRole: 'user',
-            adminRoles: ['admin'],
-        }),
+        admin({ defaultRole: 'user', adminRoles: ['admin'] }),
         openAPI({ disableDefaultReference: true }),
     ],
     advanced: {

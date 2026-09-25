@@ -151,6 +151,7 @@ export const watchlistItem = pgTable(
         overview: text('overview'),
         releaseDate: text('release_date'),
         addedAt: timestamp('added_at').defaultNow().notNull(),
+        position: integer('position').notNull().default(0),
     },
     (table) => [
         uniqueIndex('watchlist_user_provider_idx').on(
@@ -158,6 +159,6 @@ export const watchlistItem = pgTable(
             table.providerId,
             table.mediaType
         ),
-        index('watchlist_user_idx').on(table.userId),
+        index('watchlist_user_position_idx').on(table.userId, table.position),
     ]
 );

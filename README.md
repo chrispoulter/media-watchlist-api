@@ -7,6 +7,7 @@ A REST API for tracking movies and TV shows you want to watch. Built with Hono, 
 - Email/password authentication and social login (Google OAuth)
 - Email verification and password reset flows
 - Two-factor authentication (TOTP)
+- Admin user management (Better Auth admin plugin) — list, create, edit, ban and remove users
 - Search for movies and TV shows via The Movie Database (TMDB)
 - Personal watchlist management — add, remove, and reorder items
 - Transactional emails with React Email templates
@@ -61,6 +62,16 @@ cp .env.example .env
 npm run db:migrate
 npm run dev
 ```
+
+### Creating an administrator
+
+Admin endpoints (`/api/auth/admin/*`) require a user with the `admin` role. After registering an account, promote it directly in the database:
+
+```sql
+UPDATE "user" SET role = 'admin' WHERE email = 'system.administrator@example.com';
+```
+
+Sign out and back in for the new role to take effect. Once one admin exists, further roles can be managed from the web app's admin section.
 
 ## Environment Variables
 

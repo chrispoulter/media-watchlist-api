@@ -8,7 +8,7 @@ A REST API for tracking movies and TV shows you want to watch. Built with Hono, 
 - Email verification and password reset flows
 - Two-factor authentication (TOTP)
 - Search for movies and TV shows via The Movie Database (TMDB)
-- Personal watchlist management — add and remove items
+- Personal watchlist management — add, remove, and reorder items
 - Transactional emails with React Email templates
 - Interactive API documentation (Scalar) at the root route
 - Docker Compose for local development
@@ -82,60 +82,16 @@ npm run dev
 | `SMTP_PASS`            | No       | —                       | SMTP password                                                       |
 | `LOG_LEVEL`            | No       | `info`                  | Log level: `fatal`, `error`, `warning`, `info`, `debug`, or `trace` |
 
-## API Overview
+## API Documentation
 
-Interactive documentation with a request explorer is available at `GET /` when the server is running.
+Interactive documentation with a request explorer is served at [`/reference`](http://localhost:3000/reference).
 
-### Health
+The raw OpenAPI specs are also available:
 
-| Method | Path      | Auth | Description                                                            |
-| ------ | --------- | ---- | ---------------------------------------------------------------------- |
-| GET    | `/health` | No   | Checks database, mailer, and TMDB — returns 503 if any service is down |
-| GET    | `/alive`  | No   | Lightweight liveness probe — always returns 200, no downstream checks  |
-
-### Authentication (`/api/auth/*`)
-
-All auth routes are handled by Better Auth.
-
-| Method | Path                               | Description                           |
-| ------ | ---------------------------------- | ------------------------------------- |
-| POST   | `/api/auth/sign-up/email`          | Register with email and password      |
-| POST   | `/api/auth/sign-in/email`          | Sign in with email and password       |
-| POST   | `/api/auth/sign-out`               | Sign out                              |
-| GET    | `/api/auth/get-session`            | Get current session                   |
-| GET    | `/api/auth/sign-in/social`         | Sign in with Google                   |
-| POST   | `/api/auth/forget-password`        | Request password reset                |
-| POST   | `/api/auth/reset-password`         | Reset password with token             |
-| POST   | `/api/auth/two-factor/enable`      | Enable TOTP two-factor authentication |
-| POST   | `/api/auth/two-factor/disable`     | Disable two-factor authentication     |
-| POST   | `/api/auth/two-factor/verify-totp` | Verify a TOTP code                    |
-
-### Search
-
-| Method | Path                        | Auth | Description                         |
-| ------ | --------------------------- | ---- | ----------------------------------- |
-| GET    | `/api/search?query=<query>` | Yes  | Search TMDB for movies and TV shows |
-
-### Watchlist
-
-| Method | Path                 | Auth | Description                       |
-| ------ | -------------------- | ---- | --------------------------------- |
-| GET    | `/api/watchlist`     | Yes  | Get the current user's watchlist  |
-| POST   | `/api/watchlist`     | Yes  | Add an item to the watchlist      |
-| DELETE | `/api/watchlist/:id` | Yes  | Remove an item from the watchlist |
-
-**Add item request body:**
-
-```json
-{
-    "providerId": "tmdb:550",
-    "mediaType": "movie",
-    "title": "Fight Club",
-    "posterUrl": "https://image.tmdb.org/t/p/w300/jSziioSwPVrOy9Yow3XhWIBDjq1.jpg",
-    "overview": "...",
-    "releaseDate": "1999-10-15"
-}
-```
+| Path                 | Description                            |
+| -------------------- | -------------------------------------- |
+| `/openapi.json`      | App routes (health, search, watchlist) |
+| `/auth-openapi.json` | Authentication routes (Better Auth)    |
 
 ## Scripts
 
